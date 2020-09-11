@@ -1,0 +1,147 @@
+###############################################################################
+# SAMPLE CONFIGURATION FILE FOR PYEQ_KINEMATICS.PY
+###############################################################################
+# AUTHOR: Jean-Mathieu Nocquet
+#         Geoazur, UCA, IRD, CNRS, OCA
+# DATE  : 19-03-2020
+###############################################################################
+# NOTES
+###############################################################################
+# This configuration file is for modeling afterslip following the 2016
+# Mw 7.6 Pedernales - Ecuador - Earthquake
+# Input GPS time series are assummed to be corrected from their pre-seismic
+# trend.
+###############################################################################
+# GENERAL PARAMETERS
+###############################################################################
+verbose = NO
+debug   = NO
+# np_opt : YES will stop before doing the inversion
+no_opt  = NO
+# save: YES will save normal normal system
+save    = NO 
+
+###############################################################################
+# FAULT PARAMETERS
+###############################################################################
+# input_npz: Green and GPS site location as an npz file created with
+# pyeq_make_green.py
+input_npz = ../green_n9_input.npz
+###############################################################################
+# here you can specify if you want to use only a subset of your fault
+# or exclude some fault elements specified by their index
+# geometry_range_lon = [min_lon,max_lon] # (unit dec.deg)
+# geometry_range_lat = [min_lon,max_lon] # (unit dec.deg)
+# geometry_range_depth = [min_depth,max_depth] # (unit km)
+# geometry_remove_idx = [idx1,idx2,...] # index of faults to be excluded
+
+###############################################################################
+# DATES
+###############################################################################
+# dates is a string controlling model start/end dates and time step
+# pyeq allows variable time step. Pyeq uses a piecewise linear time function
+# to model the (cumulative) slip.
+# 
+# dates option can be:
+# a file including a list of dates
+# if the file is a numpy npy/npz file, then it is assume to have datetime objects.
+# 
+# all: means all available dates for the time series will be used
+#  
+dates = pandas.date_range(start='2016/4/17 12:00:00', end='2016/6/30 12:00:00', freq='1D')
+###############################################################################
+# rounding: specify date rounding for both model and observation dates. 
+# Choose among day, hour, minute, second.
+# day is daily solutions and daily model dates
+rounding = day 
+###############################################################################
+# DATA
+###############################################################################
+# dir_ts: directory of time series
+###############################################################################
+dir_ts = ../pos_ps_raw_with_clean
+###############################################################################
+up = NO # YES to use up component in the inversion
+# s_up & s_h are scaling factor for the uncertainty on up, North/East components
+# set to 0, puts all uncertainties to 1 mm.
+s_up = 5. 
+s_h  = 1.
+# lexclude_gps = XXXX YYYY # exclude GPS site. Can be repeated
+
+###############################################################################
+# REGULARIZATION
+###############################################################################
+# critical length for spatial smoothing in km
+###############################################################################
+dc = 50.
+###############################################################################
+# sigma
+###############################################################################
+# sigma is the most important parameter
+# sigma controls the weight given to the regularization constraints 
+# sigma = 2 means that a constraint of 2*2 mm^2/day for the slip
+# sigma can be a string
+sigma = 15.
+###############################################################################
+# cm_type: spatial covariance kernel
+###############################################################################
+cm_type = exponential
+###############################################################################
+# cm_norm: covariance normalization - 'd0' () or none (default)
+###############################################################################
+# cm_norm = d0
+###############################################################################
+# tau: critical duration for temporal smoothing in days 
+#      default 0, no temporal smoothing 
+###############################################################################
+tau = 0.
+
+###############################################################################
+# PRIOR
+###############################################################################
+# prior value of slip
+m0 = 0.
+
+###############################################################################
+# RAKE & SLIP
+###############################################################################
+# rake
+###############################################################################
+# rake_type : Euler or constant
+rake_type = Euler 
+# rake_value is lon, lat, omega, style if rake_type is Euler 
+# style can be inverse, normal, leftlateral,rightlateral
+# rake is a float (dec. deg.) if rake_type is constant
+rake_value = /-179.551/82.858/0.4265/inverse 
+# rake_constraint = 0 means fixed rake from rake_value
+# rake_constraint = 2. means a prior constraint of 2 mm/sqrt(day) on the rake
+# conjugate to the main rake calculated from rake_type/rake_value
+
+###############################################################################
+# ALGORITHM & INVERSION OPTIONS
+###############################################################################
+# nnls: least-square algorithm. Available choice:
+# scipy_nnls , nnls_predotted , lsqnonneg , nnlsm_block_pivot , nnlsm_activeset
+# scipy_lsq_linear, scipy_lbfgsb
+nnls = nnlsm_block_pivot
+###############################################################################
+# build: algorithm used to build the linear system. Available choice:
+# 0: decommissioned
+# 1: no uncertainty, fixed model step duration, no normal system (obsolete)
+# 2: uncertainty, fixed model step duration, normal system 
+# 3: uncertainty, variable model step duration, normal system
+# 4: not ready yet. account for NEU offset at data start time
+build = 3
+###############################################################################
+
+###############################################################################
+# NOT IMPLEMENTED YET
+###############################################################################
+# upper and lower bounds on slip
+# set_zero_at_period to define the zero of input data
+# constraints on the cumulated slip
+# force equality constraints among two subfaults
+# constraints on the cumulated slip in a given area
+# eq for earthquakes
+# resolution & restitution matrix
+# posterior covariance matrix
