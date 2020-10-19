@@ -134,7 +134,9 @@ def plot_model_shp( shp , \
         # Alternatively, you can manually set the levels
         # and the norm:
 #        lev_exp = np.arange(np.floor(np.log10(z.min())), np.ceil(np.log10(bounds[-1])+1) , 0.1 )
-        lev_exp = np.arange(np.floor(np.log10(0.01)), np.ceil(np.log10(bounds[-1])+1) , 0.1 )
+
+        #lev_exp = np.arange(np.floor(np.log10(0.01)), np.ceil(np.log10(bounds[-1])+1) , 0.1 )
+        lev_exp = np.arange(np.floor(np.log10(0.01)), np.ceil( bounds[-1] ) , 0.1 )
         levs = np.power(10, lev_exp)
         cs = plt.tricontourf(tri_refi, z_test_refi, locator=ticker.LogLocator() , levels=levs, norm=colors.LogNorm() , cmap=cmap )
         cbar = plt.colorbar( cs , ticks=[0.01,0.1,1,10,100,1000] )

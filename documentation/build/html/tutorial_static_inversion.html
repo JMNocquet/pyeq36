@@ -1,0 +1,383 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Tutorial static inversion &mdash; pyeq 0.51.2 documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+  <script type="text/javascript" src="_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+        <script src="_static/jquery.js"></script>
+        <script src="_static/underscore.js"></script>
+        <script src="_static/doctools.js"></script>
+        <script src="_static/language_data.js"></script>
+    
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+
+    
+
+  
+  <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="dates" href="dates.html" />
+    <link rel="prev" title="Options controling the behaviour" href="behaviour.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="index.html" class="icon icon-home"> pyeq
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                0.51.2
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="foreword.html">PYEQ: full time-dependent slip inversion</a></li>
+<li class="toctree-l1"><a class="reference internal" href="behaviour.html">Options controling the behaviour</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Tutorial static inversion</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#input-data">Input data</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#building-the-fault-geometry-from-a-grd-file">Building the fault geometry from a grd file</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#making-the-green-s-functions">Making the Green’s functions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#running-the-inversion">Running the inversion</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#getting-the-results">Getting the results</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="dates.html">dates</a></li>
+<li class="toctree-l1"><a class="reference internal" href="roxane.html">Roxane’s notes on PYEQ</a></li>
+<li class="toctree-l1"><a class="reference internal" href="modules.html">for developpers</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">pyeq</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="index.html">Docs</a> &raquo;</li>
+        
+      <li>Tutorial static inversion</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="_sources/tutorial_static_inversion.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="tutorial-static-inversion">
+<h1>Tutorial static inversion<a class="headerlink" href="#tutorial-static-inversion" title="Permalink to this headline">¶</a></h1>
+<div class="toctree-wrapper compound">
+</div>
+<p>There are 3 steps for running an inversion:
+* setup geodetic data (observations) files
+* build the geometry
+* calculate the Green’s function
+* run the inversion to get the models</p>
+<p>So, we create four directories:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">mkdir</span> <span class="n">data</span> <span class="p">;</span> <span class="n">mkdir</span> <span class="n">geometry</span> <span class="p">;</span> <span class="n">mkdir</span> <span class="n">green</span> <span class="p">;</span> <span class="n">mkdir</span> <span class="n">models</span>
+</pre></div>
+</div>
+<div class="section" id="input-data">
+<h2>Input data<a class="headerlink" href="#input-data" title="Permalink to this headline">¶</a></h2>
+<p>You will need the following data sets:</p>
+<ul class="simple">
+<li><p>either a gmt format displacement/velocity file</p></li>
+<li><p>or a directory of time series in GAMIT/GLOBK PBO format</p></li>
+<li><p>a geometry of your fault provided as a gmt grd file</p></li>
+</ul>
+<p>In the following, I’ll assume that that you have a file data/mw67_coseismic.dat which looks like:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># file mw67_coseismic.dat</span>
+<span class="o">-</span><span class="mf">78.62765</span>   <span class="o">-</span><span class="mf">1.26861</span>  <span class="o">-</span><span class="mf">0.20</span>  <span class="o">-</span><span class="mf">2.00</span>   <span class="mf">1.00</span>   <span class="mf">1.00</span>   <span class="mf">0.00</span> <span class="n">ABEC</span>
+<span class="o">-</span><span class="mf">78.84741</span>   <span class="o">-</span><span class="mf">2.20216</span>   <span class="mf">4.44</span>  <span class="o">-</span><span class="mf">4.89</span>   <span class="mf">1.00</span>   <span class="mf">1.00</span>   <span class="mf">0.00</span> <span class="n">ALEC</span>
+<span class="o">-</span><span class="mf">78.54539</span>    <span class="mf">0.91264</span>   <span class="mf">0.00</span>  <span class="o">-</span><span class="mf">3.05</span>   <span class="mf">1.00</span>   <span class="mf">1.00</span>   <span class="mf">0.00</span> <span class="n">ALTB</span>
+<span class="o">-</span><span class="mf">78.16230</span>   <span class="o">-</span><span class="mf">0.46342</span>   <span class="mf">2.17</span>  <span class="o">-</span><span class="mf">4.00</span>   <span class="mf">1.00</span>   <span class="mf">1.00</span>   <span class="mf">0.00</span> <span class="n">ANTN</span>
+<span class="o">-</span><span class="mf">78.17040</span>   <span class="o">-</span><span class="mf">0.49729</span>  <span class="o">-</span><span class="mf">0.40</span>  <span class="o">-</span><span class="mf">2.01</span>   <span class="mf">1.00</span>   <span class="mf">1.00</span>   <span class="mf">0.00</span> <span class="n">ANTS</span>
+<span class="o">-</span><span class="mf">79.09820</span>    <span class="mf">0.09634</span>  <span class="o">-</span><span class="mf">4.42</span>  <span class="o">-</span><span class="mf">0.77</span>   <span class="mf">1.00</span>   <span class="mf">1.00</span>   <span class="mf">0.00</span> <span class="n">ARSH</span>
+<span class="o">.</span>
+<span class="o">.</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="building-the-fault-geometry-from-a-grd-file">
+<h2>Building the fault geometry from a grd file<a class="headerlink" href="#building-the-fault-geometry-from-a-grd-file" title="Permalink to this headline">¶</a></h2>
+<p>This part assumes GMT 4.x to be properly installed on your system. Building the fault geometry can be done with the script</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">pyeq_parametrize_curve_surface_triangles</span><span class="o">.</span><span class="n">py</span>
+</pre></div>
+</div>
+<p>If not already done, you will first need to install the Polygon2 package, which is available like <a class="reference external" href="https://pypi.python.org/pypi/Polygon2/">here</a>.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">pip</span> <span class="n">install</span> <span class="n">Polygon2</span><span class="o">-</span><span class="mf">2.0</span><span class="o">.</span><span class="mf">6.</span><span class="n">tar</span><span class="o">.</span><span class="n">gz</span>
+</pre></div>
+</div>
+<p>You then need to link the grd file to you local directory</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">cd</span> <span class="n">geometry</span>
+<span class="n">ln</span> <span class="o">-</span><span class="n">s</span> <span class="o">/</span><span class="n">usr</span><span class="o">/</span><span class="n">local</span><span class="o">/</span><span class="n">geodesy</span><span class="o">/</span><span class="n">maps</span><span class="o">/</span><span class="n">geophysical_data</span><span class="o">/</span><span class="n">sam_slab1</span><span class="o">.</span><span class="mi">0</span><span class="n">_clip_shifted</span><span class="o">.</span><span class="n">grd</span> <span class="o">.</span>
+</pre></div>
+</div>
+<p>Finally, you run the script pyeq_parametrize_curve_surface_triangles.py. This routine makes an icosahedron partition of the earth surface, that is using equilateral triangles. n controls the numer of times the triangles will be divided.
+The important parameters are:</p>
+<ul>
+<li><dl class="option-list">
+<dt><kbd><span class="option">-g <var>GRD</var></span></kbd></dt>
+<dd><p>Netcdf grid</p>
+</dd>
+</dl>
+</li>
+<li><dl class="option-list">
+<dt><kbd><span class="option">-b <var>BOUNDS</var></span></kbd></dt>
+<dd><p>Bounds: /min_lon/max_lon/min_lat/max_lat</p>
+</dd>
+</dl>
+</li>
+<li><dl class="option-list">
+<dt><kbd><span class="option">-n <var>N_SUBDIVISION</var></span></kbd></dt>
+<dd><p>number of subdivisions of the global icosahedron. Triangles edge lengths are</p>
+</dd>
+</dl>
+</li>
+<li><p>n=6  57.66 km</p></li>
+<li><p>n=7  28.83 km</p></li>
+<li><p>n=8  14.415 km</p></li>
+<li><p>n=9  7.208 km</p></li>
+<li><p>n=11  4.870 km</p></li>
+<li><p>-d DEPTH_RANGE*   Depth range min_depth/max_depth in km</p></li>
+</ul>
+<p>Depending on n and the size, your selected region and your computer speed, this process might take some time.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">pyeq_parametrize_curve_surface_triangles</span><span class="o">.</span><span class="n">py</span> <span class="o">-</span><span class="n">g</span> <span class="n">sam_slab1</span><span class="o">.</span><span class="mi">0</span><span class="n">_clip_shifted</span><span class="o">.</span><span class="n">grd</span> <span class="o">-</span><span class="n">b</span> <span class="o">/-</span><span class="mf">81.3</span><span class="o">/-</span><span class="mf">78.9</span><span class="o">/</span><span class="mf">0.2</span><span class="o">/</span><span class="mf">0.7</span> <span class="o">-</span><span class="n">n</span> <span class="mi">11</span> <span class="o">-</span><span class="n">d</span> <span class="mi">15</span><span class="o">/</span><span class="mi">40</span> <span class="o">--</span><span class="n">verbose</span> <span class="o">-</span><span class="n">e</span> <span class="n">aftershocks_18_may_2016</span>
+</pre></div>
+</div>
+<p>You should see various files created. Among them, aftershocks_18_may_2016_geometry.dat is the most informative and should look like this:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1">#     rdis_long    rdis_lat rdis_depth rdis_length rdis_width  rdis_area ratio_rdis_tdis    strike        dip centroid_long centroid_lat centroid_depth tdis_long1  tdis_lat1 tdis_depth1 tdis_long2  tdis_lat2 tdis_depth2 tdis_long3  tdis_lat3 tdis_depth3  tdis_area</span>
+<span class="mi">0000</span>  <span class="o">-</span><span class="mf">79.78222</span>    <span class="mf">0.46351</span>      <span class="o">-</span><span class="mf">28.49</span>        <span class="mf">2.46</span>       <span class="mf">2.46</span>      <span class="mf">6.03</span>            <span class="mf">1.01</span>     <span class="mf">18.77</span>      <span class="mf">20.79</span>     <span class="o">-</span><span class="mf">79.76887</span>      <span class="mf">0.47066</span>         <span class="o">-</span><span class="mf">28.48</span>  <span class="o">-</span><span class="mf">79.75219</span>    <span class="mf">0.48067</span>      <span class="o">-</span><span class="mf">29.02</span>  <span class="o">-</span><span class="mf">79.77126</span>    <span class="mf">0.45063</span>      <span class="o">-</span><span class="mf">28.66</span>  <span class="o">-</span><span class="mf">79.78317</span>    <span class="mf">0.48067</span>      <span class="o">-</span><span class="mf">27.78</span>      <span class="mf">6.07</span>
+<span class="mi">0001</span>  <span class="o">-</span><span class="mf">79.77983</span>    <span class="mf">0.48354</span>      <span class="o">-</span><span class="mf">28.31</span>        <span class="mf">2.46</span>       <span class="mf">2.46</span>      <span class="mf">6.03</span>            <span class="mf">1.01</span>     <span class="mf">18.76</span>      <span class="mf">20.79</span>     <span class="o">-</span><span class="mf">79.76648</span>      <span class="mf">0.49068</span>         <span class="o">-</span><span class="mf">28.31</span>  <span class="o">-</span><span class="mf">79.76410</span>    <span class="mf">0.51071</span>      <span class="o">-</span><span class="mf">28.14</span>  <span class="o">-</span><span class="mf">79.75219</span>    <span class="mf">0.48067</span>      <span class="o">-</span><span class="mf">29.02</span>  <span class="o">-</span><span class="mf">79.78317</span>    <span class="mf">0.48067</span>      <span class="o">-</span><span class="mf">27.78</span>      <span class="mf">6.07</span>
+<span class="o">.</span>
+<span class="o">.</span>
+</pre></div>
+</div>
+<p>This file includes the geometry information then required for calculating the Green’s function either for rectangle dislocations, source points or triangles dislocation elements.
+You can display the geometry in QGIS by creating a shapefile.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">pyacs_qgis_geometry2polygon</span><span class="o">.</span><span class="n">py</span> <span class="o">-</span><span class="n">dat</span> <span class="n">aftershocks_18_may_2016_geometry</span><span class="o">.</span><span class="n">dat</span> <span class="o">--</span><span class="n">t</span>
+</pre></div>
+</div>
+<div class="align-center figure" id="id1">
+<a class="reference internal image-reference" href="../../images/qgis_geometry.png"><img alt="alternate text" src="../../images/qgis_geometry.png" style="width: 800px; height: 500px;" /></a>
+<p class="caption"><span class="caption-text">geometry file seen with QGIS</span><a class="headerlink" href="#id1" title="Permalink to this image">¶</a></p>
+</div>
+</div>
+<div class="section" id="making-the-green-s-functions">
+<h2>Making the Green’s functions<a class="headerlink" href="#making-the-green-s-functions" title="Permalink to this headline">¶</a></h2>
+<p>The next step is to calculate the Green’s functions relating the unit slip to the observed displacements/velocities.</p>
+<p>Then, assuming  run</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">cd</span> <span class="n">green</span>
+<span class="n">pyeq_make_green</span><span class="o">.</span><span class="n">py</span> <span class="o">-</span><span class="n">gps_h</span> <span class="o">../</span><span class="n">data</span><span class="o">/</span><span class="n">mw67_coseismic</span><span class="o">.</span><span class="n">dat</span> <span class="o">-</span><span class="n">g</span> <span class="o">../</span><span class="n">geometry</span><span class="o">/</span><span class="n">aftershocks_18_may_2016_geometry</span><span class="o">.</span><span class="n">npy</span> <span class="o">--</span><span class="n">tde</span> <span class="o">--</span><span class="n">verbose</span> <span class="o">-</span><span class="n">e</span> <span class="n">green_aftershocks_18_may_2016</span>
+</pre></div>
+</div>
+<p>In addition to the Green’s functions, so additional files are created. The most important is green_aftershocks_18_may_2016_input.npy .
+This files includes all the information required both calculating regularization matrices and building the linear system for the inversion.</p>
+</div>
+<div class="section" id="running-the-inversion">
+<h2>Running the inversion<a class="headerlink" href="#running-the-inversion" title="Permalink to this headline">¶</a></h2>
+<p>We simply run a static inversion in the models directory by running:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">cd</span> <span class="n">models</span>
+<span class="n">pyeq_static_inversion</span><span class="o">.</span><span class="n">py</span> <span class="o">-</span><span class="n">input_npy</span> <span class="o">../</span><span class="n">green</span><span class="o">/</span><span class="n">green_aftershocks_18_may_2016_input</span><span class="o">.</span><span class="n">npy</span> <span class="o">-</span><span class="n">dc</span> <span class="mf">20.0</span> <span class="o">-</span><span class="n">sigma</span> <span class="mf">2000.</span> <span class="o">-</span><span class="n">m0</span> <span class="mf">0.0</span> <span class="o">-</span><span class="n">rake_type</span> <span class="s1">&#39;Euler&#39;</span> <span class="o">-</span><span class="n">rake_value</span> <span class="o">/-</span><span class="mf">179.551</span><span class="o">/</span><span class="mf">82.858</span><span class="o">/</span><span class="mf">0.4265</span><span class="o">/</span><span class="n">inverse</span> <span class="o">-</span><span class="n">rake_constraint</span> <span class="mi">0</span>  <span class="o">--</span><span class="n">verbose</span> <span class="o">--</span><span class="n">debug</span>  <span class="o">-</span><span class="n">e</span> <span class="n">m67</span>
+</pre></div>
+</div>
+<p>Some explanation about the various options are explained in the help</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">pyeq_static_inversion</span><span class="o">.</span><span class="n">py</span> <span class="o">-</span><span class="n">h</span>
+</pre></div>
+</div>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>    <span class="n">Required</span> <span class="n">parameters</span> <span class="n">are</span><span class="p">:</span>
+<span class="o">-</span> <span class="n">sigma</span>      <span class="p">:</span> <span class="n">regularization</span> <span class="n">value</span><span class="o">.</span> <span class="mi">1</span><span class="o">/</span><span class="n">sigma</span><span class="o">**</span><span class="mi">2</span> <span class="ow">is</span> <span class="n">the</span> <span class="n">weight</span> <span class="n">given</span> <span class="n">to</span> <span class="n">regularization</span> <span class="p">(</span><span class="n">Cm</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span> <span class="p">(</span><span class="n">mm</span> <span class="ow">or</span> <span class="n">mm</span><span class="o">/</span><span class="n">yr</span><span class="p">)</span>
+<span class="o">-</span> <span class="n">max_slip</span>   <span class="p">:</span> <span class="mi">0</span> <span class="n">no</span> <span class="n">constraint</span><span class="p">,</span> <span class="n">Euler</span> <span class="n">calculated</span> <span class="kn">from</span> <span class="nn">Euler</span> <span class="n">pole</span><span class="p">,</span> <span class="ow">or</span> <span class="nb">any</span> <span class="nb">float</span> <span class="n">value</span>
+<span class="o">-</span> <span class="n">m0</span>         <span class="p">:</span> <span class="n">a</span> <span class="n">priori</span> <span class="n">model</span><span class="p">;</span> <span class="nb">any</span> <span class="n">real</span> <span class="n">number</span> <span class="p">[</span><span class="mi">0</span><span class="o">-</span><span class="mi">1</span><span class="p">];</span> <span class="mi">0</span><span class="o">=</span><span class="n">null</span> <span class="n">a</span> <span class="n">priori</span> <span class="n">model</span><span class="p">;</span> <span class="mi">1</span><span class="o">=</span> <span class="n">a</span> <span class="n">priori</span> <span class="n">max_slip</span>
+    <span class="n">optional</span> <span class="n">arguments</span><span class="p">:</span>
+      <span class="o">-</span><span class="n">h</span><span class="p">,</span> <span class="o">--</span><span class="n">help</span>            <span class="n">show</span> <span class="n">this</span> <span class="n">help</span> <span class="n">message</span> <span class="ow">and</span> <span class="n">exit</span>
+      <span class="o">-</span><span class="n">input_npy</span> <span class="n">INPUT_NPY</span>  <span class="nb">input</span> <span class="n">npy</span> <span class="n">file</span> <span class="n">including</span> <span class="nb">all</span> <span class="n">information</span>
+      <span class="o">-</span><span class="n">dc</span> <span class="n">DC</span>                <span class="n">Correlation</span> <span class="n">length</span> <span class="ow">in</span> <span class="n">km</span>
+      <span class="o">-</span><span class="n">sigma</span> <span class="n">SIGMA</span>          <span class="n">sigma</span> <span class="ow">in</span> <span class="n">mm</span> <span class="ow">or</span> <span class="n">mm</span><span class="o">/</span><span class="n">yr</span> <span class="p">;</span> <span class="n">weight</span> <span class="n">of</span> <span class="n">the</span> <span class="n">regularization</span>
+      <span class="o">-</span><span class="n">m0</span> <span class="n">M0</span>                <span class="n">a</span> <span class="n">priori</span> <span class="n">model</span>
+      <span class="o">--</span><span class="n">c</span> <span class="n">C</span>                 <span class="n">constraints</span> <span class="n">on</span> <span class="n">a</span> <span class="n">specific</span> <span class="n">patch</span> <span class="n">n</span><span class="o">/</span><span class="n">min_value</span><span class="o">/</span><span class="n">max_value</span>
+      <span class="o">-</span><span class="n">rake_type</span> <span class="n">RAKE_TYPE</span>  <span class="n">rake_type</span><span class="p">:</span> <span class="n">Euler</span> <span class="ow">or</span> <span class="n">constant</span>
+      <span class="o">-</span><span class="n">rake_value</span> <span class="n">RAKE_OR_POLE</span>
+                    <span class="n">Euler</span> <span class="n">pole</span> <span class="o">/</span><span class="n">long</span><span class="o">/</span><span class="n">lat</span><span class="o">/</span><span class="n">w</span><span class="o">/</span><span class="n">style</span> <span class="p">(</span><span class="n">style</span> <span class="n">among</span> <span class="n">inverse</span><span class="p">,</span> <span class="n">normal</span><span class="p">,</span> <span class="n">leftlateral</span><span class="p">,</span><span class="n">rightlateral</span><span class="p">)</span> <span class="ow">or</span> <span class="n">rake</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">degrees</span>
+      <span class="o">-</span><span class="n">rake_constraint</span> <span class="n">RAKE_CONSTRAINT</span>
+                    <span class="n">constraint</span> <span class="n">on</span> <span class="n">rake</span><span class="p">;</span> <span class="mi">0</span> <span class="n">means</span> <span class="n">fixed</span><span class="p">,</span> <span class="nb">any</span> <span class="n">positive</span> <span class="n">value</span> <span class="n">means</span> <span class="n">sigma</span> <span class="n">on</span> <span class="n">the</span> <span class="n">complement</span> <span class="n">of</span> <span class="n">the</span> <span class="n">principal</span> <span class="n">rake</span>
+      <span class="o">-</span><span class="n">max_slip</span> <span class="n">MAX_SLIP</span>    <span class="n">constraints</span> <span class="n">on</span> <span class="n">the</span> <span class="n">maximum</span> <span class="n">slip</span><span class="o">.</span> <span class="mi">0</span> <span class="n">means</span> <span class="n">maximum</span> <span class="kn">from</span> <span class="nn">Euler</span> <span class="n">pole</span><span class="p">,</span> <span class="nb">any</span> <span class="n">negative</span> <span class="n">number</span> <span class="n">means</span> <span class="n">no</span> <span class="n">bounds</span>
+      <span class="o">--</span><span class="n">verbose</span><span class="p">,</span> <span class="o">-</span><span class="n">v</span>         <span class="n">verbose</span> <span class="n">mode</span>
+      <span class="o">--</span><span class="n">debug</span>               <span class="n">debug</span> <span class="n">mode</span>
+      <span class="o">--</span><span class="n">save</span>                <span class="n">save</span> <span class="n">G</span><span class="p">,</span><span class="n">d</span><span class="p">,</span><span class="n">Cd</span><span class="p">,</span> <span class="n">lower</span><span class="p">,</span> <span class="n">upper</span> <span class="n">matrices</span><span class="o">/</span><span class="n">vectors</span> <span class="ow">and</span> <span class="n">stop</span>
+      <span class="o">-</span><span class="n">e</span> <span class="n">EXPERIMENT</span>         <span class="n">experiment</span> <span class="n">name</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="getting-the-results">
+<h2>Getting the results<a class="headerlink" href="#getting-the-results" title="Permalink to this headline">¶</a></h2>
+<p>All results files are put in a directory with automatic naming convention. The above example will create a directory m67_sigma_2000_dc_020_m0_000 with files:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">m67_sigma_2000_dc_020_m0_000_model</span><span class="o">.</span><span class="n">dat</span> <span class="c1"># model displacements/velocities GMT psvelo format</span>
+<span class="n">m67_sigma_2000_dc_020_m0_000_residuals</span><span class="o">.</span><span class="n">dat</span> <span class="c1"># obs - model displacements/velocities GMT psvelo format</span>
+<span class="n">m67_sigma_2000_dc_020_m0_000_slip_dir</span><span class="o">.</span><span class="n">dat</span> <span class="c1"># slip direction, projected onto the surface, GMT psvelo format</span>
+<span class="n">m67_sigma_2000_dc_020_m0_000_sol_coupling</span><span class="o">.</span><span class="n">dat</span> <span class="c1"># if bounded inversion, this file is the coupling, GMT psxy format</span>
+<span class="n">m67_sigma_2000_dc_020_m0_000_sol_slip</span><span class="o">.</span><span class="n">dat</span> <span class="c1"># inverted slip file, GMT psxy format</span>
+<span class="n">m67_sigma_2000_dc_020_m0_000_sum</span><span class="o">.</span><span class="n">dat</span> <span class="c1"># summary file</span>
+</pre></div>
+</div>
+<p>Again, the results can be seen with converting the file to shapefiles</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">pyacs_qgis_psvelo2shapefile</span><span class="o">.</span><span class="n">py</span> <span class="o">-</span><span class="n">gmt</span> <span class="n">m67_sigma_2000_dc_020_m0_000_model</span><span class="o">.</span><span class="n">dat</span>
+<span class="n">pyacs_qgis_psvelo2shapefile</span><span class="o">.</span><span class="n">py</span> <span class="o">-</span><span class="n">gmt</span> <span class="o">../../</span><span class="n">data</span><span class="o">/</span><span class="n">mw67_coseismic</span><span class="o">.</span><span class="n">dat</span>
+<span class="n">pyacs_qgis_model2polygon</span><span class="o">.</span><span class="n">py</span> <span class="o">-</span><span class="n">dat</span> <span class="n">m67_sigma_2000_dc_020_m0_000_sol_slip</span><span class="o">.</span><span class="n">dat</span> <span class="o">-</span><span class="n">g</span> <span class="o">../../</span><span class="n">geometry</span><span class="o">/</span><span class="n">aftershocks_18_may_2016_geometry</span><span class="o">.</span><span class="n">dat</span>
+</pre></div>
+</div>
+<div class="align-center figure" id="id2">
+<a class="reference internal image-reference" href="../../images/qgis_model.png"><img alt="alternate text" src="../../images/qgis_model.png" style="width: 800px; height: 500px;" /></a>
+<p class="caption"><span class="caption-text">Model file seen with QGIS. Blue arrows are observed displacements. Red arrows are modeled displacements.</span><a class="headerlink" href="#id2" title="Permalink to this image">¶</a></p>
+</div>
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="dates.html" class="btn btn-neutral float-right" title="dates" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="behaviour.html" class="btn btn-neutral float-left" title="Options controling the behaviour" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2016, Jean-Mathieu Nocquet IRD/Geoazur
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

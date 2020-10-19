@@ -128,7 +128,7 @@ def print_kinematic_inversion_results2(SLIP,
     import pyeq.lib.green_tensor
     import pyeq.lib.geometry
     import pyeq.lib.log.make_dir_pyeq_output
-    import pyeq.lib.log.model2shp_gmt
+    import pyeq.lib.plot.model2shp_gmt
 
 
     ###################################################################

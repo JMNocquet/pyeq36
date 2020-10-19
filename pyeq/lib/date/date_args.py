@@ -2,8 +2,9 @@
 Handle the date argument from pyeq_kinematic_inversion.py
 """
 
-def get_np_dates_from_arg( arg, np_obs_date_s, rounding='day' , verbose=False):
-    
+
+def get_np_dates_from_arg(arg, np_obs_date_s, rounding='day', verbose=False):
+
     """
     returns array of dates in integer seconds since 1980/1/1 00:00:00
     
@@ -17,8 +18,10 @@ def get_np_dates_from_arg( arg, np_obs_date_s, rounding='day' , verbose=False):
     """
 
     ###########################################################################    
-    def round_np_datetime( np_datetime , rounding ):
+    def round_np_datetime(np_datetime, rounding ):
     ###########################################################################    
+
+        from datetime import timedelta
 
         for i in np.arange( np_datetime.shape[0] ):
             if rounding == 'day':
@@ -40,7 +43,6 @@ def get_np_dates_from_arg( arg, np_obs_date_s, rounding='day' , verbose=False):
     
     import os
     import numpy as np
-    import pyacs
     from pyacs.lib import astrotime as at
     from datetime import datetime
     import pandas

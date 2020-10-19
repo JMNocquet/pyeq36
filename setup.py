@@ -2,6 +2,8 @@ from setuptools import setup
 
 ###############################################################################
 # VERSION HISTORY
+# 0.51.2 on 20201019 : fix small bugs indicated by sphinx. Added sphinx doc built in setup.py
+# 0.51.1 on 20200921 : work on bug plotting on some computers
 # 0.51.0 on 20200629 : development version - adding back coulomb calculation
 # 0.50.8 on 20200306 : development version for refactoring
 # 0.50.7 on 20200218 : correct a long standing bug for Green tensor using tde for the up component. Should only impact pyeq_kinematics where up has not been used so far.
@@ -14,9 +16,15 @@ from setuptools import setup
 # 0.50.0 on 20190401 : pyeq moved as a separate project. See pyacs for history in changes
 ###############################################################################
 
+from sphinx.setup_command import BuildDoc
+cmdclass = {'build_sphinx': BuildDoc}
 
-setup(name='pyeq',
-      version='0.51.0',
+name = 'pyeq'
+version = '0.51'
+release = '0.51.2'
+
+setup(name = name,
+      version = release,
       description='PYEQ: PYACS modeling tools for fault slip inversion',
       long_description='PYACS modeling tools for static and kinematic slip inversion',
  
@@ -69,10 +77,11 @@ setup(name='pyeq',
                 'pyeq/scripts/pyeq_kinematic_model_to_disp_time_series.py',\
                 ],
       install_requires=['ansicolors', \
+                        'matplotlib==3.2.1',\
+                        'geopandas==0.7.0',\
                         'pyacs>=0.62.0',\
                         'numpy>=1.17.2',\
                         'progress',\
-                        'geopandas', \
                         'descartes' ,\
                         'str2bool'],
           #'Polygon3',  \
@@ -82,4 +91,15 @@ setup(name='pyeq',
 
       test_suite='nose.collector',
       tests_require=['nose'],
+
+# for building documentation using sphinx
+      # these are optional and override conf.py settings
+      command_options={\
+          'build_sphinx': {\
+              'project': ('setup.py', name),\
+              'version': ('setup.py', release),\
+              'release': ('setup.py', release),\
+              'source_dir': ('setup.py', 'documentation/source'),\
+              'build_dir': ('setup.py', 'documentation/build')}}
+
 )
