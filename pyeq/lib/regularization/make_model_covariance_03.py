@@ -23,8 +23,7 @@ def make_model_covariance_03( model ):
     import scipy.linalg    
     import pyacs.lib.glinalg
     import pyeq.lib.regularization
-    import pyeq.lib.log
-    from time import time
+    import pyeq.log
     from progress.bar import Bar
 
     ###########################################################################
@@ -78,7 +77,21 @@ def make_model_covariance_03( model ):
     #######################################################################        
         print("-- Computing the time step covariance matrix - sigma_type is %s " % ( model.sigma_type ) )
 
-        if np.max( np.fabs( np.diff( delta_time_in_days ) ) ) == 0:
+        # change on 02/11/2020
+        # single model step case
+        if delta_time_in_days.size == 1:
+            boolean_constant_time_step = True
+
+        # multiple model step case
+        else:
+            if np.max( np.fabs( np.diff( delta_time_in_days ) ) ) == 0:
+                boolean_constant_time_step = True
+            else:
+                boolean_constant_time_step = False
+
+
+        if boolean_constant_time_step:
+
             print("-- Constant time step case ")
             # change 16/04/2020
             # since parameters are expressed in mm/day (slip rate) and green's function have been
@@ -137,7 +150,20 @@ def make_model_covariance_03( model ):
     #######################################################################        
         print("-- Computing the time step covariance matrix - sigma_type is %s " % ( model.sigma_type ) )
 
-        if np.max( np.fabs( np.diff( delta_time_in_days ) ) ) == 0:
+
+        # change on 02/11/2020
+        # single model step case
+        if delta_time_in_days.size == 1:
+            boolean_constant_time_step = True
+
+        # multiple model step case
+        else:
+            if np.max(np.fabs(np.diff(delta_time_in_days))) == 0:
+                boolean_constant_time_step = True
+            else:
+                boolean_constant_time_step = False
+
+        if boolean_constant_time_step:
             print("-- Constant time step case ")
 #            std_vector = np.sqrt( delta_time_in_days[0]) * model.time_sigma/nsigma_tau * model.sigma_fault * nf
             std_vector = model.time_sigma/nsigma_tau * model.sigma_fault * nf

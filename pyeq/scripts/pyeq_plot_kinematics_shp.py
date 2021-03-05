@@ -10,95 +10,165 @@
 # MODULES IMPORT
 ###################################################################
 
-import sys
 import os
 import argparse
-import pyeq.lib.plot
+import pyeq.plot
+import pyeq.lib.objects.pyeq_model
 import pyacs.lib.shapefile
-import pickle
-from colors import red
 import glob
+import pyeq.plot
+from str2bool import str2bool
 
+import logging
+import pyeq.message.message as MESSAGE
+import pyeq.message.verbose_message as VERBOSE
+import pyeq.message.error as ERROR
+import pyeq.message.warning as WARNING
+import pyeq.message.debug_message as DEBUG
+
+#TODO STress
 
 ###################################################################
 # PARSE ARGUMENT LINE
 ###################################################################
 
-prog_info="Makes model, stf, time series plots from from pyeq_kinematic_inversion.py directory results"
+SETTINGS = pyeq.plot.plot_settings()
+
+prog_info="Makes various plots from from pyeq_kinematic_inversion.py directory results"
 prog_epilog="J.-M. Nocquet (Geoazur-UCA-IRD-CNRS-OCA) - April 2020"
 
-
 parser = argparse.ArgumentParser(description=prog_info,epilog=prog_epilog,prefix_chars='-')
-parser.add_argument('-odir', action='store', type=str, dest='odir',required=True,help='output directory')
-parser.add_argument('-shp_line', action='append', type=str, dest='shp_line',default=[],help='line shapefile. Can be repeated')
-parser.add_argument('-shp_poly', action='append', type=str, dest='shp_poly',default=[],help='poly shapefile. Can be repeated')
+parser.add_argument('-odir', action='store', type=str, dest='odir',default=None,help='output directory')
+parser.add_argument('-conf', action='store', type=str, dest='conf',default=None,help='output directory')
+parser.add_argument('-defaults', action='count',default=0,help='print defaults. Useful to make a template')
 parser.add_argument('-verbose', '-v', action='count',default=0,help='verbose mode')
+parser.add_argument('-debug', action='count',default=0,help='debug mode')
+
+# parser.add_argument('-shp_line', action='append', type=str, dest='shp_line',default=[],help='line shapefile. Can be repeated')
+# parser.add_argument('-shp_poly', action='append', type=str, dest='shp_poly',default=[],help='poly shapefile. Can be repeated')
+# parser.add_argument('-all', '-a', action='count',default=0,help='make all plots')
+# parser.add_argument('-time_series', '-ts', action='count',default=0,help='make time series plots')
+# parser.add_argument('-cum', action='count',default=0,help='make cumulative slip plots')
+# parser.add_argument('-ccum', action='count',default=0,help='make contour cumulative slip plots')
+# parser.add_argument('-rate', action='count',default=0,help='make slip rate plots')
+# parser.add_argument('-crate', action='count',default=0,help='make contour rate slip plots')
+# parser.add_argument('-obs', action='count',default=0,help='make cumulative slip plots with obs/model GPS arrows')
+# parser.add_argument('-res', action='count',default=0,help='make cumulative slip plots with residuals GPS arrows')
+# parser.add_argument('-stf', action='count',default=0,help='make stf/cstf plots')
 
 args = parser.parse_args()
+
+# verbose & debug
+logging.getLogger("my_logger").setLevel(logging.WARNING)
+
+if args.verbose>0:
+    verbose=True
+    logging.getLogger("my_logger").setLevel(logging.INFO)
+else:
+    verbose=False
+if args.debug>0:
+    debug=True
+    logging.getLogger("my_logger").setLevel(logging.DEBUG)
+else:debug=False
+
+if args.defaults:
+    SETTINGS.print()
+    exit()
+
+if args.odir is None:
+    parser.print_help()
+    exit()
+
+
+VERBOSE("Current settings for plots")
+if verbose: SETTINGS.print()
 
 ###################################################################
 # LOAD MODEL PCK
 ###################################################################
 
-pck = args.odir+'/npy/model.pck'
-try:
-    print("-- Loading %s (%.2f Gb) " % ( pck , os.path.getsize( pck ) /1024 / 1024 / 1024 ) )
-    with open( pck, "rb") as f:
-        model = pickle.load( f )
-    f.close()
-    print("-- model object loaded.")
-except:
-    print( red("[PYEQ ERROR] Could not load: %s " % ( pck ) ))
-    sys.exit()
+pck = args.odir+'/npy/model.mpck'
+
+model = pyeq.lib.objects.pyeq_model.load( pck )
+model.verbose = args.verbose
+model.debug = args.debug
+
+if debug:model.print_info()
+
+###################################################################
+# READ PLOT CONF FILE IF PROVIDED
+###################################################################
+
+if args.conf is not None:
+    SETTINGS.load(args.conf)
+
+model.plot_settings = SETTINGS
 
 ###################################################################
 # UPDATE VERBOSE & ODIR
 ###################################################################
 
-model.verbose = args.verbose
-model.odir = args.odir
+
 
 ###########################################################################
 # MAKE PLOT FOR TIME SERIES
 ###########################################################################
+if str2bool(SETTINGS.time_series):
+    MESSAGE("plotting time series")
+    pyeq.plot.plot_time_series(model)
 
-print("-- plotting time series")
-pyeq.lib.plot.plot_time_series(model)
 
 ###########################################################################
 # GENERATE SHAPEFILES OF CUMULATIVE & RATE SLIP FOR MODEL DISPLAY IN QGIS
 ###########################################################################
+if str2bool(model.plot_settings.cum_slip) or str2bool(model.plot_settings.ccum_slip) \
+        or str2bool(model.plot_settings.rate) or str2bool(model.plot_settings.crate):
 
-print('-- writing GMT and shapefiles for visualization in QGIS')
-one_degree = 111.1
-TRIANGLE = True
+    MESSAGE("writing cumulative slip and slip rate GMT and shapefiles for visualization in QGIS")
+    one_degree = 111.1
+    TRIANGLE = True
 
-lslip_dat = glob.glob(model.odir + "/slip/cumulative/*_cumulative_slip.dat")
-pyeq.lib.plot.model2shp_gmt(model.geometry, 'tde', lslip_dat, out_dir_shp=model.odir + '/shapefile/slip_cumulative',
-                            out_dir_gmt=model.odir + '/gmt/slip_cumulative', verbose=model.verbose)
+    lslip_dat = glob.glob(model.odir + "/slip/cumulative/*_cumulative_slip.dat")
+    pyeq.plot.model2shp_gmt(model.geometry, 'tde', lslip_dat, out_dir_shp=args.odir + '/shapefile/slip_cumulative',
+                            out_dir_gmt=model.odir + '/gmt/slip_cumulative', verbose=model.debug)
 
-lslip_dat = glob.glob(model.odir + "/slip/rate/*_slip_rate.dat")
-pyeq.lib.plot.model2shp_gmt(model.geometry, 'tde', lslip_dat, out_dir_shp=model.odir + '/shapefile/slip_rate',
-                            out_dir_gmt=model.odir + '/gmt/slip_rate', verbose=model.verbose)
+    lslip_dat = glob.glob(model.odir + "/slip/rate/*_slip_rate.dat")
+    pyeq.plot.model2shp_gmt(model.geometry, 'tde', lslip_dat, out_dir_shp=args.odir + '/shapefile/slip_rate',
+                            out_dir_gmt=model.odir + '/gmt/slip_rate', verbose=model.debug)
 
 
-###########################################################################
-# GENERATE SHAPEFILES OF CUMULATIVE & RATE GPS DISPLACEMENTS FOR DISPLAY IN QGIS
-###########################################################################
+    ###########################################################################
+    # GENERATE SHAPEFILES OF CUMULATIVE & RATE GPS DISPLACEMENTS FOR DISPLAY IN QGIS
+    ###########################################################################
 
-ldisp_dat = glob.glob(model.odir + "/displacement/cumulative/model/*disp.dat")
-for disp in ldisp_dat:
-    shp = model.odir + "/shapefile/disp_cumulative/"+disp.split('/')[-1].split('.')[0]
-    pyacs.lib.shapefile.psvelo_to_shapefile(disp, shp, verbose=False)
+    MESSAGE("writing GPS displacements GMT and shapefiles for visualization in QGIS")
+
+    ldisp_dat = glob.glob(model.odir + "/displacement/cumulative/model/*disp.dat")
+    for disp in ldisp_dat:
+        shp = model.odir + "/shapefile/disp_cumulative/"+disp.split('/')[-1].split('.')[0]
+        pyacs.lib.shapefile.psvelo_to_shapefile(disp, shp, verbose=False)
 
 ###################################################################
 # UPDATE MODEL WITH EXTERNAL SHAPEFILE FOR PLOT
 ###################################################################
-model.external_shapefile_line = args.shp_line
-model.external_shapefile_poly = args.shp_poly
+model.external_shapefile_line = model.plot_settings.shp_line
+model.external_shapefile_poly = model.plot_settings.shp_poly
 
-###################################################################
-# MAKE PLOT
-###################################################################
-#
-pyeq.lib.plot.make_plot( model )
+###########################################################################
+# MAKE PLOT FOR MODELS
+###########################################################################
+
+
+MESSAGE("plotting model")
+# if model.interseismic !=0:
+#    pyeq.lib.plot.plot_model_interseismic( model )
+# else:
+pyeq.plot.plot_model(model, interpolation=False)
+
+###########################################################################
+# MAKE PLOT FOR STF
+###########################################################################
+
+if str2bool(model.plot_settings.stf):
+    MESSAGE("making plots for stf/cstf results in %s" % (model.odir + '/plots/stf'))
+    pyeq.plot.plot_stf(model)

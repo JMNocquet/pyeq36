@@ -17,7 +17,7 @@ import numpy as np
 import pyacs.lib.euler
 import pyacs.lib.faultslip
 
-import pyeq.lib.make_inversion
+import pyeq.optimization.wrapper.make_inversion
 from pyeq.lib import lib_inversion
 
 from time import time
@@ -84,6 +84,13 @@ parser.add_argument('--c', action='append' ,dest='c',  default=None, type=str, h
 # insar
 parser.add_argument('--insar', action='count',default=0,help='also includes InSAR data in the inversion')
 
+# shp_line
+parser.add_argument('--shp_line', action='append', type=str, dest='shp_line',default=[],help='line shapefile. Can be repeated')
+parser.add_argument('--shp_poly', action='append', type=str, dest='shp_poly',default=[],help='poly shapefile. Can be repeated')
+
+# name
+parser.add_argument('--name', action='store', type=str, dest='name',default=None,help='outdir name')
+
 # verbose/debug/save modes
 parser.add_argument('--verbose', '-v', action='count',default=0,help='verbose mode')
 parser.add_argument('--debug', action='count',default=0,help='debug mode')
@@ -116,10 +123,6 @@ H_inversion_info={'input_npz':abs_path_input_npz,        \
                   'wu': args.wu,                         \
                   'wi': args.wi}
 
-# H_inversion_info['cmd_line'] = " ".join(sys.argv)
-# H_inversion_info['wh'] = args.wh 
-# H_inversion_info['wu'] = args.wu 
-# H_inversion_info['wi'] = args.wi 
 
 
 # verbose
@@ -172,7 +175,10 @@ if args.experiment != '':
           (args.experiment,int(args.sigma),int(args.dc),int(args.m0*100.0),args.wh,args.wu,args.wi,ca,cb,cc ) )
 else:
     name=("sigma_%03d_dc_%03d_m0_%03d" % (int(args.sigma),int(args.dc),int(args.m0*100.0)))
-      
+
+if args.name is not None:
+    name = args.name
+
 ###################################################################
 # PYTHON 2.7 READING INPUT NPY FILES
 ###################################################################
@@ -532,6 +538,11 @@ print('-- Correlation neglected')
 
 Cd=np.zeros((2*ngps+ngps_up+n_insar,2*ngps+ngps_up+n_insar))
 
+# if std deviation are zero, set it to 1.
+if np.count_nonzero( OBS[:,4:6] ) == 0:
+    print("-- warning: data have no uncertainty. Setting to 1.")
+    OBS[:, 4:6] = 1.
+
 Cd_gps_east  = args.wh**2 * OBS[:,4]**2
 Cd_gps_north = args.wh**2 * OBS[:,5]**2
 if GREEN_UP.shape[0] > 0:
@@ -640,11 +651,11 @@ if (not isinstance(args.c,list)) and args.max_slip<0. and args.rake_constraint =
     # NNLS CASE
 #    SLIP,norm=pyeq_model2_inversion.make_inversion_nnls(A,B,SLIP_BOUNDS,verbose=True)
     print("-- Doing inversion using the nnlsm_block_pivot algorithm")
-    SLIP,norm = pyeq.lib.make_inversion.pyeq_nnls( ATA , ATB , 'nnlsm_block_pivot' , verbose=verbose) 
+    SLIP,norm = pyeq.optimization.wrapper.make_inversion.pyeq_nnls(ATA, ATB, 'nnlsm_block_pivot', verbose=verbose)
 else:
     # BVLS CASE
     print("-- Doing inversion using the BVLS algorithm")
-    SLIP,norm = pyeq.lib.make_inversion.pyeq_bvls(A,B,SLIP_BOUNDS,verbose=True)
+    SLIP,norm = pyeq.optimization.wrapper.make_inversion.pyeq_bvls(A, B, SLIP_BOUNDS, verbose=True)
 
 
 ###################################################################
@@ -685,3 +696,83 @@ H_inversion_info['renormalization_factor']=renormalization_factor
 import pyeq.lib.print_log_static
 
 pyeq.lib.print_log_static.print_static_inversion_results(SLIP, G, d, args.input_npz , RAKE, MAX_SLIP, name, SQRT_Wm, SQRT_Wd, m0, H_inversion_info)
+
+###################################################################
+# MAKE PLOTS
+###################################################################
+
+def get_max_scale(mx):
+    import numpy as np
+    scale = np.arange(10 ** int(np.log10(mx)), 10 ** (int(np.log10(mx)) + 1) + 10 ** int(np.log10(mx)),
+                      10 ** int(np.log10(mx)))
+    return scale[np.where(scale > mx)][0]
+
+
+# make shapefile
+
+import pyacs.lib.shapefile
+import glob
+from os import mkdir, path
+
+outdir = name + '/plots'
+if not path.exists(outdir): mkdir(outdir)
+
+sol_slip_dat = glob.glob( name+'/*_sol_slip.dat')[0]
+shp = ("%s/sol_slip.shp" % name)
+dis_type = 'tde'
+
+pyacs.lib.shapefile.static_slip_to_shapefile(sol_slip_dat, shp, dis_type, verbose)
+
+from pyeq.plot import plot_model_shp
+from pyeq.lib.objects import pyeq_model
+
+model = pyeq_model()
+model.odir = name
+
+bounds = np.linspace(0, get_max_scale(np.max(SLIP)), 21)
+model.external_shapefile_poly = args.shp_poly
+model.external_shapefile_line = args.shp_line
+
+outdir = model.odir + '/plots/model_cumulative'
+if not path.exists(outdir): mkdir(outdir)
+
+model_disp_name = glob.glob( name+'/*_model.dat')[0]
+obs_disp_name = glob.glob( name+'/*_obs.dat')[0]
+
+# cumulative slip plot
+plot_model_shp\
+     (shp, \
+      cmap='magma_r', \
+      ncolor=20, \
+      contour=None, \
+      crs=None, \
+      log=False, \
+      title=name, \
+      bounds=bounds, \
+      outdir=outdir, \
+      outfile=None, \
+      shp_poly=model.external_shapefile_poly, \
+      shp_line=model.external_shapefile_line, \
+      shp_point=None, \
+      disp = [obs_disp_name,model_disp_name])
+
+outdir = model.odir + '/plots/model_cumulative_contour'
+if not path.exists(outdir): mkdir(outdir)
+print('-- making contour plot for cumulative slip in ', outdir)
+
+# cumulative slip contour plot
+plot_model_shp\
+         (shp, \
+          cmap='magma_r', \
+          ncolor=20, \
+          contour=2, \
+          crs=None, \
+          log=False, \
+          title=name, \
+          bounds=[0., np.max(SLIP)], \
+          outdir=outdir, \
+          outfile=None, \
+          shp_poly=model.external_shapefile_poly, \
+          shp_line=model.external_shapefile_line, \
+          shp_point=None)
+

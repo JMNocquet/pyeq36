@@ -16,7 +16,6 @@
 
 import argparse, sys
 import numpy as np
-from time import time
 from colors import red
 import os
 import pickle
@@ -29,9 +28,7 @@ import pyacs.lib.coordinates
 import pyacs.lib.astrotime as at
 from pyacs.lib import gmtpoint as GMT_Point
 from pyeq.lib import eq_disloc_3d as Dislocation
-from pyeq.lib import lib_inversion
-import pyeq.lib.geometry.to_np_array
-import pyeq.lib.elastic_tensor
+import pyeq.elastic_tensor
 from pyacs.gts.Sgts import Sgts, Gts
 import pyeq.lib.green_tensor
 
@@ -64,7 +61,6 @@ else:
 
 # TDE
 if args.tde>0:
-    from pyeq.lib.meade_tde import tde
     Poisson_Ratio=0.25
     TDE=True
 else:
@@ -132,7 +128,7 @@ for i in range(OBS.shape[0]):
 # MAKE GREEN
 ###################################################################
 
-GREEN = pyeq.lib.elastic_tensor.make_green( model.geometry , model.sgeometry, array_gps , type='tde', verbose=verbose )
+GREEN = pyeq.elastic_tensor.make_green(model.geometry, model.sgeometry, array_gps, type='tde', verbose=verbose)
 print(GREEN.shape)
 print("-- Reformatting the GREEN tensor to account for the main and conjugate rake")
 GREEN = pyeq.lib.green_tensor.GREEN_ENU_TO_GREEN_RAKE_MAIN_RAKE_CONJUGATE( \

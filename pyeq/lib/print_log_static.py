@@ -51,47 +51,6 @@ def print_static_inversion_results(M, GG, d, INPUT_NPZ , RAKE, MAX_SLIP, out_dir
     mu=3.0E10 # shear modulus in Pa
 
     ###################################################################
-    # READING INPUT NPY FILES
-    # GREEN_INSAR and OBS_INSAR are read for backwards compatibility
-    # PYHTON 2.7
-    ###################################################################
-#     if not H_inversion_info['insar']:
-#         try:
-#             f = file(INPUT_NPY,"rb")
-#             GEOMETRY=np.load(f)
-#             Dm=np.load(f)
-#             GREEN=np.load(f)
-#             GREEN_UP=np.load(f)
-#             OBS=np.load(f)
-#             NAME_OBS=np.load(f)
-#             OBS_UP=np.load(f)
-#             NAME_OBS_UP=np.load(f)
-#             f.close()
-#             OBS_INSAR = np.array([])
-#             GREEN_INSAR = np.array([])
-#         except:
-#             print("!!! Could not read ",INPUT_NPY)
-#             sys.exit()
-#     else:
-#         try:
-#             f = file(INPUT_NPY,"rb")
-#             GEOMETRY    = np.load(f)
-#             Dm          = np.load(f)
-#             GREEN       = np.load(f)
-#             GREEN_UP    = np.load(f)
-#             OBS         = np.load(f)
-#             NAME_OBS    = np.load(f)
-#             OBS_UP      = np.load(f)
-#             NAME_OBS_UP = np.load(f)
-#             GREEN_INSAR = np.load(f)
-#             OBS_INSAR   = np.load(f)
-#             f.close()
-#         except:
-#             print("!!! Could not read " , INPUT_NPY)
-#             sys.exit()
-#    SGEOMETRY = lib_inversion.numpy_array_2_numpy_recarray(GEOMETRY,names)
-
-    ###################################################################
     # PYTHON 3.6 READING INPUT NPZ FILE
     ###################################################################
     
@@ -107,7 +66,12 @@ def print_static_inversion_results(M, GG, d, INPUT_NPZ , RAKE, MAX_SLIP, out_dir
     NAME_OBS_UP = INPUT["NAME_OBS_UP"]
     GREEN_INSAR = INPUT["GREEN_INSAR"]
     OBS_INSAR   = INPUT["OBS_INSAR"]
-    
+
+    if np.count_nonzero( OBS[:,4:6] ) == 0:
+        print("-- warning: data have no uncertainty. Setting to 1.")
+        OBS[:, 4:6] = 1.
+
+
     # converts array to recarray
     
     names=['rdis_long','rdis_lat','rdis_depth','rdis_length','rdis_width',\

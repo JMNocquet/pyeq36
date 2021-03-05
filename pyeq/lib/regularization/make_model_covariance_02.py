@@ -21,8 +21,7 @@ def make_model_covariance_02( model ):
     import scipy.linalg    
     import pyacs.lib.glinalg
     import pyeq.lib.regularization
-    import pyeq.lib.log
-    from time import time
+    import pyeq.log
     from progress.bar import Bar
 
     ###########################################################################

@@ -8,7 +8,7 @@ from pyeq.lib import edcmp_from_27 as edcmp
 
 ###############################################################################
 def fault_normal_vector(strike, dip):
-    ###############################################################################
+###############################################################################
     """
     Calculates the vector normal to a plane defined by its strike and dip
     Coordinates system is x (Easting), y (Northing), z (positive downward)

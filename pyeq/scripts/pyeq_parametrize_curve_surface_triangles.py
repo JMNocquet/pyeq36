@@ -598,7 +598,7 @@ frectangular_gmt.close()
 
 # print gmt and shapefiles
 
-from pyeq.lib.log.geometry2shp_gmt import geometry2shp_gmt
+from pyeq.log.geometry2shp_gmt import geometry2shp_gmt
 
 geometry2shp_gmt( GEOMETRY, 'tde' , out_shp=args.experiment + '_tde', out_gmt= args.experiment + '_tde.gmt' , verbose=verbose) 
 geometry2shp_gmt( GEOMETRY, 'rde' , out_shp=args.experiment + '_rde', out_gmt= args.experiment + '_rde.gmt' , verbose=verbose) 

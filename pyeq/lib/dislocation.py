@@ -72,8 +72,8 @@ class Dislocation:
         """
         from numpy import array,dot,set_printoptions
         set_printoptions(precision=2,linewidth=50   )
-        from math import cos,sin,radians,pi
-        print("-- Faults will be divided into ",n_length, "segments along strike and ",n_width, "segments along dip (",n_length*n_width," subfaults)")
+        from math import cos,sin,radians
+print("-- Faults will be divided into ",n_length, "segments along strike and ",n_width, "segments along dip (",n_length*n_width," subfaults)")
         
         delta_length=self.length/float(n_length)
         delta_width=self.width/float(n_width)
@@ -190,7 +190,7 @@ class Dislocation:
         import numpy as np
         
         
-        from pyeq.lib.okada.okada import okada
+        from pyeq.green.okada_rde.okada import okada
         
         llambda = 3.2074E+10  
         mu      = 3.9701E+10

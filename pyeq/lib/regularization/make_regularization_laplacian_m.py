@@ -9,8 +9,7 @@ def make_regularization_laplacian( model ):
     import scipy.linalg    
     import pyacs.lib.glinalg
     import pyeq.lib.regularization
-    import pyeq.lib.log
-    from time import time
+    import pyeq.log
     from progress.bar import Bar
    
     # computes model step duration vector in days delta_time_in_days

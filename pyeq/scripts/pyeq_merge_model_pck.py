@@ -18,32 +18,16 @@
 
 import sys, os
 import argparse
-from argparse import RawTextHelpFormatter
 import numpy as np
-import pkg_resources
 from time import time
-import pyacs.lib.astrotime as at
-import copy
 import pickle
 from colors import red
 
 # PYACS
 
-import pyacs.lib.glinalg
-import pyeq.lib.date
-import pyeq.lib.regularization
-import pyacs.lib.utils
-
 # PYEQ
-import pyeq.lib.forward_model
 import pyeq.lib.objects
-import pyeq.lib.log
-import pyeq.lib.conf
-import pyeq.lib.elastic_tensor
-import pyeq.lib.green_tensor
-import pyeq.lib.gps_time_series
-import pyeq.lib.obs_tensor.set_zero_at_first_obs
-import pyeq.lib.make_inversion
+import pyeq.optimization.wrapper.make_inversion
 
 ###################################################################
 # PARSE COMMAND LINE
@@ -121,15 +105,35 @@ for model in lpck[1:]:
 print("-- OK.")
 
 ###################################################################
-# CHECK PCK DATES ARE CONSISTENT AND DEFINE THE COMBINED MODEL DATES
+# HANDLING DATES
+###################################################################
+# Here, we define the list of np_mid_model_date_s (dates in seconds)
+# for the merged model. Taking np_mid_model_date_s should enable
+# direct interpolation of slip rate value
+
+
+# get the list of model dates to be updated
+np_mid_mmodel_date_s = np.array( set( ref_model.np_mid_model_date_s.tolist() + i_model.np_mid_model_date_s.tolist()) )
+
+###################################################################
+# INTERPOLATES MODELS AT NEW DATES
 ###################################################################
 
-
+slip_ref = np.zeros( ( model.nfaults, np_mid_mmodel_date_s ) )
 
 
 ###################################################################
 # COMBINE SLIP
 ###################################################################
+
+###################################################################
+# INSERT SLIP
+###################################################################
+
+import copy
+
+mmodel = copy.deepcopy( ref_model )
+
 
 ###################################################################
 # PRINT RESULTS

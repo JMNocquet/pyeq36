@@ -17,7 +17,7 @@ import numpy as np
 import pickle
 from colors import red
 
-import pyeq.lib.plot
+import pyeq.plot
 
 ###################################################################
 # PARSE ARGUMENT LINE
@@ -72,4 +72,4 @@ print("-- interpolate %d faults on %d faults" % ( model.geometry.shape[0] , geom
 # MAKE INTERPOLATION
 ###################################################################
 
-pyeq.lib.plot.interpolate_model( model , geometry )
+pyeq.plot.interpolate_model(model, geometry)

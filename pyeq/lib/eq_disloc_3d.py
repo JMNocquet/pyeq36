@@ -182,7 +182,7 @@ class Dislocation:
         
         # import
         import numpy as np
-        from pyeq.lib.okada.okada import okada
+        from pyeq.green.okada_rde.okada import okada
 
         # elastic parameters        
         llambda = 3.2074E+10  

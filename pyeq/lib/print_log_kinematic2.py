@@ -106,29 +106,16 @@ def print_kinematic_inversion_results2(SLIP,
     ###################################################################
     # IMPORT
     ###################################################################
-    
-    import pyacs.lib.astrotime as at
-    from shutil import copyfile
-    import copy
-    import os
-    import shapefile
-    from datetime import datetime,timedelta
-    import time
-    
-    import pyacs
-    from pyeq.lib import eq_disloc_3d as DL
-    from pyacs.lib.vel_field import Velocity_Field as VF
-    from pyacs.lib.gmtpoint import GMT_Point
-    import pyacs.lib.utils
-    import pyacs.lib.glinalg
-    from pyacs.gts.Sgts import Sgts
+
+
+import time
+
+import pyacs.lib.utils
+from pyacs.gts.Sgts import Sgts
     from pyacs.gts.Gts import Gts
     import pyacs.lib.coordinates
-    import pyeq.lib.lib_inversion
-    import pyeq.lib.green_tensor
-    import pyeq.lib.geometry
-    import pyeq.lib.log.make_dir_pyeq_output
-    import pyeq.lib.plot.model2shp_gmt
+import pyeq.log.make_dir_pyeq_output
+    import pyeq.plot.model2shp_gmt
 
 
     ###################################################################
@@ -211,7 +198,7 @@ def print_kinematic_inversion_results2(SLIP,
     print("-- Printing inversion results in: %s" % odir )
     
     
-    pyeq.lib.log.make_dir_pyeq_output.make_dir_pyeq_output( odir )
+    pyeq.log.make_dir_pyeq_output.make_dir_pyeq_output(odir)
 
     ###################################################################
     # SAVE PYEQ_KINEMATICS COMMAND LINE IN INFO DIR
@@ -1125,10 +1112,10 @@ def print_kinematic_inversion_results2(SLIP,
     import glob
     
     lslip_dat=glob.glob(odir+"/slip/cumulative/*_cumulative_slip.dat")
-    pyeq.lib.log.model2shp_gmt.model2shp_gmt(GEOMETRY, 'tde', lslip_dat, out_dir_shp=odir+'/shapefile/slip_cumulative', out_dir_gmt=odir+'/gmt/slip_cumulative' , verbose=verbose )
+    pyeq.log.model2shp_gmt.model2shp_gmt(GEOMETRY, 'tde', lslip_dat, out_dir_shp=odir + '/shapefile/slip_cumulative', out_dir_gmt=odir + '/gmt/slip_cumulative', verbose=verbose)
 
     lslip_dat=glob.glob(odir+"/slip/incremental/*_delta_slip.dat")
-    pyeq.lib.log.model2shp_gmt.model2shp_gmt(GEOMETRY, 'tde', lslip_dat, out_dir_shp=odir+'/shapefile/slip_incremental', out_dir_gmt=odir+'/gmt/slip_incremental' , verbose=verbose )
+    pyeq.log.model2shp_gmt.model2shp_gmt(GEOMETRY, 'tde', lslip_dat, out_dir_shp=odir + '/shapefile/slip_incremental', out_dir_gmt=odir + '/gmt/slip_incremental', verbose=verbose)
 
 
 #     sys.exit()
