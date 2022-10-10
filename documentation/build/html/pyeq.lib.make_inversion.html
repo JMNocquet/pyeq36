@@ -1,0 +1,290 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>pyeq.lib.make_inversion module &mdash; pyeq 0.51.8 documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+
+  
+  
+  
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+        <script src="_static/jquery.js"></script>
+        <script src="_static/underscore.js"></script>
+        <script src="_static/doctools.js"></script>
+        <script src="_static/language_data.js"></script>
+    
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="pyeq.lib.print_log_kinematic module" href="pyeq.lib.print_log_kinematic.html" />
+    <link rel="prev" title="pyeq.lib.lib_inversion module" href="pyeq.lib.lib_inversion.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="index.html" class="icon icon-home" alt="Documentation Home"> pyeq
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                0.51.8
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="foreword.html">PYEQ: full time-dependent slip inversion</a></li>
+<li class="toctree-l1"><a class="reference internal" href="behaviour.html">Options controlling the overall behaviour</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tutorial_static_inversion.html">Tutorial static inversion</a></li>
+<li class="toctree-l1"><a class="reference internal" href="dates.html">dates</a></li>
+<li class="toctree-l1"><a class="reference internal" href="roxane.html">Roxane’s notes on PYEQ</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="modules.html">for developpers</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="pyeq.html">pyeq package</a><ul class="current">
+<li class="toctree-l3 current"><a class="reference internal" href="pyeq.html#subpackages">Subpackages</a><ul class="current">
+<li class="toctree-l4 current"><a class="reference internal" href="pyeq.lib.html">pyeq.lib package</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="pyeq.html#module-pyeq">Module contents</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">pyeq</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="index.html" class="icon icon-home"></a> &raquo;</li>
+        
+          <li><a href="modules.html">for developpers</a> &raquo;</li>
+        
+          <li><a href="pyeq.html">pyeq package</a> &raquo;</li>
+        
+          <li><a href="pyeq.lib.html">pyeq.lib package</a> &raquo;</li>
+        
+      <li>pyeq.lib.make_inversion module</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="_sources/pyeq.lib.make_inversion.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="module-pyeq.lib.make_inversion">
+<span id="pyeq-lib-make-inversion-module"></span><h1>pyeq.lib.make_inversion module<a class="headerlink" href="#module-pyeq.lib.make_inversion" title="Permalink to this headline">¶</a></h1>
+<p>Wrapper for NNLS &amp; BVLS inversion routines
+Added CVXOPT inversion 15/11/2020</p>
+<dl class="py function">
+<dt id="pyeq.lib.make_inversion.pyeq_cvxopt">
+<code class="sig-prename descclassname">pyeq.lib.make_inversion.</code><code class="sig-name descname">pyeq_cvxopt</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">model</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pyeq/lib/make_inversion.html#pyeq_cvxopt"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyeq.lib.make_inversion.pyeq_cvxopt" title="Permalink to this definition">¶</a></dt>
+<dd><p>performs an inversion using cvxopt</p>
+</dd></dl>
+
+<dl class="py function">
+<dt id="pyeq.lib.make_inversion.pyeq_nnls">
+<code class="sig-prename descclassname">pyeq.lib.make_inversion.</code><code class="sig-name descname">pyeq_nnls</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">ATPA</span></em>, <em class="sig-param"><span class="n">ATPB</span></em>, <em class="sig-param"><span class="n">nnls</span></em>, <em class="sig-param"><span class="n">verbose</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pyeq/lib/make_inversion.html#pyeq_nnls"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyeq.lib.make_inversion.pyeq_nnls" title="Permalink to this definition">¶</a></dt>
+<dd><p>solves the normalized linear system ATPA m = ATPB using non-negative least-squares
+This is a wrapper to various solvers. See notes.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>ATPA</strong> – m x m normal matrix as a numpy 2D array</p></li>
+<li><p><strong>ATPB</strong> – 1D numpy array of normalized right-hand-side vector</p></li>
+<li><p><strong>nnls</strong> – string, routine used for nnls. See note</p></li>
+<li><p><strong>verbose</strong> – verbose mode</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return X, time</dt>
+<dd class="field-even"><p>solution vector as a 1D numpy array of lenght m, time of inversion</p>
+</dd>
+<dt class="field-odd">Note</dt>
+<dd class="field-odd"><p>available methods:</p>
+</dd>
+</dl>
+<p>scipy_nnls : the classical Lawson and Hansen (1974) nnls. Slow for large system
+nnls_predotted: from <a class="reference external" href="https://github.com/nnls">https://github.com/nnls</a> - Alexfields
+lsqnonneg: python transcription of Matlab lsqnonneg, usually very slow 
+nnlsm_block_pivot: the preferred method on 02/03/2018
+ref: J. Kim and H. Park, Fast nonnegative matrix factorization: An active-set-like method and comparisons,
+SIAM Journal on Scientific Computing, vol. 33, no. 6, pp. 3261-3281, 2011.
+nnlsm_activeset: J. Kim and H. Park, Fast nonnegative matrix factorization: An active-set-like method and comparisons,
+SIAM Journal on Scientific Computing, vol. 33, no. 6, pp. 3261-3281, 2011.
+scipy_lsq_linear: scipy linear least-squares routine
+scipy_lbfgsb: scipy lbfgs routine)</p>
+</dd></dl>
+
+<dl class="py function">
+<dt id="pyeq.lib.make_inversion.pyeq_bvls">
+<code class="sig-prename descclassname">pyeq.lib.make_inversion.</code><code class="sig-name descname">pyeq_bvls</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">A</span></em>, <em class="sig-param"><span class="n">B</span></em>, <em class="sig-param"><span class="n">bounds_slip</span></em>, <em class="sig-param"><span class="n">verbose</span><span class="o">=</span><span class="default_value">True</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pyeq/lib/make_inversion.html#pyeq_bvls"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyeq.lib.make_inversion.pyeq_bvls" title="Permalink to this definition">¶</a></dt>
+<dd><p>Stark &amp; Parker algorithm
+Bounds are assumed to be between 0 and max_slip*m0, where max_slip is a vector of dim(m)
+This used to be a wrapper to use bvls.so f2py compiled from the original bvls.f routine. 
+Looks like scipy.optimize.lsq_linear does the bvls problem.</p>
+<p>G          :     Green’s functions
+d          :     Observation vector
+max_slip   :     vector of max_slip</p>
+</dd></dl>
+
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="pyeq.lib.print_log_kinematic.html" class="btn btn-neutral float-right" title="pyeq.lib.print_log_kinematic module" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="pyeq.lib.lib_inversion.html" class="btn btn-neutral float-left" title="pyeq.lib.lib_inversion module" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        
+        &copy; Copyright 2016, Jean-Mathieu Nocquet IRD/Geoazur
+
+    </p>
+  </div>
+    
+    
+    
+    Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

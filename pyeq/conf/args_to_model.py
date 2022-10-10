@@ -53,4 +53,8 @@ def args_to_model( model , args ):
 
     model = pyeq.conf.check_model_conf(model)
 
+    MESSAGE("regularization parameters after check_model_conf: %s %s %s %s %s " % ( model.sigma, model.lambda_spatial_smoothing,
+                model.lambda_spatial_smoothing, model.lambda_final_spatial_smoothing, model.lambda_stf ))
+
+
     return model 

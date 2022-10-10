@@ -1,4 +1,4 @@
-def make_dlo_trimesh( geometry , stencil=4, verbose=True ):
+def make_dlo_trimesh( model , stencil=4, verbose=True ):
     """
     Build a Discrete Laplace Operator (DLO) from a geometry file including a regular triangular mesh.
     In this routine, the Discrete Laplace Operator (DLO) is a n x n (n=number of subfaults=geometry.shape[0])
@@ -29,6 +29,7 @@ def make_dlo_trimesh( geometry , stencil=4, verbose=True ):
 
     import pyeq.lib.geometry.make_topology_trimesh
     import pyeq.message.message as MESSAGE
+    import pyeq.message.verbose_message as VERBOSE
     import pyeq.message.warning as WARNING
     import pyeq.message.error as ERROR
 
@@ -38,12 +39,13 @@ def make_dlo_trimesh( geometry , stencil=4, verbose=True ):
         ERROR(err_message,exit=True)
 
     # get topology
-    if verbose:
-        MESSAGE("Making topology for the triangular mesh")
-    topology = pyeq.lib.geometry.make_topology_trimesh( geometry )
+    if not hasattr(model,'topology'):
+        VERBOSE("Making topology for the triangular mesh")
+        model.topology = pyeq.lib.geometry.make_topology_trimesh( model.geometry )
+
     # compute the discrete_laplace operator (DLO)
     # create a sparse matrix
-    DLO = lil_matrix((geometry.shape[0], geometry.shape[0]))
+    DLO = lil_matrix((model.geometry.shape[0], model.geometry.shape[0]))
 
     # 16-points stencil
     if stencil==16:
@@ -51,8 +53,8 @@ def make_dlo_trimesh( geometry , stencil=4, verbose=True ):
             MESSAGE("Creating Discrete Laplace Operator (DLO) using a 16 points stencil")
         # loop on cells
         for i in np.arange( DLO.shape[0] ):
-            DLO[i,topology.cell_neighbours_edge[i]]   = 2./3
-            DLO[i,topology.cell_neighbours_vertex[i]] = 2./9
+            DLO[i,model.topology.cell_neighbours_edge[i]]   = 2./3
+            DLO[i,model.topology.cell_neighbours_vertex[i]] = 2./9
             DLO[i,i] = - DLO[i,:].sum(axis=1)
 
     # 4-points stencil
@@ -61,7 +63,7 @@ def make_dlo_trimesh( geometry , stencil=4, verbose=True ):
             MESSAGE("Creating Discrete Laplace Operator (DLO) using a 4 points stencil")
         # loop on cells
         for i in np.arange( DLO.shape[0] ):
-            DLO[i,topology.cell_neighbours_edge[i]]   = 1./3
+            DLO[i,model.topology.cell_neighbours_edge[i]]   = 1./3
             DLO[i,i] = - DLO[i,:].sum(axis=1)
 
     return DLO

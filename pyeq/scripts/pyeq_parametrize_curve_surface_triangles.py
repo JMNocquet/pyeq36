@@ -141,22 +141,45 @@ def write_triangles(faces,verts,name):
     ftriangles.close()
     
 
+# ###################################################################
+# def get_depth(longitude,latitude,grid):
+# ###################################################################
+#     ftmp_xy=open('tmp.xy','w')
+#     ftmp_xy.write("%10.5lf %10.5lf\n" % (longitude,latitude))
+#     ftmp_xy.close()
+#     import subprocess
+#     cmd="gmt grdtrack "+'tmp.xy'+ " -G"+grid+ " > tmpgrid.dat"
+#     #print "- running ", cmd
+#     subprocess.getstatusoutput(cmd)
+#
+#     fs=open('tmpgrid.dat','r')
+#     lline = fs.readlines()
+#     if len(lline) <1:str_depth='NaN'
+#     else:str_depth=lline[0].split()[-1]
+#     return(str_depth)
+
+
 ###################################################################
-def get_depth(longitude,latitude,grid):
+def get_depth(longitude, latitude, grid):
 ###################################################################
-    ftmp_xy=open('tmp.xy','w')
-    ftmp_xy.write("%10.5lf %10.5lf\n" % (longitude,latitude))
-    ftmp_xy.close()
-    import subprocess
-    cmd="gmt grdtrack "+'tmp.xy'+ " -G"+grid+ " > tmpgrid.dat"
-    #print "- running ", cmd
-    subprocess.getstatusoutput(cmd)
-    
-    fs=open('tmpgrid.dat','r')
-    lline = fs.readlines()
-    if len(lline) <1:str_depth='NaN'   
-    else:str_depth=lline[0].split()[-1]
-    return(str_depth)
+    import scipy.interpolate
+    import numpy as np
+    import netCDF4
+
+    ds = netCDF4.Dataset( grid )
+    z = ds.variables['z'][:].T
+    interp = scipy.interpolate.RegularGridInterpolator(
+        tuple((ds.variables['x'][:], ds.variables['y'][:])),
+        z.data,
+        method='linear',
+        bounds_error=False)
+
+    interpolated = interp( (np.array([longitude]),np.array([latitude])) )
+
+    if np.isnan(interpolated):
+        return 'NaN'
+    else:
+        return interpolated[0]
 
 # ###################################################################
 # def get_depth_netcdf(longitude,latitude,grid):
@@ -446,14 +469,14 @@ for i in sorted(lindex_face):
     (area,strike,dip)=face_area_strike_dip(face,verts,args.grd)
 
     # Added for weird marine geophysics geometry
-    if strike > 90.0: 
-        print('!!!! strike dip',strike,dip)
-        strike=strike-90.0
-        print('!!!! strike corrected to ',strike)
-    if strike < -90.0:
-        print('!!!! strike dip',strike,dip)
-        strike=strike+90.0 
-        print('!!!! corrected to ',strike,dip)
+    # if strike > 90.0:
+    #     print('!!!! strike dip',strike,dip)
+    #     strike=strike-90.0
+    #     print('!!!! strike corrected to ',strike)
+    # if strike < -90.0:
+    #     print('!!!! strike dip',strike,dip)
+    #     strike=strike+90.0
+    #     print('!!!! corrected to ',strike,dip)
 
 
     (x,y,z)=verts[face[0]]

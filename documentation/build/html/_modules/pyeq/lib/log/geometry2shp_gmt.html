@@ -1,0 +1,360 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>pyeq.lib.log.geometry2shp_gmt &mdash; pyeq 0.51.8 documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="../../../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../../../_static/pygments.css" type="text/css" />
+
+  
+  
+  
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="../../../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../../../../" src="../../../../_static/documentation_options.js"></script>
+        <script src="../../../../_static/jquery.js"></script>
+        <script src="../../../../_static/underscore.js"></script>
+        <script src="../../../../_static/doctools.js"></script>
+        <script src="../../../../_static/language_data.js"></script>
+    
+    <script type="text/javascript" src="../../../../_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../../../../index.html" class="icon icon-home" alt="Documentation Home"> pyeq
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                0.51.8
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../foreword.html">PYEQ: full time-dependent slip inversion</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../behaviour.html">Options controlling the overall behaviour</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../tutorial_static_inversion.html">Tutorial static inversion</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../dates.html">dates</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../roxane.html">Roxane’s notes on PYEQ</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../modules.html">for developpers</a></li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../../index.html">pyeq</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../../../index.html" class="icon icon-home"></a> &raquo;</li>
+        
+          <li><a href="../../../index.html">Module code</a> &raquo;</li>
+        
+      <li>pyeq.lib.log.geometry2shp_gmt</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>Source code for pyeq.lib.log.geometry2shp_gmt</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Converts a geometry from pyeq to shapefile and gmt</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="geometry2shp_gmt"><a class="viewcode-back" href="../../../../pyeq.lib.log.geometry2shp_gmt.html#pyeq.lib.log.geometry2shp_gmt.geometry2shp_gmt">[docs]</a><span class="k">def</span> <span class="nf">geometry2shp_gmt</span><span class="p">(</span><span class="n">geometry</span><span class="p">,</span> <span class="n">type_dis</span><span class="p">,</span> <span class="n">out_shp</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">out_gmt</span><span class="o">=</span><span class="kc">None</span> <span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">True</span> <span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    :param geometry: geometry as either .dat, .npy, or 2D numpy array</span>
+<span class="sd">    :param type_dis: dislocation type either &#39;tde&#39; or &#39;rde&#39;</span>
+<span class="sd">    :param out_shp: output shapefiles</span>
+<span class="sd">    :param out_gmt: output gmt files to be plotted with psxy out_gmt -V -R$bounds -J$proj -L -m -W0.2/0  -Clut.cpt</span>
+<span class="sd">    :param verbose: verbose mode</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    
+    <span class="n">one_degree</span><span class="o">=</span><span class="mf">111.</span>
+    
+    <span class="c1">###########################################################################</span>
+    <span class="c1"># import</span>
+    <span class="c1">###########################################################################</span>
+
+    <span class="kn">import</span> <span class="nn">shapefile</span>
+    <span class="kn">from</span> <span class="nn">pyeq.lib</span> <span class="kn">import</span> <span class="n">eq_disloc_3d</span> <span class="k">as</span> <span class="n">DL</span>
+    <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span> 
+    
+    <span class="c1">###########################################################################</span>
+    <span class="c1"># type_dis</span>
+    <span class="c1">###########################################################################</span>
+    
+    <span class="n">TRIANGLE</span> <span class="o">=</span> <span class="kc">False</span>
+    <span class="k">if</span> <span class="n">type_dis</span> <span class="o">==</span> <span class="s1">&#39;tde&#39;</span><span class="p">:</span>
+        <span class="n">TRIANGLE</span> <span class="o">=</span> <span class="kc">True</span>
+    
+    <span class="c1">###########################################################################</span>
+    <span class="c1"># geometry</span>
+    <span class="c1">###########################################################################</span>
+
+    <span class="n">GEOMETRY</span> <span class="o">=</span> <span class="kc">None</span>
+    
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span> <span class="n">geometry</span> <span class="p">,</span> <span class="nb">str</span> <span class="p">):</span>
+        <span class="k">if</span> <span class="n">geometry</span><span class="p">[</span><span class="o">-</span><span class="mi">3</span><span class="p">:]</span> <span class="o">==</span> <span class="s1">&#39;dat&#39;</span><span class="p">:</span>
+            <span class="c1"># reads the dat text file</span>
+            <span class="kn">import</span> <span class="nn">sys</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;!!!TODO: geometry as dat file not implemented yet.&#39;</span><span class="p">)</span>
+            <span class="n">sys</span><span class="o">.</span><span class="n">exit</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">geometry</span><span class="p">[</span><span class="o">-</span><span class="mi">3</span><span class="p">:]</span> <span class="o">==</span> <span class="s1">&#39;npy&#39;</span><span class="p">:</span>
+            <span class="c1"># reads the npy</span>
+            <span class="kn">import</span> <span class="nn">pyeq.lib.geometry.to_np_array</span>
+            <span class="n">GEOMETRY</span> <span class="o">=</span> <span class="n">pyeq</span><span class="o">.</span><span class="n">lib</span><span class="o">.</span><span class="n">geometry</span><span class="o">.</span><span class="n">to_np_array</span><span class="o">.</span><span class="n">npy_geometry_to_array_and_recarray</span><span class="p">(</span> <span class="n">geometry</span> <span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="n">verbose</span> <span class="p">)</span>
+        
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span> <span class="n">geometry</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span> <span class="p">):</span>
+        <span class="n">GEOMETRY</span> <span class="o">=</span> <span class="n">geometry</span>
+    
+    <span class="k">if</span> <span class="n">GEOMETRY</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;!!!ERROR: Could not understand argument: geometry&#39;</span><span class="p">)</span>
+        <span class="kn">import</span> <span class="nn">sys</span>
+        <span class="n">sys</span><span class="o">.</span><span class="n">exit</span><span class="p">()</span>
+    
+    <span class="c1">###########################################################################</span>
+    <span class="c1"># reads geometry</span>
+    <span class="c1">###########################################################################</span>
+
+    <span class="n">lfaults</span><span class="o">=</span><span class="p">[]</span>
+    <span class="n">lrecord</span><span class="o">=</span><span class="p">[]</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">GEOMETRY</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]):</span>
+        <span class="p">(</span> <span class="n">rdis_long</span><span class="p">,</span> <span class="n">rdis_lat</span><span class="p">,</span> <span class="n">rdis_depth</span><span class="p">,</span> <span class="n">rdis_length</span><span class="p">,</span> <span class="n">rdis_width</span><span class="p">,</span>  <span class="n">rdis_area</span><span class="p">,</span> <span class="n">ratio_rdis_tdis</span><span class="p">,</span><span class="n">strike</span><span class="p">,</span><span class="n">dip</span><span class="p">,</span>\
+         <span class="n">centroid_long</span><span class="p">,</span> <span class="n">centroid_lat</span><span class="p">,</span> <span class="n">centroid_depth</span><span class="p">,</span>\
+         <span class="n">tdis_long1</span><span class="p">,</span><span class="n">tdis_lat1</span><span class="p">,</span><span class="n">tdis_depth1</span><span class="p">,</span><span class="n">tdis_long2</span><span class="p">,</span><span class="n">tdis_lat2</span><span class="p">,</span><span class="n">tdis_depth2</span><span class="p">,</span><span class="n">tdis_long3</span><span class="p">,</span><span class="n">tdis_lat3</span><span class="p">,</span><span class="n">tdis_depth3</span><span class="p">,</span><span class="n">tdis_area</span><span class="p">)</span>\
+         <span class="o">=</span><span class="n">GEOMETRY</span><span class="p">[</span><span class="n">i</span><span class="p">,:]</span>
+        <span class="n">depth</span><span class="o">=</span><span class="n">rdis_depth</span>
+    
+
+        <span class="k">if</span> <span class="n">TRIANGLE</span><span class="p">:</span>
+            <span class="n">lfaults</span><span class="o">.</span><span class="n">append</span><span class="p">([</span> <span class="p">[</span><span class="n">tdis_long1</span><span class="p">,</span><span class="n">tdis_lat1</span><span class="p">],</span> <span class="p">[</span><span class="n">tdis_long2</span><span class="p">,</span><span class="n">tdis_lat2</span><span class="p">],</span> <span class="p">[</span><span class="n">tdis_long3</span><span class="p">,</span><span class="n">tdis_lat3</span><span class="p">]</span> <span class="p">])</span>
+            <span class="n">lrecord</span><span class="o">.</span><span class="n">append</span><span class="p">([</span><span class="n">i</span><span class="p">,</span><span class="n">centroid_depth</span><span class="p">])</span>
+    
+        <span class="k">else</span><span class="p">:</span>
+        
+            <span class="c1"># creates a dislocation object</span>
+            <span class="n">disloc</span><span class="o">=</span><span class="n">DL</span><span class="o">.</span><span class="n">Dislocation</span><span class="p">(</span><span class="n">i</span><span class="p">,</span><span class="n">rdis_long</span><span class="p">,</span><span class="n">rdis_lat</span><span class="p">,</span><span class="n">rdis_depth</span><span class="o">/</span><span class="n">one_degree</span><span class="p">,</span> <span class="n">strike</span><span class="p">,</span> <span class="n">dip</span><span class="p">,</span> <span class="n">rdis_length</span><span class="o">/</span><span class="n">one_degree</span><span class="p">,</span> <span class="n">rdis_width</span><span class="o">/</span><span class="n">one_degree</span><span class="p">,</span><span class="n">rdis_area</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+            <span class="c1"># get the corners</span>
+            <span class="p">(</span><span class="n">X1</span><span class="p">,</span><span class="n">X2</span><span class="p">,</span><span class="n">X3</span><span class="p">,</span><span class="n">X4</span><span class="p">)</span><span class="o">=</span><span class="n">disloc</span><span class="o">.</span><span class="n">corners</span><span class="p">()</span>
+            <span class="n">lfaults</span><span class="o">.</span><span class="n">append</span><span class="p">([</span> <span class="p">[</span><span class="n">X1</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span><span class="n">X1</span><span class="p">[</span><span class="mi">1</span><span class="p">]],</span> <span class="p">[</span><span class="n">X2</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span><span class="n">X2</span><span class="p">[</span><span class="mi">1</span><span class="p">]],</span> <span class="p">[</span><span class="n">X3</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span><span class="n">X3</span><span class="p">[</span><span class="mi">1</span><span class="p">]],</span> <span class="p">[</span><span class="n">X4</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span><span class="n">X4</span><span class="p">[</span><span class="mi">1</span><span class="p">]],</span> <span class="p">[</span><span class="n">X1</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span><span class="n">X1</span><span class="p">[</span><span class="mi">1</span><span class="p">]]</span> <span class="p">])</span>
+            <span class="n">lrecord</span><span class="o">.</span><span class="n">append</span><span class="p">([</span><span class="n">i</span><span class="p">,</span><span class="n">depth</span><span class="p">])</span>
+    
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;-- &quot;</span><span class="p">,</span><span class="nb">len</span><span class="p">(</span><span class="n">lfaults</span><span class="p">),</span><span class="s2">&quot; polygons read&quot;</span><span class="p">)</span>
+
+    <span class="c1">###################################################################</span>
+    <span class="c1"># WRITES GMT PSXY FILES</span>
+    <span class="c1"># This file can be then plotted with</span>
+    <span class="c1">#  psxy lima_simple_sigma_010_dc_050_m0_000_sol_coupling.gmt -V -R-81/-72/-16/-7 -JM14 -L -m -W0.2/0  -Clut_coupling.cpt &gt; test.ps</span>
+    <span class="c1"># triangles have not been tested yet</span>
+    <span class="c1">###################################################################</span>
+    
+    <span class="k">if</span> <span class="n">out_gmt</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">gmtfile</span> <span class="o">=</span> <span class="s2">&quot;geometry.gmt&quot;</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">gmtfile</span> <span class="o">=</span> <span class="n">out_gmt</span>
+        <span class="k">if</span> <span class="n">verbose</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">((</span><span class="s2">&quot;-- saving gmt file </span><span class="si">%s</span><span class="s2"> &quot;</span> <span class="o">%</span> <span class="n">gmtfile</span> <span class="p">))</span>
+
+    <span class="n">f</span><span class="o">=</span><span class="nb">open</span><span class="p">(</span><span class="n">gmtfile</span><span class="p">,</span><span class="s1">&#39;w&#39;</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">lfaults</span><span class="p">)):</span>
+        <span class="p">[</span><span class="n">index</span><span class="p">,</span><span class="n">depth</span><span class="p">]</span><span class="o">=</span><span class="n">lrecord</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+        <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">&#39;&gt; -Z</span><span class="si">%.3lf</span><span class="se">\n</span><span class="s1">&#39;</span><span class="o">%</span><span class="n">depth</span><span class="p">)</span>
+        <span class="n">fault</span><span class="o">=</span><span class="n">lfaults</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+        <span class="k">for</span> <span class="n">xy</span> <span class="ow">in</span> <span class="n">fault</span><span class="p">:</span>
+            <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%10.3lf</span><span class="s2"> </span><span class="si">%10.3lf</span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">%</span><span class="p">(</span><span class="n">xy</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span><span class="n">xy</span><span class="p">[</span><span class="mi">1</span><span class="p">]))</span>
+    <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">&#39;&gt;</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)</span>
+    <span class="n">f</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+
+    <span class="c1">###################################################################</span>
+    <span class="c1"># WRITES SHAPEFILES</span>
+    <span class="c1">###################################################################</span>
+
+    <span class="k">if</span> <span class="n">out_shp</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">shp_file</span> <span class="o">=</span> <span class="s2">&quot;geometry&quot;</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">shp_file</span> <span class="o">=</span> <span class="n">out_shp</span>
+    
+    <span class="c1">###################################################################</span>
+    <span class="c1"># INITIALIZE SHAPEFILE</span>
+    <span class="c1">###################################################################</span>
+    
+    <span class="c1"># Make a polygon shapefile</span>
+    <span class="n">w</span> <span class="o">=</span> <span class="n">shapefile</span><span class="o">.</span><span class="n">Writer</span><span class="p">(</span> <span class="n">shp_file</span> <span class="p">,</span><span class="n">shapeType</span><span class="o">=</span><span class="n">shapefile</span><span class="o">.</span><span class="n">POLYGON</span><span class="p">)</span>
+    <span class="n">w</span><span class="o">.</span><span class="n">field</span><span class="p">(</span><span class="s1">&#39;ID&#39;</span><span class="p">,</span><span class="s1">&#39;I&#39;</span><span class="p">,</span><span class="s1">&#39;40&#39;</span><span class="p">)</span>
+    <span class="n">w</span><span class="o">.</span><span class="n">field</span><span class="p">(</span><span class="s1">&#39;i_subfault&#39;</span><span class="p">,</span><span class="s1">&#39;F&#39;</span><span class="p">,</span><span class="s1">&#39;40&#39;</span><span class="p">)</span>
+    <span class="n">w</span><span class="o">.</span><span class="n">field</span><span class="p">(</span><span class="s1">&#39;depth_top_disloc&#39;</span><span class="p">,</span><span class="s1">&#39;F&#39;</span><span class="p">,</span><span class="s1">&#39;40&#39;</span><span class="p">)</span>
+    
+    <span class="c1">###################################################################</span>
+    <span class="c1"># LOOP ON FAULTS</span>
+    <span class="c1">###################################################################</span>
+    
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">lfaults</span><span class="p">)):</span>
+        <span class="n">fault</span><span class="o">=</span><span class="n">lfaults</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+        <span class="n">record</span><span class="o">=</span><span class="n">lrecord</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+        <span class="n">w</span><span class="o">.</span><span class="n">poly</span><span class="p">([</span><span class="n">fault</span><span class="p">])</span>
+        <span class="p">[</span><span class="n">index</span><span class="p">,</span><span class="n">depth</span><span class="p">]</span><span class="o">=</span><span class="n">lrecord</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+        <span class="n">w</span><span class="o">.</span><span class="n">record</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">i</span><span class="p">),</span><span class="n">index</span><span class="p">,</span><span class="n">depth</span><span class="p">)</span>
+    
+    <span class="c1">###################################################################</span>
+    <span class="c1"># SAVE SHAPEFILE</span>
+    <span class="c1">###################################################################</span>
+    
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;-- saving shapefile </span><span class="si">%s</span><span class="s2"> &quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">shp_file</span><span class="p">)</span> <span class="p">)</span>
+    <span class="n">w</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+    
+    <span class="c1">###################################################################</span>
+    <span class="c1"># SAVE .PRJ FILE</span>
+    <span class="c1">###################################################################</span>
+    
+    <span class="n">prj</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%s</span><span class="s2">.prj&quot;</span> <span class="o">%</span> <span class="n">shp_file</span><span class="p">,</span> <span class="s2">&quot;w&quot;</span><span class="p">)</span> 
+    <span class="n">epsg</span> <span class="o">=</span> <span class="s1">&#39;GEOGCS[&quot;WGS 84&quot;,DATUM[&quot;WGS_1984&quot;,SPHEROID[&quot;WGS 84&quot;,6378137,298.257223563]],PRIMEM[&quot;Greenwich&quot;,0],UNIT[&quot;degree&quot;,0.0174532925199433]]&#39;</span> 
+    <span class="n">prj</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">epsg</span><span class="p">)</span> 
+    <span class="n">prj</span><span class="o">.</span><span class="n">close</span><span class="p">()</span></div>
+</pre></div>
+
+           </div>
+           
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        
+        &copy; Copyright 2016, Jean-Mathieu Nocquet IRD/Geoazur
+
+    </p>
+  </div>
+    
+    
+    
+    Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

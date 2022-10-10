@@ -1,0 +1,904 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>pyeq.lib.print_log_static &mdash; pyeq 0.51.8 documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+
+  
+  
+  
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="../../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
+        <script src="../../../_static/jquery.js"></script>
+        <script src="../../../_static/underscore.js"></script>
+        <script src="../../../_static/doctools.js"></script>
+        <script src="../../../_static/language_data.js"></script>
+    
+    <script type="text/javascript" src="../../../_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../../../index.html" class="icon icon-home" alt="Documentation Home"> pyeq
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                0.51.8
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../foreword.html">PYEQ: full time-dependent slip inversion</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../behaviour.html">Options controlling the overall behaviour</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../tutorial_static_inversion.html">Tutorial static inversion</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../dates.html">dates</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../roxane.html">Roxane’s notes on PYEQ</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../modules.html">for developpers</a></li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">pyeq</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../../index.html" class="icon icon-home"></a> &raquo;</li>
+        
+          <li><a href="../../index.html">Module code</a> &raquo;</li>
+        
+      <li>pyeq.lib.print_log_static</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>Source code for pyeq.lib.print_log_static</h1><div class="highlight"><pre>
+<span></span><span class="c1">###############################################################################</span>
+<div class="viewcode-block" id="print_static_inversion_results"><a class="viewcode-back" href="../../../pyeq.lib.print_log_static.html#pyeq.lib.print_log_static.print_static_inversion_results">[docs]</a><span class="k">def</span> <span class="nf">print_static_inversion_results</span><span class="p">(</span><span class="n">M</span><span class="p">,</span> <span class="n">GG</span><span class="p">,</span> <span class="n">d</span><span class="p">,</span> <span class="n">INPUT_NPZ</span> <span class="p">,</span> <span class="n">RAKE</span><span class="p">,</span> <span class="n">MAX_SLIP</span><span class="p">,</span> <span class="n">out_dir</span> <span class="p">,</span> <span class="n">SQRT_Wm</span><span class="p">,</span> <span class="n">SQRT_Wd</span><span class="p">,</span> <span class="n">m0</span><span class="p">,</span> <span class="n">H_inversion_info</span><span class="p">):</span>
+<span class="c1">###############################################################################</span>
+
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Print static inversion results</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+
+    <span class="c1">###################################################################</span>
+    <span class="c1"># IMPORT</span>
+    <span class="c1">###################################################################</span>
+
+    <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+    <span class="kn">import</span> <span class="nn">os</span>
+    <span class="kn">from</span> <span class="nn">pyeq.lib</span> <span class="kn">import</span> <span class="n">lib_inversion</span>
+    <span class="kn">import</span> <span class="nn">pyacs.lib.faultslip</span>
+
+
+    <span class="c1">###################################################################</span>
+    <span class="c1"># INITIALIZATION</span>
+    <span class="c1">###################################################################</span>
+
+    <span class="n">name</span> <span class="o">=</span> <span class="n">out_dir</span>
+    
+    <span class="n">big</span> <span class="o">=</span> <span class="n">H_inversion_info</span><span class="p">[</span><span class="s1">&#39;big&#39;</span><span class="p">]</span> 
+
+    <span class="k">if</span> <span class="n">H_inversion_info</span><span class="p">[</span><span class="s1">&#39;insar&#39;</span><span class="p">]:</span>
+        <span class="c1"># The last 3 parameters are the coefficient of the plane correction for InSAR shift by an amount of &#39;big&#39;</span>
+        
+        <span class="p">[</span><span class="n">a</span><span class="p">,</span><span class="n">b</span><span class="p">,</span><span class="n">c</span><span class="p">]</span> <span class="o">=</span> <span class="n">M</span><span class="p">[</span><span class="o">-</span><span class="mi">3</span><span class="p">:]</span> <span class="o">-</span> <span class="n">big</span>
+        <span class="n">M</span><span class="p">[</span><span class="o">-</span><span class="mi">3</span><span class="p">:]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">a</span><span class="p">,</span><span class="n">b</span><span class="p">,</span><span class="n">c</span><span class="p">])</span>
+        
+        <span class="n">SLIP</span> <span class="o">=</span> <span class="n">M</span><span class="p">[:</span><span class="o">-</span><span class="mi">3</span><span class="p">]</span> 
+        <span class="n">G</span> <span class="o">=</span> <span class="n">GG</span><span class="p">[:,</span><span class="mi">0</span><span class="p">:</span><span class="o">-</span><span class="mi">3</span><span class="p">]</span>
+        
+        <span class="n">m0</span> <span class="o">=</span> <span class="n">m0</span><span class="p">[:</span><span class="o">-</span><span class="mi">3</span><span class="p">]</span>
+        <span class="n">m0_a_b_c</span> <span class="o">=</span> <span class="n">m0</span><span class="p">[</span><span class="o">-</span><span class="mi">3</span><span class="p">:]</span> <span class="o">-</span> <span class="n">big</span>
+        
+        <span class="c1"># Get SQRT_Wm</span>
+        
+        <span class="n">Wmm</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">SQRT_Wm</span><span class="o">.</span><span class="n">T</span><span class="p">,</span><span class="n">SQRT_Wm</span><span class="p">)</span> <span class="c1"># we get CM^{-1}, which should be a block diagonal matrix </span>
+        
+        <span class="n">sigma_a_b_c</span> <span class="o">=</span> <span class="mf">1.</span> <span class="o">/</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">diag</span><span class="p">(</span> <span class="n">Wmm</span><span class="p">[</span><span class="o">-</span><span class="mi">3</span><span class="p">:,</span><span class="o">-</span><span class="mi">3</span><span class="p">:]</span> <span class="p">))</span> 
+    
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">SLIP</span> <span class="o">=</span> <span class="n">M</span>
+        <span class="n">G</span> <span class="o">=</span> <span class="n">GG</span>
+        <span class="p">[</span><span class="n">a</span><span class="p">,</span><span class="n">b</span><span class="p">,</span><span class="n">c</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="mf">0.</span><span class="p">,</span><span class="mf">0.</span><span class="p">,</span><span class="mf">0.</span><span class="p">]</span>
+
+    <span class="n">mu</span><span class="o">=</span><span class="mf">3.0E10</span> <span class="c1"># shear modulus in Pa</span>
+
+    <span class="c1">###################################################################</span>
+    <span class="c1"># PYTHON 3.6 READING INPUT NPZ FILE</span>
+    <span class="c1">###################################################################</span>
+    
+    <span class="n">INPUT</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">INPUT_NPZ</span><span class="p">)</span>
+    
+    <span class="n">GEOMETRY</span>    <span class="o">=</span> <span class="n">INPUT</span><span class="p">[</span><span class="s2">&quot;GEOMETRY&quot;</span><span class="p">]</span>
+    <span class="n">Dm</span>          <span class="o">=</span> <span class="n">INPUT</span><span class="p">[</span><span class="s2">&quot;Dm&quot;</span><span class="p">]</span>
+    <span class="n">GREEN</span>       <span class="o">=</span> <span class="n">INPUT</span><span class="p">[</span><span class="s2">&quot;GREEN&quot;</span><span class="p">]</span>
+    <span class="n">GREEN_UP</span>    <span class="o">=</span> <span class="n">INPUT</span><span class="p">[</span><span class="s2">&quot;GREEN_UP&quot;</span><span class="p">]</span>
+    <span class="n">OBS</span>         <span class="o">=</span> <span class="n">INPUT</span><span class="p">[</span><span class="s2">&quot;OBS&quot;</span><span class="p">]</span>
+    <span class="n">NAME_OBS</span>    <span class="o">=</span> <span class="n">INPUT</span><span class="p">[</span><span class="s2">&quot;NAME_OBS&quot;</span><span class="p">]</span>
+    <span class="n">OBS_UP</span>      <span class="o">=</span> <span class="n">INPUT</span><span class="p">[</span><span class="s2">&quot;OBS_UP&quot;</span><span class="p">]</span>
+    <span class="n">NAME_OBS_UP</span> <span class="o">=</span> <span class="n">INPUT</span><span class="p">[</span><span class="s2">&quot;NAME_OBS_UP&quot;</span><span class="p">]</span>
+    <span class="n">GREEN_INSAR</span> <span class="o">=</span> <span class="n">INPUT</span><span class="p">[</span><span class="s2">&quot;GREEN_INSAR&quot;</span><span class="p">]</span>
+    <span class="n">OBS_INSAR</span>   <span class="o">=</span> <span class="n">INPUT</span><span class="p">[</span><span class="s2">&quot;OBS_INSAR&quot;</span><span class="p">]</span>
+
+    <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">count_nonzero</span><span class="p">(</span> <span class="n">OBS</span><span class="p">[:,</span><span class="mi">4</span><span class="p">:</span><span class="mi">6</span><span class="p">]</span> <span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;-- warning: data have no uncertainty. Setting to 1.&quot;</span><span class="p">)</span>
+        <span class="n">OBS</span><span class="p">[:,</span> <span class="mi">4</span><span class="p">:</span><span class="mi">6</span><span class="p">]</span> <span class="o">=</span> <span class="mf">1.</span>
+
+
+    <span class="c1"># converts array to recarray</span>
+    
+    <span class="n">names</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;rdis_long&#39;</span><span class="p">,</span><span class="s1">&#39;rdis_lat&#39;</span><span class="p">,</span><span class="s1">&#39;rdis_depth&#39;</span><span class="p">,</span><span class="s1">&#39;rdis_length&#39;</span><span class="p">,</span><span class="s1">&#39;rdis_width&#39;</span><span class="p">,</span>\
+           <span class="s1">&#39;rdis_area&#39;</span><span class="p">,</span><span class="s1">&#39;ratio_rdis_tdis&#39;</span><span class="p">,</span><span class="s1">&#39;strike&#39;</span><span class="p">,</span><span class="s1">&#39;dip&#39;</span><span class="p">,</span>\
+           <span class="s1">&#39;centroid_long&#39;</span><span class="p">,</span><span class="s1">&#39;centroid_lat&#39;</span><span class="p">,</span><span class="s1">&#39;centroid_depth&#39;</span><span class="p">,</span>\
+           <span class="s1">&#39;tdis_long1&#39;</span><span class="p">,</span><span class="s1">&#39;tdis_lat1&#39;</span><span class="p">,</span><span class="s1">&#39;tdis_depth1&#39;</span><span class="p">,</span>\
+           <span class="s1">&#39;tdis_long2&#39;</span><span class="p">,</span><span class="s1">&#39;tdis_lat2&#39;</span><span class="p">,</span><span class="s1">&#39;tdis_depth2&#39;</span><span class="p">,</span>\
+           <span class="s1">&#39;tdis_long3&#39;</span><span class="p">,</span><span class="s1">&#39;tdis_lat3&#39;</span><span class="p">,</span><span class="s1">&#39;tdis_depth3&#39;</span><span class="p">,</span><span class="s1">&#39;tdis_area&#39;</span><span class="p">]</span>
+    
+    <span class="n">SGEOMETRY</span><span class="o">=</span><span class="n">lib_inversion</span><span class="o">.</span><span class="n">numpy_array_2_numpy_recarray</span><span class="p">(</span><span class="n">GEOMETRY</span><span class="p">,</span><span class="n">names</span><span class="p">)</span>
+
+    
+    
+    <span class="c1">###################################################################</span>
+    <span class="c1"># END PYTHON 3.6 READING INPUT NPZ FILE</span>
+    <span class="c1">###################################################################</span>
+    
+
+    <span class="n">nfaults</span> <span class="o">=</span> <span class="n">GEOMETRY</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="n">n_fields_geometry</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">GEOMETRY</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+    
+    
+    <span class="n">ngps</span><span class="o">=</span><span class="n">OBS</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="n">ngps_up</span><span class="o">=</span><span class="n">OBS_UP</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="n">ninsar</span><span class="o">=</span><span class="n">OBS_INSAR</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+
+    <span class="c1"># nn=1 principal rake only, nn=2 rake_principal and rake_conjugate</span>
+    
+    <span class="k">if</span> <span class="n">SLIP</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">nfaults</span><span class="p">:</span>
+        <span class="n">nn</span> <span class="o">=</span> <span class="mi">2</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">nn</span> <span class="o">=</span> <span class="mi">1</span>  
+
+    <span class="c1">###################################################################</span>
+    <span class="k">def</span> <span class="nf">save_np_array_with_string_2_psvelo_format</span><span class="p">(</span><span class="n">A</span><span class="p">,</span><span class="n">S</span><span class="p">,</span><span class="n">fmt</span><span class="p">,</span><span class="n">name</span><span class="p">):</span>
+    <span class="c1">###################################################################</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        saves a numpy array with the last column being a 1D numpy array of dtype string</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># Create a structured numpy array</span>
+        <span class="n">nrow</span><span class="o">=</span><span class="n">A</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">ncol</span><span class="o">=</span><span class="n">A</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">+</span><span class="mi">1</span>
+        
+        <span class="n">Snp</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">nrow</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="p">[(</span><span class="s1">&#39;lon&#39;</span><span class="p">,</span> <span class="s1">&#39;float64&#39;</span><span class="p">),</span> <span class="p">(</span><span class="s1">&#39;lat&#39;</span><span class="p">,</span> <span class="s1">&#39;float64&#39;</span><span class="p">),</span> <span class="p">(</span><span class="s1">&#39;ve&#39;</span><span class="p">,</span> <span class="s1">&#39;float64&#39;</span><span class="p">),</span> <span class="p">(</span><span class="s1">&#39;vn&#39;</span><span class="p">,</span> <span class="s1">&#39;float64&#39;</span><span class="p">),</span> <span class="p">(</span><span class="s1">&#39;sve&#39;</span><span class="p">,</span> <span class="s1">&#39;float64&#39;</span><span class="p">),</span> <span class="p">(</span><span class="s1">&#39;svn&#39;</span><span class="p">,</span> <span class="s1">&#39;float64&#39;</span><span class="p">),</span> <span class="p">(</span><span class="s1">&#39;sven&#39;</span><span class="p">,</span> <span class="s1">&#39;float64&#39;</span><span class="p">),(</span><span class="s1">&#39;code&#39;</span><span class="p">,</span> <span class="s1">&#39;U255&#39;</span><span class="p">),</span> <span class="p">])</span>
+        <span class="n">lfield</span><span class="o">=</span><span class="nb">list</span><span class="p">(</span><span class="n">Snp</span><span class="o">.</span><span class="n">dtype</span><span class="o">.</span><span class="n">names</span><span class="p">)</span>
+        <span class="n">lfield</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+        
+        <span class="n">i</span><span class="o">=</span><span class="mi">0</span>
+        <span class="k">for</span> <span class="n">field</span> <span class="ow">in</span> <span class="n">lfield</span><span class="p">:</span>
+            <span class="n">Snp</span><span class="p">[</span><span class="n">field</span><span class="p">]</span><span class="o">=</span><span class="n">A</span><span class="p">[:,</span><span class="n">i</span><span class="p">]</span> 
+            <span class="n">i</span><span class="o">=</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span>
+           
+        <span class="n">Snp</span><span class="p">[</span><span class="s1">&#39;code&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">S</span>
+
+        <span class="n">np</span><span class="o">.</span><span class="n">savetxt</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">Snp</span><span class="p">,</span> <span class="n">fmt</span><span class="o">=</span><span class="n">fmt</span><span class="p">)</span>
+
+    <span class="c1">###################################################################</span>
+
+    <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;-- Writing solutions for inversion in directory&#39;</span><span class="p">,</span><span class="n">out_dir</span><span class="p">)</span>
+
+    <span class="c1">###################################################################</span>
+    <span class="c1"># FILE NAMES FOR OUTPUT RESULTS</span>
+    <span class="c1">###################################################################</span>
+
+
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">out_dir</span><span class="p">):</span>
+        <span class="n">os</span><span class="o">.</span><span class="n">mkdir</span><span class="p">(</span><span class="n">out_dir</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="kn">import</span> <span class="nn">shutil</span>
+        <span class="n">shutil</span><span class="o">.</span><span class="n">rmtree</span><span class="p">(</span><span class="n">out_dir</span><span class="p">)</span>        
+        <span class="n">os</span><span class="o">.</span><span class="n">mkdir</span><span class="p">(</span><span class="n">out_dir</span><span class="p">)</span>
+
+    <span class="n">fslip</span>     <span class="o">=</span> <span class="n">out_dir</span><span class="o">+</span><span class="s1">&#39;/&#39;</span><span class="o">+</span><span class="n">name</span><span class="o">+</span><span class="s1">&#39;_sol_slip.dat&#39;</span>
+    <span class="n">fcoupling</span> <span class="o">=</span> <span class="n">out_dir</span><span class="o">+</span><span class="s1">&#39;/&#39;</span><span class="o">+</span><span class="n">name</span><span class="o">+</span><span class="s1">&#39;_sol_coupling.dat&#39;</span>
+    <span class="n">fpred</span>     <span class="o">=</span> <span class="n">out_dir</span><span class="o">+</span><span class="s1">&#39;/&#39;</span><span class="o">+</span><span class="n">name</span><span class="o">+</span><span class="s1">&#39;_model.dat&#39;</span>
+    <span class="n">fpred_up</span>  <span class="o">=</span> <span class="n">out_dir</span><span class="o">+</span><span class="s1">&#39;/&#39;</span><span class="o">+</span><span class="n">name</span><span class="o">+</span><span class="s1">&#39;_model_up.dat&#39;</span>
+    <span class="n">fpred_insar</span>  <span class="o">=</span> <span class="n">out_dir</span><span class="o">+</span><span class="s1">&#39;/&#39;</span><span class="o">+</span><span class="n">name</span><span class="o">+</span><span class="s1">&#39;_model_insar.dat&#39;</span>
+    <span class="n">fres</span>      <span class="o">=</span> <span class="n">out_dir</span><span class="o">+</span><span class="s1">&#39;/&#39;</span><span class="o">+</span><span class="n">name</span><span class="o">+</span><span class="s1">&#39;_residuals.dat&#39;</span>
+    <span class="n">fres_up</span>   <span class="o">=</span> <span class="n">out_dir</span><span class="o">+</span><span class="s1">&#39;/&#39;</span><span class="o">+</span><span class="n">name</span><span class="o">+</span><span class="s1">&#39;_residuals_up.dat&#39;</span>
+    <span class="n">fres_insar</span><span class="o">=</span> <span class="n">out_dir</span><span class="o">+</span><span class="s1">&#39;/&#39;</span><span class="o">+</span><span class="n">name</span><span class="o">+</span><span class="s1">&#39;_residuals_insar.dat&#39;</span>
+    <span class="n">fsumn</span>     <span class="o">=</span> <span class="n">out_dir</span><span class="o">+</span><span class="s1">&#39;/&#39;</span><span class="o">+</span><span class="n">name</span><span class="o">+</span><span class="s1">&#39;_sum.dat&#39;</span>
+    <span class="n">fslip_dir</span> <span class="o">=</span> <span class="n">out_dir</span><span class="o">+</span><span class="s1">&#39;/&#39;</span><span class="o">+</span><span class="n">name</span><span class="o">+</span><span class="s1">&#39;_slip_dir.dat&#39;</span>
+    <span class="n">f_geometry</span><span class="o">=</span> <span class="n">out_dir</span><span class="o">+</span><span class="s1">&#39;/&#39;</span><span class="o">+</span><span class="n">name</span><span class="o">+</span><span class="s1">&#39;_geometry.dat&#39;</span>
+    <span class="n">f_obs</span>     <span class="o">=</span> <span class="n">out_dir</span><span class="o">+</span><span class="s1">&#39;/&#39;</span><span class="o">+</span><span class="n">name</span><span class="o">+</span><span class="s1">&#39;_obs.dat&#39;</span>
+    <span class="n">f_obsup</span>   <span class="o">=</span> <span class="n">out_dir</span><span class="o">+</span><span class="s1">&#39;/&#39;</span><span class="o">+</span><span class="n">name</span><span class="o">+</span><span class="s1">&#39;_obs_up.dat&#39;</span>
+
+
+    <span class="c1">###########################################################################    </span>
+    <span class="c1"># MODEL</span>
+    <span class="c1">###########################################################################    </span>
+
+    <span class="kn">import</span> <span class="nn">pyeq.lib.lib_inversion</span>
+    <span class="n">GEOMETRY</span> <span class="o">=</span> <span class="n">pyeq</span><span class="o">.</span><span class="n">lib</span><span class="o">.</span><span class="n">lib_inversion</span><span class="o">.</span><span class="n">numpy_recarray_2_numpy_array</span><span class="p">(</span><span class="n">SGEOMETRY</span><span class="p">)</span>
+    
+    <span class="n">MODEL</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">nfaults</span><span class="p">,</span><span class="n">GEOMETRY</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">+</span><span class="mi">5</span><span class="p">))</span> <span class="c1"># geometry_fields,rake1,slip1,rake2,slip2,slip_total</span>
+    <span class="n">MODEL</span><span class="p">[:,:</span><span class="n">n_fields_geometry</span><span class="p">]</span><span class="o">=</span><span class="n">GEOMETRY</span>
+    <span class="n">MODEL</span><span class="p">[:,</span><span class="n">n_fields_geometry</span><span class="p">]</span><span class="o">=</span><span class="n">RAKE</span> <span class="c1"># rake principal</span>
+    <span class="n">MODEL</span><span class="p">[:,</span><span class="n">n_fields_geometry</span><span class="o">+</span><span class="mi">1</span><span class="p">]</span><span class="o">=</span><span class="n">SLIP</span><span class="p">[:</span><span class="n">nfaults</span><span class="p">]</span> <span class="c1"># rake principal</span>
+    <span class="n">MODEL</span><span class="p">[:,</span><span class="n">n_fields_geometry</span><span class="o">+</span><span class="mi">2</span><span class="p">]</span><span class="o">=</span><span class="n">RAKE</span><span class="o">+</span><span class="mf">90.0</span> <span class="c1"># rake conjugate</span>
+    
+    <span class="k">if</span> <span class="n">SLIP</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">nfaults</span><span class="p">:</span>
+        <span class="c1"># variable rake case</span>
+        <span class="n">MODEL</span><span class="p">[:,</span><span class="n">n_fields_geometry</span><span class="o">+</span><span class="mi">3</span><span class="p">]</span><span class="o">=</span><span class="n">SLIP</span><span class="p">[</span><span class="n">nfaults</span><span class="p">:]</span> <span class="c1"># rake conjugate case</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">MODEL</span><span class="p">[:,</span><span class="n">n_fields_geometry</span><span class="o">+</span><span class="mi">3</span><span class="p">]</span><span class="o">=</span><span class="n">SLIP</span><span class="o">*</span><span class="mf">0.0</span> <span class="c1"># rake principal only case</span>
+        
+    <span class="n">MODEL</span><span class="p">[:,</span><span class="n">n_fields_geometry</span><span class="o">+</span><span class="mi">4</span><span class="p">]</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">MODEL</span><span class="p">[:,</span><span class="n">n_fields_geometry</span><span class="o">+</span><span class="mi">1</span><span class="p">]</span><span class="o">**</span><span class="mi">2</span><span class="o">+</span><span class="n">MODEL</span><span class="p">[:,</span><span class="n">n_fields_geometry</span><span class="o">+</span><span class="mi">3</span><span class="p">]</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span>
+    
+    <span class="n">header_model</span><span class="o">=</span><span class="s2">&quot;rdis_long   rdis_lat rdis_depth     rdis_length rdis_width  rdis_area ratio_rdis_tdis        strike       dip</span><span class="se">\</span>
+<span class="s2">      centroid_long centroid_lat centroid_depth     tdis_long1</span><span class="se">\</span>
+<span class="s2">  tdis_lat1 tdis_depth1     tdis_long2  tdis_lat2 tdis_depth2     tdis_long3  tdis_lat3 tdis_depth3      tdis_area</span><span class="se">\</span>
+<span class="s2"> rake_1 slip_1 rake_2  slip2   slip&quot;</span>
+
+    <span class="n">header_model</span><span class="o">=</span><span class="s2">&quot;rdis_long   rdis_lat rdis_depth     rdis_length rdis_width  rdis_area ratio_rdis_tdis        strike       dip</span><span class="se">\</span>
+<span class="s2">      centroid_long centroid_lat centroid_depth     tdis_long1</span><span class="se">\</span>
+<span class="s2">  tdis_lat1 tdis_depth1     tdis_long2  tdis_lat2 tdis_depth2     tdis_long3  tdis_lat3 tdis_depth3      tdis_area</span><span class="se">\</span>
+<span class="s2"> rake_1 slip_1 rake_2  slip2  ISC(%)&quot;</span>
+
+    <span class="n">format_model</span><span class="o">=</span>\
+    <span class="s1">&#39;</span><span class="si">%10.5lf</span><span class="s1"> </span><span class="si">%10.5lf</span><span class="s1">      </span><span class="si">%6.2lf</span><span class="s1"> </span><span class="se">\</span>
+<span class="s1">         </span><span class="si">%6.2lf</span><span class="s1">     </span><span class="si">%6.2lf</span><span class="s1">    </span><span class="si">%6.2lf</span><span class="s1">          </span><span class="si">%6.2lf</span><span class="se">\</span>
+<span class="s1">        </span><span class="si">%6.2lf</span><span class="s1"> </span><span class="si">%10.2lf</span><span class="s1"> </span><span class="se">\</span>
+<span class="s1">       </span><span class="si">%10.5lf</span><span class="s1">   </span><span class="si">%10.5lf</span><span class="s1">         </span><span class="si">%6.2lf</span><span class="s1"> </span><span class="se">\</span>
+<span class="s1">    </span><span class="si">%10.5lf</span><span class="s1"> </span><span class="si">%10.5lf</span><span class="s1">      </span><span class="si">%6.2lf</span><span class="s1"> </span><span class="se">\</span>
+<span class="s1">    </span><span class="si">%10.5lf</span><span class="s1"> </span><span class="si">%10.5lf</span><span class="s1">      </span><span class="si">%6.2lf</span><span class="s1"> </span><span class="se">\</span>
+<span class="s1">    </span><span class="si">%10.5lf</span><span class="s1"> </span><span class="si">%10.5lf</span><span class="s1">      </span><span class="si">%6.2lf</span><span class="s1"> </span><span class="se">\</span>
+<span class="s1">       </span><span class="si">%6.2lf</span><span class="s1">   </span><span class="si">%6.2lf</span><span class="s1"> </span><span class="si">%6.2lf</span><span class="s1"> </span><span class="si">%6.2lf</span><span class="s1"> </span><span class="si">%6.2lf</span><span class="s1"> </span><span class="si">%6.2lf</span><span class="s1">&#39;</span>
+
+    <span class="n">np</span><span class="o">.</span><span class="n">savetxt</span><span class="p">(</span><span class="n">fslip</span><span class="p">,</span><span class="n">MODEL</span><span class="p">,</span><span class="n">fmt</span><span class="o">=</span><span class="n">format_model</span><span class="p">,</span><span class="n">header</span><span class="o">=</span><span class="n">header_model</span><span class="p">)</span>
+    
+    <span class="c1">###########################################################################</span>
+    <span class="c1"># MOMENT</span>
+    <span class="c1">###########################################################################</span>
+
+    <span class="n">SLIP_POTENCY</span><span class="o">=</span><span class="n">MODEL</span><span class="p">[:,</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">*</span><span class="mf">1.0E-3</span> <span class="o">*</span> <span class="n">MODEL</span><span class="p">[:,</span><span class="mi">5</span><span class="p">]</span><span class="o">*</span><span class="mf">1.0E6</span>
+
+    <span class="n">M0</span><span class="o">=</span><span class="n">mu</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">SLIP_POTENCY</span><span class="p">)</span>
+    
+    <span class="n">magnitude</span><span class="o">=</span> <span class="mf">2.</span><span class="o">/</span><span class="mf">3.</span><span class="o">*</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">log10</span><span class="p">(</span><span class="n">M0</span><span class="p">)</span><span class="o">-</span><span class="mf">9.1</span><span class="p">)</span>
+    
+    <span class="c1">###########################################################################</span>
+    <span class="c1"># COUPLING</span>
+    <span class="c1">###########################################################################</span>
+    
+    <span class="n">COUPLING</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="n">MODEL</span><span class="p">)</span>
+    <span class="n">COUPLING</span><span class="p">[:,</span><span class="n">n_fields_geometry</span><span class="o">+</span><span class="mi">4</span><span class="p">]</span><span class="o">=</span><span class="n">MODEL</span><span class="p">[:,</span><span class="n">n_fields_geometry</span><span class="o">+</span><span class="mi">4</span><span class="p">]</span><span class="o">/</span><span class="n">MAX_SLIP</span><span class="o">*</span><span class="mf">100.0</span>
+    <span class="n">np</span><span class="o">.</span><span class="n">savetxt</span><span class="p">(</span><span class="n">fcoupling</span><span class="p">,</span><span class="n">COUPLING</span><span class="p">,</span><span class="n">fmt</span><span class="o">=</span><span class="n">format_model</span><span class="p">,</span><span class="n">header</span><span class="o">=</span><span class="n">header_model</span><span class="p">)</span>
+    
+    <span class="c1">###########################################################################</span>
+    <span class="c1"># MODEL PREDICTIONS</span>
+    <span class="c1">###########################################################################</span>
+
+    <span class="n">PREDICTION_ALL</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">GG</span><span class="p">,</span><span class="n">M</span><span class="p">)</span>
+
+    <span class="c1"># horizontal GPS</span>
+    
+    <span class="n">PREDICTION_EAST</span><span class="o">=</span><span class="n">PREDICTION_ALL</span><span class="p">[</span><span class="mi">0</span><span class="p">:</span><span class="n">ngps</span><span class="p">]</span>
+    <span class="n">PREDICTION_NORTH</span><span class="o">=</span><span class="n">PREDICTION_ALL</span><span class="p">[</span><span class="n">ngps</span><span class="p">:</span><span class="mi">2</span><span class="o">*</span><span class="n">ngps</span><span class="p">]</span>
+
+    <span class="c1"># fills the horizontal model prediction GPS file for writing in gmt psvelo format</span>
+    <span class="n">PREDICTION_GPS</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="n">OBS</span><span class="p">)</span>
+    <span class="n">PREDICTION_GPS</span><span class="p">[:,</span><span class="mi">2</span><span class="p">]</span><span class="o">=</span><span class="n">PREDICTION_EAST</span>
+    <span class="n">PREDICTION_GPS</span><span class="p">[:,</span><span class="mi">3</span><span class="p">]</span><span class="o">=</span><span class="n">PREDICTION_NORTH</span>
+
+    <span class="n">PREDICTION_GPS</span><span class="p">[:,</span><span class="mi">4</span><span class="p">]</span><span class="o">=</span><span class="mf">0.0</span>
+    <span class="n">PREDICTION_GPS</span><span class="p">[:,</span><span class="mi">5</span><span class="p">]</span><span class="o">=</span><span class="mf">0.0</span>
+    <span class="n">PREDICTION_GPS</span><span class="p">[:,</span><span class="mi">6</span><span class="p">]</span><span class="o">=</span><span class="mf">0.0</span>
+    
+    <span class="n">save_np_array_with_string_2_psvelo_format</span><span class="p">(</span><span class="n">PREDICTION_GPS</span><span class="p">,</span><span class="n">NAME_OBS</span><span class="p">,</span><span class="s1">&#39;</span><span class="si">%10.5lf</span><span class="s1">  </span><span class="si">%10.5lf</span><span class="s1"> </span><span class="si">%10.5lf</span><span class="s1">  </span><span class="si">%10.5lf</span><span class="s1"> </span><span class="si">%3.1lf</span><span class="s1"> </span><span class="si">%3.1lf</span><span class="s1"> </span><span class="si">%3.1lf</span><span class="s1"> </span><span class="si">%s</span><span class="s1">&#39;</span><span class="p">,</span><span class="n">fpred</span><span class="p">)</span>
+
+    <span class="c1"># vertical GPS</span>
+    <span class="k">if</span> <span class="n">ngps_up</span><span class="o">&gt;</span><span class="mi">0</span><span class="p">:</span>
+
+        <span class="n">PREDICTION_UP</span><span class="o">=</span><span class="n">PREDICTION_ALL</span><span class="p">[</span><span class="mi">2</span><span class="o">*</span><span class="n">ngps</span><span class="p">:</span><span class="mi">2</span><span class="o">*</span><span class="n">ngps</span><span class="o">+</span><span class="n">ngps_up</span><span class="p">]</span>
+        <span class="n">PREDICTION_GPS_UP</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="n">OBS_UP</span><span class="p">)</span>
+        <span class="n">PREDICTION_GPS_UP</span><span class="p">[:,</span><span class="mi">2</span><span class="p">]</span><span class="o">=</span><span class="n">PREDICTION_UP</span>
+        <span class="n">PREDICTION_GPS_UP</span><span class="p">[:,</span><span class="mi">3</span><span class="p">]</span><span class="o">=</span><span class="mf">0.0</span>
+        
+        <span class="n">np</span><span class="o">.</span><span class="n">savetxt</span><span class="p">(</span><span class="n">fpred_up</span><span class="p">,</span> <span class="n">PREDICTION_GPS_UP</span><span class="p">,</span> <span class="n">fmt</span><span class="o">=</span><span class="s1">&#39;</span><span class="si">%10.5lf</span><span class="s1">  </span><span class="si">%10.5lf</span><span class="s1"> </span><span class="si">%10.5lf</span><span class="s1">  </span><span class="si">%10.5lf</span><span class="s1">&#39;</span><span class="p">,</span> <span class="n">delimiter</span><span class="o">=</span><span class="s1">&#39; &#39;</span><span class="p">)</span>
+    
+    <span class="c1"># InSAR</span>
+
+    <span class="k">if</span> <span class="n">H_inversion_info</span><span class="p">[</span><span class="s1">&#39;insar&#39;</span><span class="p">]:</span>
+
+        <span class="n">MODEL_PREDICTION_INSAR</span><span class="o">=</span><span class="n">PREDICTION_ALL</span><span class="p">[</span><span class="mi">2</span><span class="o">*</span><span class="n">ngps</span><span class="o">+</span><span class="n">ngps_up</span><span class="p">:</span><span class="mi">2</span><span class="o">*</span><span class="n">ngps</span><span class="o">+</span><span class="n">ngps_up</span><span class="o">+</span><span class="n">ninsar</span><span class="p">]</span>
+        <span class="n">PREDICTION_INSAR</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="n">OBS_INSAR</span><span class="p">[:,</span><span class="mi">0</span><span class="p">:</span><span class="mi">4</span><span class="p">])</span>
+
+        <span class="n">PREDICTION_INSAR</span><span class="p">[:,</span><span class="mi">2</span><span class="p">]</span> <span class="o">=</span> <span class="n">MODEL_PREDICTION_INSAR</span>
+        <span class="n">PREDICTION_INSAR</span><span class="p">[:,</span><span class="mi">3</span><span class="p">]</span><span class="o">=</span><span class="mf">0.0</span>
+        
+        <span class="n">np</span><span class="o">.</span><span class="n">savetxt</span><span class="p">(</span><span class="n">fpred_insar</span><span class="p">,</span> <span class="n">PREDICTION_INSAR</span><span class="p">,</span> <span class="n">fmt</span><span class="o">=</span><span class="s1">&#39;</span><span class="si">%10.5lf</span><span class="s1">  </span><span class="si">%10.5lf</span><span class="s1"> </span><span class="si">%10.5lf</span><span class="s1">  </span><span class="si">%10.5lf</span><span class="s1">&#39;</span><span class="p">,</span> <span class="n">delimiter</span><span class="o">=</span><span class="s1">&#39; &#39;</span><span class="p">)</span>
+    
+    <span class="c1">###########################################################################</span>
+    <span class="c1"># MODEL RESIDUALS</span>
+    <span class="c1">###########################################################################</span>
+    
+    <span class="c1"># horizontal GPS</span>
+    
+    <span class="n">RESIDUALS_GPS</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="n">OBS</span><span class="p">)</span>
+    <span class="n">RESIDUALS_GPS</span><span class="p">[:,</span><span class="mi">2</span><span class="p">]</span><span class="o">=</span><span class="n">OBS</span><span class="p">[:,</span><span class="mi">2</span><span class="p">]</span><span class="o">-</span><span class="n">PREDICTION_GPS</span><span class="p">[:,</span><span class="mi">2</span><span class="p">]</span>
+    <span class="n">RESIDUALS_GPS</span><span class="p">[:,</span><span class="mi">3</span><span class="p">]</span><span class="o">=</span><span class="n">OBS</span><span class="p">[:,</span><span class="mi">3</span><span class="p">]</span><span class="o">-</span><span class="n">PREDICTION_GPS</span><span class="p">[:,</span><span class="mi">3</span><span class="p">]</span>
+
+    <span class="n">save_np_array_with_string_2_psvelo_format</span><span class="p">(</span><span class="n">RESIDUALS_GPS</span><span class="p">,</span><span class="n">NAME_OBS</span><span class="p">,</span><span class="s1">&#39;</span><span class="si">%10.5lf</span><span class="s1">  </span><span class="si">%10.5lf</span><span class="s1"> </span><span class="si">%10.5lf</span><span class="s1">  </span><span class="si">%10.5lf</span><span class="s1"> </span><span class="si">%3.1lf</span><span class="s1"> </span><span class="si">%3.1lf</span><span class="s1"> </span><span class="si">%3.1lf</span><span class="s1"> </span><span class="si">%s</span><span class="s1">&#39;</span><span class="p">,</span><span class="n">fres</span><span class="p">)</span>
+
+    <span class="c1"># vertical GPS</span>
+    <span class="k">if</span> <span class="n">ngps_up</span><span class="o">&gt;</span><span class="mi">0</span><span class="p">:</span>
+        <span class="n">RESIDUALS_GPS_UP</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="n">OBS_UP</span><span class="p">)</span>
+        <span class="n">RESIDUALS_GPS_UP</span><span class="p">[:,</span><span class="mi">2</span><span class="p">]</span><span class="o">=</span><span class="n">OBS_UP</span><span class="p">[:,</span><span class="mi">2</span><span class="p">]</span><span class="o">-</span><span class="n">PREDICTION_GPS_UP</span><span class="p">[:,</span><span class="mi">2</span><span class="p">]</span>
+        <span class="n">np</span><span class="o">.</span><span class="n">savetxt</span><span class="p">(</span><span class="n">fres_up</span><span class="p">,</span> <span class="n">RESIDUALS_GPS_UP</span><span class="p">,</span> <span class="n">fmt</span><span class="o">=</span><span class="s1">&#39;</span><span class="si">%10.5lf</span><span class="s1">  </span><span class="si">%10.5lf</span><span class="s1"> </span><span class="si">%10.5lf</span><span class="s1">  </span><span class="si">%10.5lf</span><span class="s1">&#39;</span><span class="p">,</span> <span class="n">delimiter</span><span class="o">=</span><span class="s1">&#39; &#39;</span><span class="p">)</span>
+
+    <span class="c1"># insar</span>
+    
+    <span class="k">if</span> <span class="n">H_inversion_info</span><span class="p">[</span><span class="s1">&#39;insar&#39;</span><span class="p">]:</span>
+        <span class="n">RESIDUALS_INSAR</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="n">OBS_INSAR</span><span class="p">[:,</span><span class="mi">0</span><span class="p">:</span><span class="mi">4</span><span class="p">])</span>
+        <span class="n">RESIDUALS_INSAR</span><span class="p">[:,</span><span class="mi">2</span><span class="p">]</span><span class="o">=</span><span class="n">OBS_INSAR</span><span class="p">[:,</span><span class="mi">2</span><span class="p">]</span> <span class="o">-</span> <span class="n">PREDICTION_INSAR</span><span class="p">[:,</span><span class="mi">2</span><span class="p">]</span>
+        <span class="n">np</span><span class="o">.</span><span class="n">savetxt</span><span class="p">(</span><span class="n">fres_insar</span><span class="p">,</span> <span class="n">RESIDUALS_INSAR</span><span class="p">,</span> <span class="n">fmt</span><span class="o">=</span><span class="s1">&#39;</span><span class="si">%10.5lf</span><span class="s1">  </span><span class="si">%10.5lf</span><span class="s1"> </span><span class="si">%10.5lf</span><span class="s1">  </span><span class="si">%10.5lf</span><span class="s1">&#39;</span><span class="p">,</span> <span class="n">delimiter</span><span class="o">=</span><span class="s1">&#39; &#39;</span><span class="p">)</span>
+        
+    
+    <span class="c1">###########################################################################</span>
+    <span class="c1"># STATISTICS SLIP MIN &amp; MAX</span>
+    <span class="c1">###########################################################################</span>
+    
+    <span class="n">slip_max</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">MODEL</span><span class="p">[:,</span><span class="n">n_fields_geometry</span><span class="o">+</span><span class="mi">4</span><span class="p">])</span>
+    <span class="n">slip_max_rake_principal</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">MODEL</span><span class="p">[:,</span><span class="n">n_fields_geometry</span><span class="o">+</span><span class="mi">1</span><span class="p">])</span>
+    <span class="n">slip_max_rake_conjugate</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">MODEL</span><span class="p">[:,</span><span class="n">n_fields_geometry</span><span class="o">+</span><span class="mi">3</span><span class="p">])</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span>
+
+    <span class="n">slip_min</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">min</span><span class="p">(</span><span class="n">MODEL</span><span class="p">[:,</span><span class="n">n_fields_geometry</span><span class="o">+</span><span class="mi">4</span><span class="p">])</span>
+    <span class="n">slip_min_rake_principal</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">min</span><span class="p">(</span><span class="n">MODEL</span><span class="p">[:,</span><span class="n">n_fields_geometry</span><span class="o">+</span><span class="mi">1</span><span class="p">])</span>
+    <span class="n">slip_min_rake_conjugate</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">min</span><span class="p">(</span><span class="n">MODEL</span><span class="p">[:,</span><span class="n">n_fields_geometry</span><span class="o">+</span><span class="mi">3</span><span class="p">])</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span>
+
+
+    <span class="c1">###########################################################################</span>
+    <span class="c1"># STATISTICS RMS (NO WEIGHT ACCOUNTED FOR)</span>
+    <span class="c1">###########################################################################</span>
+    
+    <span class="c1"># rms horizontal GPS</span>
+    
+    <span class="n">rms_obs</span>  <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span> <span class="n">RESIDUALS_GPS</span><span class="p">[:,</span><span class="mi">2</span><span class="p">]</span><span class="o">**</span><span class="mi">2</span> <span class="o">+</span> <span class="n">RESIDUALS_GPS</span><span class="p">[:,</span><span class="mi">3</span><span class="p">]</span><span class="o">**</span><span class="mi">2</span> <span class="p">)</span> <span class="o">/</span> <span class="p">(</span><span class="mi">2</span><span class="o">*</span><span class="n">ngps</span><span class="p">)</span> <span class="p">)</span> 
+    
+    <span class="c1"># rms vertical GPS</span>
+    <span class="k">if</span> <span class="n">ngps_up</span><span class="o">&gt;</span><span class="mi">0</span><span class="p">:</span>
+        <span class="n">rms_obs_up</span><span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span> <span class="p">(</span><span class="n">RESIDUALS_GPS_UP</span><span class="p">[:,</span><span class="mi">2</span><span class="p">]</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span> <span class="p">)</span> <span class="o">/</span> <span class="n">ngps_up</span> <span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">rms_obs_up</span> <span class="o">=</span> <span class="mf">0.</span>
+
+    <span class="c1"># rms insar</span>
+    <span class="k">if</span> <span class="n">H_inversion_info</span><span class="p">[</span><span class="s1">&#39;insar&#39;</span><span class="p">]:</span>
+        <span class="n">rms_insar</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span> <span class="n">RESIDUALS_INSAR</span><span class="p">[:,</span><span class="mi">2</span><span class="p">]</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span> <span class="o">/</span> <span class="n">ninsar</span> <span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">rms_insar</span> <span class="o">=</span> <span class="mf">0.</span>
+
+    <span class="c1"># overall rms</span>
+    
+    <span class="n">rms_obs_all</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span> <span class="p">(</span> <span class="n">rms_obs</span><span class="o">**</span><span class="mi">2</span> <span class="o">*</span> <span class="p">(</span><span class="mi">2</span><span class="o">*</span><span class="n">ngps</span><span class="p">)</span> <span class="o">+</span> <span class="n">rms_obs_up</span><span class="o">**</span><span class="mi">2</span> <span class="o">*</span> <span class="n">ngps_up</span> <span class="o">+</span> <span class="n">rms_insar</span><span class="o">**</span><span class="mi">2</span> <span class="o">*</span> <span class="n">ninsar</span> <span class="p">)</span> <span class="o">/</span> <span class="p">(</span> <span class="mi">2</span><span class="o">*</span><span class="n">ngps</span> <span class="o">+</span> <span class="n">ngps_up</span> <span class="o">+</span> <span class="n">ninsar</span> <span class="p">)</span> <span class="p">)</span>
+
+    
+    <span class="c1">###########################################################################</span>
+    <span class="c1"># STATISTICS CHI2</span>
+    <span class="c1">###########################################################################</span>
+    
+    <span class="c1"># chi2 horizontal GPS</span>
+    
+    <span class="n">chi2_obs</span>  <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">((</span><span class="n">RESIDUALS_GPS</span><span class="p">[:,</span><span class="mi">2</span><span class="p">]</span><span class="o">/</span><span class="n">RESIDUALS_GPS</span><span class="p">[:,</span><span class="mi">4</span><span class="p">])</span><span class="o">**</span><span class="mi">2</span> <span class="o">+</span> <span class="p">(</span><span class="n">RESIDUALS_GPS</span><span class="p">[:,</span><span class="mi">3</span><span class="p">]</span><span class="o">/</span><span class="n">RESIDUALS_GPS</span><span class="p">[:,</span><span class="mi">5</span><span class="p">])</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span>
+    
+    
+    <span class="c1"># chi2 vertical GPS</span>
+    <span class="k">if</span> <span class="n">ngps_up</span><span class="o">&gt;</span><span class="mi">0</span><span class="p">:</span>
+        <span class="n">chi2_obs_up</span><span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">((</span><span class="n">RESIDUALS_GPS_UP</span><span class="p">[:,</span><span class="mi">2</span><span class="p">]</span><span class="o">/</span><span class="n">RESIDUALS_GPS_UP</span><span class="p">[:,</span><span class="mi">3</span><span class="p">])</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">chi2_obs_up</span> <span class="o">=</span> <span class="mf">0.</span>
+
+    <span class="c1"># chi2 insar</span>
+    <span class="k">if</span> <span class="n">H_inversion_info</span><span class="p">[</span><span class="s1">&#39;insar&#39;</span><span class="p">]:</span>
+        <span class="n">chi2_insar</span><span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">((</span><span class="n">RESIDUALS_INSAR</span><span class="p">[:,</span><span class="mi">2</span><span class="p">]</span><span class="o">/</span><span class="n">RESIDUALS_INSAR</span><span class="p">[:,</span><span class="mi">3</span><span class="p">])</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">chi2_insar</span> <span class="o">=</span> <span class="mf">0.</span>
+
+    <span class="c1"># overall chi2</span>
+    
+    <span class="n">chi2_obs_all</span> <span class="o">=</span> <span class="n">chi2_obs</span>
+    
+    <span class="k">if</span> <span class="n">ngps_up</span><span class="o">&gt;</span><span class="mi">0</span><span class="p">:</span>
+        <span class="n">chi2_obs_all</span> <span class="o">=</span> <span class="n">chi2_obs_all</span> <span class="o">+</span> <span class="n">chi2_obs_up</span>
+        
+    <span class="k">if</span> <span class="n">H_inversion_info</span><span class="p">[</span><span class="s1">&#39;insar&#39;</span><span class="p">]:</span>
+        <span class="n">chi2_obs_all</span> <span class="o">=</span> <span class="n">chi2_obs_all</span> <span class="o">+</span> <span class="n">chi2_insar</span>
+
+    <span class="c1">###########################################################################</span>
+    <span class="c1"># STATISTICS REDUCED CHI2</span>
+    <span class="c1">###########################################################################</span>
+
+    <span class="n">red_chi2_obs</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span> <span class="n">chi2_obs</span> <span class="o">/</span> <span class="p">(</span> <span class="mi">2</span><span class="o">*</span><span class="n">ngps</span> <span class="p">)</span> <span class="p">)</span>
+    
+    <span class="k">if</span> <span class="n">ngps_up</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="p">:</span>
+        <span class="n">red_chi2_up</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span> <span class="n">chi2_obs_up</span> <span class="o">/</span> <span class="n">ngps_up</span> <span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">red_chi2_up</span> <span class="o">=</span> <span class="mf">0.</span>
+
+    <span class="k">if</span> <span class="n">H_inversion_info</span><span class="p">[</span><span class="s1">&#39;insar&#39;</span><span class="p">]:</span>
+        <span class="n">red_chi2_insar</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span> <span class="n">chi2_insar</span> <span class="o">/</span> <span class="n">ninsar</span> <span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">red_chi2_insar</span> <span class="o">=</span> <span class="mf">0.</span>
+
+    <span class="n">red_chi2_all</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span> <span class="n">chi2_obs_all</span> <span class="o">/</span> <span class="p">(</span><span class="mi">2</span><span class="o">*</span><span class="n">ngps</span><span class="o">+</span><span class="n">ngps_up</span><span class="o">+</span><span class="n">ninsar</span><span class="p">)</span> <span class="p">)</span>
+
+    <span class="c1">###########################################################################</span>
+    <span class="c1"># STATISTICS WRMS</span>
+    <span class="c1">###########################################################################</span>
+
+    <span class="c1"># wrms horizontal GPS        </span>
+    <span class="n">denom_obs</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="mf">1.</span><span class="o">/</span><span class="n">RESIDUALS_GPS</span><span class="p">[:,</span><span class="mi">4</span><span class="p">]</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span> <span class="o">+</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="mf">1.</span><span class="o">/</span><span class="n">RESIDUALS_GPS</span><span class="p">[:,</span><span class="mi">5</span><span class="p">]</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span>
+    <span class="n">wrms_obs</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span> <span class="n">chi2_obs</span> <span class="o">/</span>  <span class="n">denom_obs</span> <span class="p">)</span>
+    
+    <span class="c1"># wrms vertical GPS</span>
+    <span class="k">if</span> <span class="n">ngps_up</span><span class="o">&gt;</span><span class="mi">0</span><span class="p">:</span>
+        <span class="n">denom_obs_up</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="mf">1.</span><span class="o">/</span><span class="n">RESIDUALS_GPS_UP</span><span class="p">[:,</span><span class="mi">3</span><span class="p">]</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span>
+        <span class="n">wrms_obs_up</span>  <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span> <span class="n">chi2_obs_up</span> <span class="o">/</span> <span class="n">denom_obs_up</span> <span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">wrms_obs_up</span>  <span class="o">=</span> <span class="mf">0.0</span>
+        <span class="n">denom_obs_up</span> <span class="o">=</span> <span class="mf">0.0</span>
+    
+    <span class="c1"># wrms insar</span>
+    <span class="k">if</span> <span class="n">H_inversion_info</span><span class="p">[</span><span class="s1">&#39;insar&#39;</span><span class="p">]:</span>
+        <span class="n">denom_insar</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="mf">1.</span><span class="o">/</span><span class="n">RESIDUALS_INSAR</span><span class="p">[:,</span><span class="mi">3</span><span class="p">]</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span>
+        <span class="n">wrms_insar</span>  <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span> <span class="n">chi2_insar</span> <span class="o">/</span> <span class="n">denom_insar</span> <span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">wrms_insar</span>  <span class="o">=</span> <span class="mf">0.0</span>
+        <span class="n">denom_insar</span> <span class="o">=</span> <span class="mf">0.0</span>
+
+    <span class="c1"># wrms all obs</span>
+    
+    <span class="n">wrms_all</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span> <span class="n">chi2_obs_all</span> <span class="o">/</span> <span class="p">(</span><span class="n">denom_obs</span> <span class="o">+</span> <span class="n">denom_obs_up</span> <span class="o">+</span> <span class="n">denom_insar</span><span class="p">)</span> <span class="p">)</span>
+
+    <span class="c1">###########################################################################</span>
+    <span class="c1"># STATISTICS VARIANCE REDUCTION</span>
+    <span class="c1">###########################################################################</span>
+    
+    <span class="c1"># variance reduction horizontal GPS</span>
+    
+    <span class="n">chi2_obs_prefit</span>  <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">((</span><span class="n">OBS</span><span class="p">[:,</span><span class="mi">2</span><span class="p">]</span><span class="o">/</span><span class="n">OBS</span><span class="p">[:,</span><span class="mi">4</span><span class="p">])</span><span class="o">**</span><span class="mi">2</span> <span class="o">+</span> <span class="p">(</span><span class="n">OBS</span><span class="p">[:,</span><span class="mi">3</span><span class="p">]</span><span class="o">/</span><span class="n">OBS</span><span class="p">[:,</span><span class="mi">5</span><span class="p">])</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span>
+    <span class="n">redvar_obs</span> <span class="o">=</span> <span class="p">(</span> <span class="n">chi2_obs_prefit</span> <span class="o">-</span> <span class="n">chi2_obs</span> <span class="p">)</span> <span class="o">/</span> <span class="n">chi2_obs_prefit</span> <span class="o">*</span> <span class="mf">100.0</span>
+
+    <span class="c1"># variance reduction vertical GPS</span>
+    <span class="k">if</span> <span class="n">ngps_up</span><span class="o">&gt;</span><span class="mi">0</span><span class="p">:</span>
+        <span class="n">chi2_obs_up_prefit</span>  <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">((</span><span class="n">OBS_UP</span><span class="p">[:,</span><span class="mi">2</span><span class="p">]</span><span class="o">/</span><span class="n">OBS_UP</span><span class="p">[:,</span><span class="mi">3</span><span class="p">])</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span>
+        <span class="n">redvar_obs_up</span> <span class="o">=</span> <span class="p">(</span> <span class="n">chi2_obs_up_prefit</span> <span class="o">-</span> <span class="n">chi2_obs_up</span> <span class="p">)</span> <span class="o">/</span> <span class="n">chi2_obs_up_prefit</span> <span class="o">*</span> <span class="mf">100.0</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">redvar_obs_up</span> <span class="o">=</span> <span class="mf">0.0</span>
+        <span class="n">chi2_obs_up_prefit</span>  <span class="o">=</span> <span class="mf">0.0</span>
+             
+    <span class="c1"># variance reduction insar</span>
+    <span class="k">if</span> <span class="n">H_inversion_info</span><span class="p">[</span><span class="s1">&#39;insar&#39;</span><span class="p">]:</span>
+        <span class="n">chi2_insar_prefit</span>  <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">((</span><span class="n">OBS_INSAR</span><span class="p">[:,</span><span class="mi">2</span><span class="p">]</span><span class="o">/</span><span class="n">OBS_INSAR</span><span class="p">[:,</span><span class="mi">3</span><span class="p">])</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span>
+        <span class="n">redvar_insar</span> <span class="o">=</span> <span class="p">(</span> <span class="n">chi2_insar_prefit</span> <span class="o">-</span> <span class="n">chi2_insar</span> <span class="p">)</span> <span class="o">/</span> <span class="n">chi2_insar_prefit</span> <span class="o">*</span> <span class="mf">100.0</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">redvar_insar</span> <span class="o">=</span> <span class="mf">0.0</span>
+        <span class="n">chi2_insar_prefit</span>  <span class="o">=</span> <span class="mf">0.0</span>
+    
+    <span class="c1"># variance reduction all</span>
+    
+    <span class="n">chi2_prefit</span>  <span class="o">=</span> <span class="n">chi2_obs_prefit</span> <span class="o">+</span> <span class="n">chi2_obs_up_prefit</span> <span class="o">+</span><span class="n">chi2_insar_prefit</span>
+    <span class="n">chi2_postfit</span> <span class="o">=</span> <span class="n">chi2_obs</span> 
+    <span class="k">if</span> <span class="n">ngps_up</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="n">chi2_postfit</span> <span class="o">=</span> <span class="n">chi2_postfit</span> <span class="o">+</span> <span class="n">chi2_obs_up</span>
+    <span class="k">if</span> <span class="n">H_inversion_info</span><span class="p">[</span><span class="s1">&#39;insar&#39;</span><span class="p">]:</span>
+        <span class="n">chi2_postfit</span> <span class="o">=</span> <span class="n">chi2_postfit</span> <span class="o">+</span> <span class="n">chi2_insar</span>
+         
+    <span class="n">redvar_all</span> <span class="o">=</span> <span class="p">(</span> <span class="n">chi2_prefit</span> <span class="o">-</span> <span class="n">chi2_postfit</span> <span class="p">)</span> <span class="o">/</span> <span class="n">chi2_prefit</span> <span class="o">*</span> <span class="mf">100.0</span>
+
+
+    <span class="c1">###########################################################################</span>
+    <span class="c1"># STATISTICS FULL CHI2</span>
+    <span class="c1"># This is now removed - I&#39;ll see in future whether it is useful or not</span>
+    <span class="c1">###########################################################################</span>
+
+    <span class="c1"># complete chi2 S(m)=(Gm-d).T Cd-1 (Gm-d) + (m-m0).T Cm-1 (m-m0)</span>
+    <span class="c1"># S(m)=(Gm-d).T SQRT_Wd.T SQRT_Wd (Gm-d) + (m-m0).T SQRT_Wm.T SQRT_Wm (m-m0)</span>
+    
+<span class="c1">#     SQRT_Wd_Gm_d=np.dot(SQRT_Wd,np.dot(G,SLIP)-d)</span>
+<span class="c1"># </span>
+<span class="c1">#     if H_inversion_info[&#39;insar&#39;]:</span>
+<span class="c1">#         SQRT_Wm_m_m0=np.dot(SQRT_Wm[0:-3,0:-3],SLIP-m0)</span>
+<span class="c1">#     else:</span>
+<span class="c1">#         SQRT_Wm_m_m0=np.dot(SQRT_Wm,SLIP-m0)</span>
+<span class="c1">#     </span>
+<span class="c1">#     chi2_1=np.dot(SQRT_Wd_Gm_d.T,SQRT_Wd_Gm_d)</span>
+<span class="c1">#     chi2_2=np.dot(SQRT_Wm_m_m0.T,SQRT_Wm_m_m0)</span>
+<span class="c1">#     </span>
+<span class="c1">#     chi2_all=0.5*(chi2_1+chi2_2)</span>
+
+    <span class="c1">###########################################################################</span>
+    <span class="c1"># STATISTICS MEAN BIAS</span>
+    <span class="c1">###########################################################################</span>
+    
+    <span class="n">bias_east</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">RESIDUALS_GPS</span><span class="p">[:,</span><span class="mi">2</span><span class="p">])</span>
+    <span class="n">bias_north</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">RESIDUALS_GPS</span><span class="p">[:,</span><span class="mi">3</span><span class="p">])</span>
+    <span class="k">if</span> <span class="n">ngps_up</span><span class="o">&gt;</span><span class="mi">0</span><span class="p">:</span>
+        <span class="n">bias_up</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">RESIDUALS_GPS_UP</span><span class="p">[:,</span><span class="mi">2</span><span class="p">])</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">bias_up</span><span class="o">=</span><span class="mf">0.0</span>
+
+    <span class="k">if</span> <span class="n">H_inversion_info</span><span class="p">[</span><span class="s1">&#39;insar&#39;</span><span class="p">]:</span>
+        <span class="n">bias_insar</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">RESIDUALS_INSAR</span><span class="p">[:,</span><span class="mi">2</span><span class="p">])</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">bias_insar</span><span class="o">=</span><span class="mf">0.0</span>
+
+    <span class="c1">###########################################################################</span>
+    <span class="c1"># WORST RESIDUALS</span>
+    <span class="c1">###########################################################################</span>
+    
+    <span class="c1"># hor. GPS</span>
+    <span class="n">id_worst_gps</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">argmax</span><span class="p">(</span> <span class="n">RESIDUALS_GPS</span><span class="p">[:,</span><span class="mi">2</span><span class="p">]</span><span class="o">**</span><span class="mi">2</span> <span class="o">+</span> <span class="n">RESIDUALS_GPS</span><span class="p">[:,</span><span class="mi">3</span><span class="p">]</span><span class="o">**</span><span class="mi">2</span> <span class="p">)</span>
+    <span class="n">worst_gps</span><span class="p">,</span> <span class="n">wgps_east</span><span class="p">,</span> <span class="n">wgps_north</span> <span class="o">=</span> <span class="n">NAME_OBS</span><span class="p">[</span><span class="n">id_worst_gps</span><span class="p">],</span><span class="n">RESIDUALS_GPS</span><span class="p">[</span><span class="n">id_worst_gps</span><span class="p">,</span><span class="mi">2</span><span class="p">],</span><span class="n">RESIDUALS_GPS</span><span class="p">[</span><span class="n">id_worst_gps</span><span class="p">,</span><span class="mi">3</span><span class="p">]</span>
+    <span class="c1"># up GPS</span>
+    <span class="k">if</span> <span class="n">ngps_up</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="n">id_worst_gps_up</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">argmax</span><span class="p">(</span> <span class="n">RESIDUALS_GPS_UP</span><span class="p">[:,</span><span class="mi">2</span><span class="p">]</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span>
+        <span class="n">worst_gps_up</span><span class="p">,</span> <span class="n">wgps_up</span> <span class="o">=</span> <span class="n">NAME_OBS_UP</span><span class="p">[</span><span class="n">id_worst_gps_up</span><span class="p">],</span><span class="n">RESIDUALS_GPS_UP</span><span class="p">[</span><span class="n">id_worst_gps_up</span><span class="p">,</span><span class="mi">2</span><span class="p">]</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">worst_gps_up</span><span class="p">,</span> <span class="n">wgps_up</span> <span class="o">=</span> <span class="s1">&#39;NA&#39;</span><span class="p">,</span><span class="mf">0.</span>
+        
+    <span class="c1"># insar</span>
+    <span class="k">if</span> <span class="n">H_inversion_info</span><span class="p">[</span><span class="s1">&#39;insar&#39;</span><span class="p">]:</span>
+        <span class="n">id_worst_insar</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">argmax</span><span class="p">(</span> <span class="n">RESIDUALS_INSAR</span><span class="p">[:,</span><span class="mi">2</span><span class="p">]</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span>
+        <span class="p">[</span><span class="n">worst_res_insar_lon</span><span class="p">,</span><span class="n">worst_res_insar_lat</span><span class="p">,</span><span class="n">worst_res_insar</span><span class="p">]</span> <span class="o">=</span> <span class="n">RESIDUALS_INSAR</span><span class="p">[</span><span class="n">id_worst_insar</span><span class="p">,:</span><span class="mi">3</span><span class="p">]</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="p">[</span><span class="n">worst_res_insar_lon</span><span class="p">,</span><span class="n">worst_res_insar_lat</span><span class="p">,</span><span class="n">worst_res_insar</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="mf">0.</span><span class="p">,</span><span class="mf">0.</span><span class="p">,</span><span class="mf">0.</span><span class="p">]</span>
+        
+    <span class="c1">###########################################################################</span>
+    <span class="c1"># LARGEST SLIP</span>
+    <span class="c1">###########################################################################</span>
+    
+    <span class="n">id_largest_slip</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">argmax</span><span class="p">(</span> <span class="n">MODEL</span><span class="p">[:,</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="p">)</span>
+    <span class="p">[</span><span class="n">lon_ls</span><span class="p">,</span><span class="n">lat_ls</span><span class="p">]</span> <span class="o">=</span> <span class="n">MODEL</span><span class="p">[</span><span class="n">id_largest_slip</span><span class="p">,:</span><span class="mi">2</span><span class="p">]</span>
+    
+    <span class="c1">###########################################################################</span>
+    <span class="c1"># SUMARY FILE</span>
+    <span class="c1">###########################################################################</span>
+
+    
+    <span class="n">fsum</span><span class="o">=</span><span class="nb">open</span><span class="p">(</span><span class="n">fsumn</span><span class="p">,</span><span class="s1">&#39;w&#39;</span><span class="p">)</span>
+    
+    <span class="n">fsum</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">&#39;#--------------------------------------------------------------------------</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)</span>
+    <span class="n">fsum</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">&#39;# Input file: </span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)</span>
+    <span class="n">fsum</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">&#39;#--------------------------------------------------------------------------</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)</span>
+    <span class="n">fsum</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;    command line                     : </span><span class="si">%s</span><span class="s2"> </span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">H_inversion_info</span><span class="p">[</span><span class="s1">&#39;cmd_line&#39;</span><span class="p">])</span>
+    <span class="n">fsum</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;    input npy file                   : </span><span class="si">%s</span><span class="s2"> </span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">H_inversion_info</span><span class="p">[</span><span class="s1">&#39;input_npz&#39;</span><span class="p">])</span>
+    <span class="n">fsum</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">&#39;#--------------------------------------------------------------------------</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)</span>
+    <span class="n">fsum</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">&#39;# Inversion type: </span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)</span>
+    <span class="n">fsum</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">&#39;#--------------------------------------------------------------------------</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)</span>
+    <span class="n">fsum</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;    rake_type (Euler or constant)    : </span><span class="si">%s</span><span class="s2"> </span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">H_inversion_info</span><span class="p">[</span><span class="s1">&#39;rake_type&#39;</span><span class="p">])</span>
+    <span class="n">fsum</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;    rake_value (Euler pole or value) : </span><span class="si">%s</span><span class="s2"> </span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">H_inversion_info</span><span class="p">[</span><span class="s1">&#39;rake_value&#39;</span><span class="p">])</span>
+    <span class="n">fsum</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;    rake_constraint (0=fixed, float) : </span><span class="si">%s</span><span class="s2"> </span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">H_inversion_info</span><span class="p">[</span><span class="s1">&#39;rake_constraint&#39;</span><span class="p">])</span>
+    <span class="n">fsum</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;    max_slip (0=from Euler,else user): </span><span class="si">%s</span><span class="s2"> </span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">H_inversion_info</span><span class="p">[</span><span class="s1">&#39;max_slip&#39;</span><span class="p">])</span>
+    <span class="n">fsum</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">&#39;#--------------------------------------------------------------------------</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)</span>
+    <span class="n">fsum</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">&#39;# Model and observation parameters: </span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)</span>
+    <span class="n">fsum</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">&#39;#--------------------------------------------------------------------------</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)</span>
+    <span class="n">fsum</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;    number of subfaults              : </span><span class="si">%d</span><span class="s2"> </span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">SGEOMETRY</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+    <span class="n">fsum</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;    number of parameters estimated   : </span><span class="si">%d</span><span class="s2"> </span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">GG</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+    <span class="n">fsum</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;    number of total observations     : </span><span class="si">%d</span><span class="s2"> </span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">GG</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+    <span class="n">fsum</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;    number of GPS horizontal obs.    : </span><span class="si">%d</span><span class="s2"> </span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">OBS</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+    <span class="n">fsum</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;    number of GPS vertical   obs.    : </span><span class="si">%d</span><span class="s2"> </span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">OBS_UP</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+    <span class="n">fsum</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;    number of InSAR          obs.    : </span><span class="si">%d</span><span class="s2"> </span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">ninsar</span> <span class="p">)</span>
+    <span class="n">fsum</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;    scaling factor for h.GPS unc.    : </span><span class="si">%4.1lf</span><span class="s2"> </span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">H_inversion_info</span><span class="p">[</span><span class="s1">&#39;wh&#39;</span><span class="p">]</span> <span class="p">)</span>
+    <span class="n">fsum</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;    scaling factor for u.GPS unc.    : </span><span class="si">%4.1lf</span><span class="s2"> </span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">H_inversion_info</span><span class="p">[</span><span class="s1">&#39;wu&#39;</span><span class="p">]</span> <span class="p">)</span>
+    <span class="n">fsum</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;    scaling factor for InSAR         : </span><span class="si">%4.1lf</span><span class="s2"> </span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">H_inversion_info</span><span class="p">[</span><span class="s1">&#39;wi&#39;</span><span class="p">]</span> <span class="p">)</span>
+    <span class="n">fsum</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;    constraints on InSAR corrections : </span><span class="si">%s</span><span class="s2"> </span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">H_inversion_info</span><span class="p">[</span><span class="s1">&#39;ci&#39;</span><span class="p">]</span> <span class="p">)</span>
+    <span class="n">fsum</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">&#39;#--------------------------------------------------------------------------</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)</span>
+    <span class="n">fsum</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;    inversion duration (s)           : </span><span class="si">%.1lf</span><span class="s2"> </span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">H_inversion_info</span><span class="p">[</span><span class="s1">&#39;time&#39;</span><span class="p">])</span>
+    <span class="n">fsum</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">&#39;#--------------------------------------------------------------------------</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)</span>
+    <span class="n">fsum</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">&#39;#--------------------------------------------------------------------------</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)</span>
+    <span class="n">fsum</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">&#39;#   Inversion results: </span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)</span>
+    <span class="n">fsum</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">&#39;#--------------------------------------------------------------------------</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)</span>
+    <span class="n">fsum</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;    Moment (N.m)                     : </span><span class="si">%8.2E</span><span class="s2"> </span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">M0</span><span class="p">)</span>
+    <span class="n">fsum</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;    Equivalent Mw                    : </span><span class="si">%8.2f</span><span class="s2"> </span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">magnitude</span><span class="p">)</span>
+    <span class="n">fsum</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;    slip max (unit of input gps file): </span><span class="si">%8.1f</span><span class="s2"> (</span><span class="si">%4.2f</span><span class="s2">,</span><span class="si">%4.2f</span><span class="s2">)</span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">MODEL</span><span class="p">[:,</span><span class="n">n_fields_geometry</span><span class="o">+</span><span class="mi">4</span><span class="p">]),</span><span class="n">lon_ls</span><span class="p">,</span><span class="n">lat_ls</span><span class="p">))</span>
+    <span class="n">fsum</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;    slip min (unit of input gps file): </span><span class="si">%8.1f</span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">np</span><span class="o">.</span><span class="n">min</span><span class="p">(</span><span class="n">MODEL</span><span class="p">[:,</span><span class="n">n_fields_geometry</span><span class="o">+</span><span class="mi">4</span><span class="p">]))</span>
+    <span class="n">fsum</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;    InSAR correction a*x+b*y+c       : </span><span class="si">%5.1f</span><span class="s2"> </span><span class="si">%5.1f</span><span class="s2"> </span><span class="si">%5.1f</span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">%</span>  <span class="p">(</span><span class="n">a</span><span class="p">,</span><span class="n">b</span><span class="p">,</span><span class="n">c</span><span class="p">)</span> <span class="p">)</span>
+    <span class="n">fsum</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">&#39;#--------------------------------------------------------------------------</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)</span>
+    <span class="n">fsum</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">&#39;#   Inversion statistics: </span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)</span>
+    <span class="n">fsum</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">&#39;#--------------------------------------------------------------------------</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)</span>
+    <span class="n">fsum</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;    rms h_gps (unit input gps file)  : </span><span class="si">%8.2f</span><span class="s2"> </span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">rms_obs</span><span class="p">)</span>
+    <span class="n">fsum</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;    rms up (unit of input gps file)  : </span><span class="si">%8.2f</span><span class="s2"> </span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">rms_obs_up</span><span class="p">)</span>
+    <span class="n">fsum</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;    rms InSAR                        : </span><span class="si">%8.2f</span><span class="s2"> </span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">rms_insar</span><span class="p">)</span>
+    <span class="n">fsum</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;    rms all                          : </span><span class="si">%8.2f</span><span class="s2"> </span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">rms_obs_all</span><span class="p">)</span>
+    <span class="n">fsum</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">&#39;#--------------------------------------------------------------------------</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)</span>
+    <span class="n">fsum</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;    wrms h_gps (unit input gps file) : </span><span class="si">%8.2f</span><span class="s2"> </span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">wrms_obs</span><span class="p">)</span>
+    <span class="n">fsum</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;    wrms up (unit of input gps file) : </span><span class="si">%8.2f</span><span class="s2"> </span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">wrms_obs_up</span><span class="p">)</span>
+    <span class="n">fsum</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;    wrms InSAR                       : </span><span class="si">%8.2f</span><span class="s2"> </span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">wrms_insar</span><span class="p">)</span>
+    <span class="n">fsum</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;    wrms all                         : </span><span class="si">%8.2f</span><span class="s2"> </span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">wrms_all</span><span class="p">)</span>
+    <span class="n">fsum</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">&#39;#--------------------------------------------------------------------------</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)</span>
+    <span class="n">fsum</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;    chi2 prefit gps horizontal       : </span><span class="si">%8.1f</span><span class="s2"> </span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">chi2_obs_prefit</span><span class="p">)</span>
+    <span class="n">fsum</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;    chi2 prefit gps vertical         : </span><span class="si">%8.1f</span><span class="s2"> </span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">chi2_obs_up_prefit</span><span class="p">)</span>
+    <span class="n">fsum</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;    chi2 prefit InSAR                : </span><span class="si">%8.1f</span><span class="s2"> </span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">chi2_insar_prefit</span><span class="p">)</span>
+    <span class="n">fsum</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;    chi2 prefit all  (only diagonal) : </span><span class="si">%8.1f</span><span class="s2"> </span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">chi2_prefit</span><span class="p">)</span>
+    <span class="n">fsum</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">&#39;#--------------------------------------------------------------------------</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)</span>
+    <span class="n">fsum</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;    chi2 postfit gps horizontal      : </span><span class="si">%8.1f</span><span class="s2"> </span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">chi2_obs</span><span class="p">)</span>
+    <span class="n">fsum</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;    chi2 postfit gps vertical        : </span><span class="si">%8.1f</span><span class="s2"> </span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">chi2_obs_up</span><span class="p">)</span>
+    <span class="n">fsum</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;    chi2 postfit InSAR               : </span><span class="si">%8.1f</span><span class="s2"> </span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">chi2_insar</span><span class="p">)</span>
+    <span class="n">fsum</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;    chi2 all obs (only diagonal)     : </span><span class="si">%8.1f</span><span class="s2"> </span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">chi2_obs_all</span><span class="p">)</span>
+    <span class="n">fsum</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">&#39;#--------------------------------------------------------------------------</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)</span>
+    <span class="n">fsum</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;    reduced chi2 hor. GPS            : </span><span class="si">%8.1f</span><span class="s2"> </span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">red_chi2_obs</span> <span class="p">)</span>
+    <span class="n">fsum</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;    reduced chi2 up   GPS            : </span><span class="si">%8.1f</span><span class="s2"> </span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">red_chi2_up</span> <span class="p">)</span>
+    <span class="n">fsum</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;    reduced chi2 InSAR               : </span><span class="si">%8.1f</span><span class="s2"> </span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">red_chi2_insar</span> <span class="p">)</span>
+    <span class="n">fsum</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;    reduced chi2 all obs             : </span><span class="si">%8.1f</span><span class="s2"> </span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">red_chi2_all</span> <span class="p">)</span>
+    <span class="n">fsum</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">&#39;#--------------------------------------------------------------------------</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)</span>
+    <span class="n">fsum</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;    variance reduction hor. GPS      : </span><span class="si">%8.1f</span><span class="s2"> </span><span class="si">%%</span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">redvar_obs</span><span class="p">)</span>
+    <span class="n">fsum</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;    variance reduction up   GPS      : </span><span class="si">%8.1f</span><span class="s2"> </span><span class="si">%%</span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">redvar_obs_up</span><span class="p">)</span>
+    <span class="n">fsum</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;    variance reduction InSAR         : </span><span class="si">%8.1f</span><span class="s2"> </span><span class="si">%%</span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">redvar_insar</span><span class="p">)</span>
+    <span class="n">fsum</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;    variance reduction all obs       : </span><span class="si">%8.1f</span><span class="s2"> </span><span class="si">%%</span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">redvar_all</span><span class="p">)</span>
+    <span class="n">fsum</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">&#39;#--------------------------------------------------------------------------</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)</span>
+    <span class="n">fsum</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;    bias east                        : </span><span class="si">%8.1f</span><span class="s2"> </span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">bias_east</span><span class="p">)</span>
+    <span class="n">fsum</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;    bias north                       : </span><span class="si">%8.1f</span><span class="s2"> </span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">bias_north</span><span class="p">)</span>
+    <span class="n">fsum</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;    bias up                          : </span><span class="si">%8.1f</span><span class="s2"> </span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">bias_up</span><span class="p">)</span>
+    <span class="n">fsum</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;    bias InSAR                       : </span><span class="si">%8.1f</span><span class="s2"> </span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">bias_insar</span><span class="p">)</span>
+    <span class="n">fsum</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">&#39;#--------------------------------------------------------------------------</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)</span>
+    <span class="n">fsum</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;    worst hor. GPS                   : </span><span class="si">%s</span><span class="s2"> </span><span class="si">%5.1f</span><span class="s2"> </span><span class="si">%5.1f</span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">%</span>  <span class="p">(</span><span class="n">worst_gps</span> <span class="p">,</span> <span class="n">wgps_east</span><span class="p">,</span> <span class="n">wgps_north</span><span class="p">)</span> <span class="p">)</span>
+    <span class="n">fsum</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;    worst up. GPS                    : </span><span class="si">%s</span><span class="s2"> </span><span class="si">%5.1f</span><span class="s2"> </span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">%</span>  <span class="p">(</span><span class="n">worst_gps_up</span> <span class="p">,</span> <span class="n">wgps_up</span><span class="p">)</span> <span class="p">)</span>
+    <span class="n">fsum</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;    worst InSAR                      : </span><span class="si">%5.1f</span><span class="s2"> at (</span><span class="si">%4.2f</span><span class="s2">,</span><span class="si">%4.2f</span><span class="s2">)</span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">%</span>  <span class="p">(</span><span class="n">worst_res_insar</span><span class="p">,</span><span class="n">worst_res_insar_lon</span><span class="p">,</span><span class="n">worst_res_insar_lat</span><span class="p">)</span> <span class="p">)</span>
+    <span class="n">fsum</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">&#39;#--------------------------------------------------------------------------</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)</span>
+    <span class="n">fsum</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+    
+        
+    <span class="c1"># print results on screen</span>
+    
+    <span class="n">f</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="n">fsumn</span><span class="p">,</span> <span class="s2">&quot;r&quot;</span><span class="p">)</span>
+    <span class="n">text</span> <span class="o">=</span> <span class="n">f</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">text</span><span class="p">)</span>
+    <span class="n">f</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+
+    <span class="c1"># slip direction file</span>
+    
+    <span class="kn">import</span> <span class="nn">pyacs.lib.coordinates</span> <span class="k">as</span> <span class="nn">C</span>
+    <span class="kn">import</span> <span class="nn">pyacs.lib</span>
+
+    <span class="n">MODEL</span><span class="p">[:,:</span><span class="n">n_fields_geometry</span><span class="p">]</span><span class="o">=</span><span class="n">GEOMETRY</span>
+    <span class="n">MODEL</span><span class="p">[:,</span><span class="n">n_fields_geometry</span><span class="p">]</span><span class="o">=</span><span class="n">RAKE</span> <span class="c1"># rake principal</span>
+    <span class="n">MODEL</span><span class="p">[:,</span><span class="n">n_fields_geometry</span><span class="o">+</span><span class="mi">1</span><span class="p">]</span><span class="o">=</span><span class="n">SLIP</span><span class="p">[:</span><span class="n">nfaults</span><span class="p">]</span> <span class="c1"># rake principal</span>
+    <span class="n">MODEL</span><span class="p">[:,</span><span class="n">n_fields_geometry</span><span class="o">+</span><span class="mi">2</span><span class="p">]</span><span class="o">=</span><span class="n">RAKE</span><span class="o">+</span><span class="mf">90.0</span> <span class="c1"># rake conjugate</span>
+
+    <span class="n">SLIP_DIR</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">MODEL</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span><span class="mi">8</span><span class="p">))</span>
+    
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">MODEL</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]):</span>
+        <span class="c1"># centroid</span>
+        <span class="n">SLIP_DIR</span><span class="p">[</span><span class="n">i</span><span class="p">,</span><span class="mi">0</span><span class="p">]</span><span class="o">=</span><span class="n">MODEL</span><span class="p">[</span><span class="n">i</span><span class="p">,</span><span class="mi">9</span><span class="p">]</span>
+        <span class="n">SLIP_DIR</span><span class="p">[</span><span class="n">i</span><span class="p">,</span><span class="mi">1</span><span class="p">]</span><span class="o">=</span><span class="n">MODEL</span><span class="p">[</span><span class="n">i</span><span class="p">,</span><span class="mi">10</span><span class="p">]</span>
+        <span class="c1"># strike &amp; dip</span>
+        <span class="n">strike</span><span class="o">=</span><span class="n">MODEL</span><span class="p">[</span><span class="n">i</span><span class="p">,</span><span class="mi">7</span><span class="p">]</span>
+        <span class="n">dip</span><span class="o">=</span><span class="n">MODEL</span><span class="p">[</span><span class="n">i</span><span class="p">,</span><span class="mi">8</span><span class="p">]</span>
+        <span class="c1"># rake_1 &amp; rake_2</span>
+        <span class="n">rake_1</span><span class="o">=</span><span class="n">MODEL</span><span class="p">[</span><span class="n">i</span><span class="p">,</span><span class="mi">22</span><span class="p">]</span>
+        <span class="n">rake_2</span><span class="o">=</span><span class="n">MODEL</span><span class="p">[</span><span class="n">i</span><span class="p">,</span><span class="mi">24</span><span class="p">]</span>
+        <span class="c1"># slip_1 &amp; slip_2</span>
+        <span class="n">slip_1</span><span class="o">=</span><span class="n">MODEL</span><span class="p">[</span><span class="n">i</span><span class="p">,</span><span class="mi">23</span><span class="p">]</span>
+        <span class="n">slip_2</span><span class="o">=</span><span class="n">MODEL</span><span class="p">[</span><span class="n">i</span><span class="p">,</span><span class="mi">25</span><span class="p">]</span>
+        <span class="c1"># get direction</span>
+        <span class="n">direction_1</span><span class="o">=</span><span class="n">pyacs</span><span class="o">.</span><span class="n">lib</span><span class="o">.</span><span class="n">faultslip</span><span class="o">.</span><span class="n">strike_dip_rake_to_dir</span><span class="p">(</span><span class="n">strike</span><span class="p">,</span> <span class="n">dip</span><span class="p">,</span> <span class="n">rake_1</span><span class="p">)</span>
+        <span class="p">(</span><span class="n">e1</span><span class="p">,</span><span class="n">n1</span><span class="p">)</span><span class="o">=</span><span class="n">C</span><span class="o">.</span><span class="n">azimuth_to_en</span><span class="p">(</span><span class="n">direction_1</span><span class="p">)</span>
+        <span class="n">direction_2</span><span class="o">=</span><span class="n">pyacs</span><span class="o">.</span><span class="n">lib</span><span class="o">.</span><span class="n">faultslip</span><span class="o">.</span><span class="n">strike_dip_rake_to_dir</span><span class="p">(</span><span class="n">strike</span><span class="p">,</span> <span class="n">dip</span><span class="p">,</span> <span class="n">rake_2</span><span class="p">)</span>
+        <span class="p">(</span><span class="n">e2</span><span class="p">,</span><span class="n">n2</span><span class="p">)</span><span class="o">=</span><span class="n">C</span><span class="o">.</span><span class="n">azimuth_to_en</span><span class="p">(</span><span class="n">direction_2</span><span class="p">)</span>
+        
+        <span class="n">e</span><span class="o">=</span><span class="n">e1</span><span class="o">*</span><span class="n">slip_1</span><span class="o">+</span><span class="n">e2</span><span class="o">*</span><span class="n">slip_2</span>
+        <span class="n">n</span><span class="o">=</span><span class="n">n1</span><span class="o">*</span><span class="n">slip_1</span><span class="o">+</span><span class="n">n2</span><span class="o">*</span><span class="n">slip_2</span>
+    
+        <span class="n">SLIP_DIR</span><span class="p">[</span><span class="n">i</span><span class="p">,</span><span class="mi">2</span><span class="p">]</span><span class="o">=</span><span class="n">e</span>
+        <span class="n">SLIP_DIR</span><span class="p">[</span><span class="n">i</span><span class="p">,</span><span class="mi">3</span><span class="p">]</span><span class="o">=</span><span class="n">n</span>
+        
+    <span class="n">SLIP_DIR</span><span class="p">[:,</span><span class="mi">7</span><span class="p">]</span><span class="o">=</span><span class="nb">list</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="n">MODEL</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]))</span>
+        
+    <span class="n">np</span><span class="o">.</span><span class="n">savetxt</span><span class="p">(</span><span class="n">fslip_dir</span><span class="p">,</span> <span class="n">SLIP_DIR</span><span class="p">,</span> <span class="n">fmt</span><span class="o">=</span><span class="s2">&quot;</span><span class="si">%10.5lf</span><span class="s2"> </span><span class="si">%10.5lf</span><span class="s2"> </span><span class="si">%10.3lf</span><span class="s2"> </span><span class="si">%10.3lf</span><span class="s2"> </span><span class="si">%10.3lf</span><span class="s2"> </span><span class="si">%10.3lf</span><span class="s2"> </span><span class="si">%10.3lf</span><span class="s2"> </span><span class="si">%0d</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">header</span><span class="o">=</span><span class="s1">&#39;# Slip direction projected onto the surface&#39;</span><span class="p">)</span>
+
+
+    <span class="c1"># save geometry</span>
+
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;-- Writing geometry file &quot;</span><span class="p">,</span><span class="n">f_geometry</span><span class="p">)</span>
+    
+    <span class="n">names</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;rdis_long&#39;</span><span class="p">,</span><span class="s1">&#39;rdis_lat&#39;</span><span class="p">,</span><span class="s1">&#39;rdis_depth&#39;</span><span class="p">,</span><span class="s1">&#39;rdis_length&#39;</span><span class="p">,</span><span class="s1">&#39;rdis_width&#39;</span><span class="p">,</span>\
+           <span class="s1">&#39;rdis_area&#39;</span><span class="p">,</span><span class="s1">&#39;ratio_rdis_tdis&#39;</span><span class="p">,</span><span class="s1">&#39;strike&#39;</span><span class="p">,</span><span class="s1">&#39;dip&#39;</span><span class="p">,</span>\
+           <span class="s1">&#39;centroid_long&#39;</span><span class="p">,</span><span class="s1">&#39;centroid_lat&#39;</span><span class="p">,</span><span class="s1">&#39;centroid_depth&#39;</span><span class="p">,</span>\
+           <span class="s1">&#39;tdis_long1&#39;</span><span class="p">,</span><span class="s1">&#39;tdis_lat1&#39;</span><span class="p">,</span><span class="s1">&#39;tdis_depth1&#39;</span><span class="p">,</span>\
+           <span class="s1">&#39;tdis_long2&#39;</span><span class="p">,</span><span class="s1">&#39;tdis_lat2&#39;</span><span class="p">,</span><span class="s1">&#39;tdis_depth2&#39;</span><span class="p">,</span>\
+           <span class="s1">&#39;tdis_long3&#39;</span><span class="p">,</span><span class="s1">&#39;tdis_lat3&#39;</span><span class="p">,</span><span class="s1">&#39;tdis_depth3&#39;</span><span class="p">,</span><span class="s1">&#39;tdis_area&#39;</span><span class="p">]</span>
+
+    <span class="n">Hdtype</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;names&#39;</span><span class="p">:[</span><span class="s1">&#39;    rdis_long&#39;</span><span class="p">,</span><span class="s1">&#39;   rdis_lat&#39;</span><span class="p">,</span><span class="s1">&#39;rdis_depth&#39;</span><span class="p">,</span>\
+                    <span class="s1">&#39;rdis_length&#39;</span><span class="p">,</span><span class="s1">&#39;rdis_width&#39;</span><span class="p">,</span><span class="s1">&#39; rdis_area&#39;</span><span class="p">,</span><span class="s1">&#39;ratio_rdis_tdis&#39;</span><span class="p">,</span>\
+                    <span class="s1">&#39;   strike&#39;</span><span class="p">,</span><span class="s1">&#39;       dip&#39;</span><span class="p">,</span>\
+                    <span class="s1">&#39;centroid_long&#39;</span><span class="p">,</span><span class="s1">&#39;centroid_lat&#39;</span><span class="p">,</span><span class="s1">&#39;centroid_depth&#39;</span><span class="p">,</span>\
+                    <span class="s1">&#39;tdis_long1&#39;</span><span class="p">,</span> <span class="s1">&#39; tdis_lat1&#39;</span><span class="p">,</span><span class="s1">&#39;tdis_depth1&#39;</span><span class="p">,</span> \
+                    <span class="s1">&#39;tdis_long2&#39;</span><span class="p">,</span><span class="s1">&#39; tdis_lat2&#39;</span><span class="p">,</span><span class="s1">&#39;tdis_depth2&#39;</span><span class="p">,</span> \
+                    <span class="s1">&#39;tdis_long3&#39;</span><span class="p">,</span><span class="s1">&#39; tdis_lat3&#39;</span><span class="p">,</span><span class="s1">&#39;tdis_depth3&#39;</span><span class="p">,</span> \
+                    <span class="s1">&#39; tdis_area&#39;</span><span class="p">],</span>\
+             <span class="s1">&#39;formats&#39;</span><span class="p">:[</span><span class="s1">&#39;f&#39;</span><span class="p">,</span><span class="s1">&#39;f&#39;</span><span class="p">,</span><span class="s1">&#39;f&#39;</span><span class="p">,</span><span class="s1">&#39;f&#39;</span><span class="p">,</span><span class="s1">&#39;f&#39;</span><span class="p">,</span><span class="s1">&#39;f&#39;</span><span class="p">,</span><span class="s1">&#39;f&#39;</span><span class="p">,</span><span class="s1">&#39;f&#39;</span><span class="p">,</span><span class="s1">&#39;f&#39;</span><span class="p">,</span><span class="s1">&#39;f&#39;</span><span class="p">,</span><span class="s1">&#39;f&#39;</span><span class="p">,</span><span class="s1">&#39;f&#39;</span><span class="p">,</span><span class="s1">&#39;f&#39;</span><span class="p">,</span><span class="s1">&#39;f&#39;</span><span class="p">,</span><span class="s1">&#39;f&#39;</span><span class="p">,</span><span class="s1">&#39;f&#39;</span><span class="p">,</span><span class="s1">&#39;f&#39;</span><span class="p">,</span><span class="s1">&#39;f&#39;</span><span class="p">,</span><span class="s1">&#39;f&#39;</span><span class="p">,</span><span class="s1">&#39;f&#39;</span><span class="p">,</span><span class="s1">&#39;f&#39;</span><span class="p">,</span><span class="s1">&#39;f&#39;</span><span class="p">]}</span>
+   
+    
+    <span class="n">SGEOMETRY</span><span class="o">=</span><span class="n">lib_inversion</span><span class="o">.</span><span class="n">numpy_array_2_numpy_recarray</span><span class="p">(</span><span class="n">GEOMETRY</span><span class="p">,</span><span class="n">names</span><span class="p">)</span>
+    
+    <span class="n">GEOMETRY_TXT</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">GEOMETRY</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span><span class="n">GEOMETRY</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">+</span><span class="mi">1</span><span class="p">))</span>
+    <span class="n">GEOMETRY_TXT</span><span class="p">[:,</span><span class="mi">0</span><span class="p">]</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">GEOMETRY</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+    <span class="n">GEOMETRY_TXT</span><span class="p">[:,</span><span class="mi">1</span><span class="p">:]</span><span class="o">=</span><span class="n">GEOMETRY</span>
+    <span class="n">header_cols</span><span class="o">=</span><span class="s1">&#39; &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">Hdtype</span><span class="p">[</span><span class="s1">&#39;names&#39;</span><span class="p">])</span>
+    <span class="n">format_header</span><span class="o">=</span><span class="s1">&#39;</span><span class="si">%04d</span><span class="s1"> </span><span class="si">%10.5lf</span><span class="s1"> </span><span class="si">%10.5lf</span><span class="s1">      </span><span class="si">%6.2lf</span><span class="s1"> </span><span class="se">\</span>
+<span class="s1">         </span><span class="si">%6.2lf</span><span class="s1">     </span><span class="si">%6.2lf</span><span class="s1">    </span><span class="si">%6.2lf</span><span class="s1">          </span><span class="si">%6.2lf</span><span class="se">\</span>
+<span class="s1">        </span><span class="si">%6.2lf</span><span class="s1"> </span><span class="si">%10.2lf</span><span class="s1"> </span><span class="se">\</span>
+<span class="s1">       </span><span class="si">%10.5lf</span><span class="s1">   </span><span class="si">%10.5lf</span><span class="s1">         </span><span class="si">%6.2lf</span><span class="s1"> </span><span class="se">\</span>
+<span class="s1">    </span><span class="si">%10.5lf</span><span class="s1"> </span><span class="si">%10.5lf</span><span class="s1">      </span><span class="si">%6.2lf</span><span class="s1"> </span><span class="se">\</span>
+<span class="s1">    </span><span class="si">%10.5lf</span><span class="s1"> </span><span class="si">%10.5lf</span><span class="s1">      </span><span class="si">%6.2lf</span><span class="s1"> </span><span class="se">\</span>
+<span class="s1">    </span><span class="si">%10.5lf</span><span class="s1"> </span><span class="si">%10.5lf</span><span class="s1">      </span><span class="si">%6.2lf</span><span class="s1"> </span><span class="se">\</span>
+<span class="s1">       </span><span class="si">%6.2lf</span><span class="s1"> &#39;</span>
+    
+    <span class="n">np</span><span class="o">.</span><span class="n">savetxt</span><span class="p">(</span><span class="n">f_geometry</span><span class="p">,</span> <span class="n">GEOMETRY_TXT</span><span class="p">,</span> <span class="n">fmt</span><span class="o">=</span><span class="n">format_header</span><span class="p">,</span> <span class="n">header</span><span class="o">=</span><span class="n">header_cols</span><span class="p">)</span>
+
+    <span class="c1"># save obs</span>
+
+    <span class="n">save_np_array_with_string_2_psvelo_format</span><span class="p">(</span><span class="n">OBS</span><span class="p">,</span> <span class="n">NAME_OBS</span><span class="p">,</span> <span class="s1">&#39;</span><span class="si">%10.5lf</span><span class="s1">  </span><span class="si">%10.5lf</span><span class="s1"> </span><span class="si">%10.5lf</span><span class="s1">  </span><span class="si">%10.5lf</span><span class="s1"> </span><span class="si">%3.1lf</span><span class="s1"> </span><span class="si">%3.1lf</span><span class="s1"> </span><span class="si">%3.1lf</span><span class="s1"> </span><span class="si">%s</span><span class="s1">&#39;</span><span class="p">,</span> <span class="n">f_obs</span><span class="p">)</span>
+
+    <span class="c1"># save obs up</span>
+    <span class="k">if</span> <span class="n">ngps_up</span><span class="o">&gt;</span><span class="mi">0</span><span class="p">:</span>
+        
+        <span class="n">MOBSUP</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span> <span class="p">(</span><span class="n">OBS_UP</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span><span class="mi">7</span><span class="p">)</span> <span class="p">)</span>
+        <span class="n">MOBSUP</span><span class="p">[:,</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="n">OBS_UP</span><span class="p">[:,</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">MOBSUP</span><span class="p">[:,</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">OBS_UP</span><span class="p">[:,</span><span class="mi">1</span><span class="p">]</span>
+        <span class="n">MOBSUP</span><span class="p">[:,</span><span class="mi">3</span><span class="p">]</span> <span class="o">=</span> <span class="n">OBS_UP</span><span class="p">[:,</span><span class="mi">2</span><span class="p">]</span>
+        <span class="n">MOBSUP</span><span class="p">[:,</span><span class="mi">5</span><span class="p">]</span> <span class="o">=</span> <span class="n">OBS_UP</span><span class="p">[:,</span><span class="mi">3</span><span class="p">]</span>
+        
+        <span class="n">save_np_array_with_string_2_psvelo_format</span><span class="p">(</span><span class="n">MOBSUP</span><span class="p">,</span> <span class="n">NAME_OBS_UP</span><span class="p">,</span> <span class="s1">&#39;</span><span class="si">%10.5lf</span><span class="s1">  </span><span class="si">%10.5lf</span><span class="s1"> </span><span class="si">%10.5lf</span><span class="s1">  </span><span class="si">%10.5lf</span><span class="s1"> </span><span class="si">%3.1lf</span><span class="s1"> </span><span class="si">%3.1lf</span><span class="s1"> </span><span class="si">%3.1lf</span><span class="s1"> </span><span class="si">%s</span><span class="s1">&#39;</span><span class="p">,</span> <span class="n">f_obsup</span><span class="p">)</span></div>
+</pre></div>
+
+           </div>
+           
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        
+        &copy; Copyright 2016, Jean-Mathieu Nocquet IRD/Geoazur
+
+    </p>
+  </div>
+    
+    
+    
+    Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

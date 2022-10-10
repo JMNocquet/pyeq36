@@ -57,7 +57,10 @@ def print_summary( model ):
     fsum.write('#--------------------------------------------------------------------------\n')
     fsum.write('# Inversion speed and memory usage: \n')
     fsum.write('#--------------------------------------------------------------------------\n')
-    fsum.write("    number of parameters estimated   : %d ( %d faults %d steps) \n" % (model.nparameters , model.nfaults, model.nstep ))
+    if model.geometry_type =='TDV':
+        fsum.write("    number of parameters estimated   : %d ( %d vertices %d steps) \n" % (model.nparameters , model.nvertices, model.nstep ))
+    else:
+        fsum.write("    number of parameters estimated   : %d ( %d faults %d steps) \n" % (model.nparameters, model.nfaults, model.nstep))
     fsum.write("    run start date & time            : %s \n" % time.strftime("%Y/%m/%d  %H:%M:%S", time.localtime(model.start_time) ) )
     end_time = time.time()
     fsum.write("    run end   date & time            : %s \n" % time.strftime("%Y/%m/%d  %H:%M:%S", time.localtime( end_time ) ) )
@@ -85,7 +88,10 @@ def print_summary( model ):
     fsum.write('#--------------------------------------------------------------------------\n')
     fsum.write('# Geometry information: \n')
     fsum.write('#--------------------------------------------------------------------------\n')
+    fsum.write("    geometry type                    : %s \n" % model.geometry_type)
     fsum.write("    number of subfaults              : %d \n" % model.nfaults)
+    if model.geometry_type in ['TDE','TDV']:
+        fsum.write("    number of vertices               : %d \n" % model.nvertices)
 
     fsum.write('#--------------------------------------------------------------------------\n')
     fsum.write('# Regularization: \n')
@@ -242,7 +248,7 @@ def print_summary( model ):
     fsum.write("    reduced chi2 obs 3D              : %8.1f\n" %  model.reduced_chi2_all )
     
     fsum.write("    number of observations           : %8d\n" %  model.n_obs_inversion )
-    fsum.write("    worst site rms ENU (mm)          : %s %8.2lf %8.2lf %8.2lf\n" % ( model.worst_site , model.rms_worst[1] , model.rms_worst[0] , model.rms_worst[2] ) )
+    fsum.write("    worst site rms NEU (mm)          : %s %8.2lf %8.2lf %8.2lf\n" % ( model.worst_site , model.rms_worst[1] , model.rms_worst[0] , model.rms_worst[2] ) )
 
     fsum.close()
     

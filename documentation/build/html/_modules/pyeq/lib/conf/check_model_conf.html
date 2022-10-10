@@ -1,0 +1,328 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>pyeq.lib.conf.check_model_conf &mdash; pyeq 0.51.8 documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="../../../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../../../_static/pygments.css" type="text/css" />
+
+  
+  
+  
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="../../../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../../../../" src="../../../../_static/documentation_options.js"></script>
+        <script src="../../../../_static/jquery.js"></script>
+        <script src="../../../../_static/underscore.js"></script>
+        <script src="../../../../_static/doctools.js"></script>
+        <script src="../../../../_static/language_data.js"></script>
+    
+    <script type="text/javascript" src="../../../../_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../../../../index.html" class="icon icon-home" alt="Documentation Home"> pyeq
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                0.51.8
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../foreword.html">PYEQ: full time-dependent slip inversion</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../behaviour.html">Options controlling the overall behaviour</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../tutorial_static_inversion.html">Tutorial static inversion</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../dates.html">dates</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../roxane.html">Roxane’s notes on PYEQ</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../modules.html">for developpers</a></li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../../index.html">pyeq</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../../../index.html" class="icon icon-home"></a> &raquo;</li>
+        
+          <li><a href="../../../index.html">Module code</a> &raquo;</li>
+        
+      <li>pyeq.lib.conf.check_model_conf</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>Source code for pyeq.lib.conf.check_model_conf</h1><div class="highlight"><pre>
+<div class="viewcode-block" id="check_model_conf"><a class="viewcode-back" href="../../../../pyeq.lib.conf.check_model_conf.html#pyeq.lib.conf.check_model_conf.check_model_conf">[docs]</a><span></span><span class="k">def</span> <span class="nf">check_model_conf</span><span class="p">(</span> <span class="n">model</span> <span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Check all model attributes.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    
+    <span class="kn">import</span> <span class="nn">pyacs.lib.utils</span>
+    <span class="kn">import</span> <span class="nn">str2bool</span>
+    <span class="kn">from</span> <span class="nn">colors</span> <span class="kn">import</span> <span class="n">red</span>
+    <span class="kn">import</span> <span class="nn">sys</span>
+    <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+    
+    <span class="c1">###############################################################################</span>
+    <span class="c1"># BEHAVIOUR CONTROL </span>
+    <span class="c1">###############################################################################</span>
+    
+    <span class="c1"># VERBOSE</span>
+    <span class="n">model</span><span class="o">.</span><span class="n">verbose</span> <span class="o">=</span> <span class="n">str2bool</span><span class="o">.</span><span class="n">str2bool</span><span class="p">(</span> <span class="n">model</span><span class="o">.</span><span class="n">verbose</span> <span class="p">)</span>
+    <span class="c1"># DEBUG</span>
+    <span class="n">model</span><span class="o">.</span><span class="n">debug</span> <span class="o">=</span> <span class="n">str2bool</span><span class="o">.</span><span class="n">str2bool</span><span class="p">(</span> <span class="n">model</span><span class="o">.</span><span class="n">debug</span> <span class="p">)</span>
+    <span class="c1"># NO_OPT</span>
+    <span class="n">model</span><span class="o">.</span><span class="n">no_opt</span> <span class="o">=</span> <span class="n">str2bool</span><span class="o">.</span><span class="n">str2bool</span><span class="p">(</span> <span class="n">model</span><span class="o">.</span><span class="n">no_opt</span> <span class="p">)</span>
+    <span class="c1"># SAVE</span>
+    <span class="n">model</span><span class="o">.</span><span class="n">save</span> <span class="o">=</span> <span class="n">str2bool</span><span class="o">.</span><span class="n">str2bool</span><span class="p">(</span> <span class="n">model</span><span class="o">.</span><span class="n">save</span><span class="p">)</span>
+    <span class="c1"># PLOT</span>
+    <span class="n">model</span><span class="o">.</span><span class="n">plot</span> <span class="o">=</span> <span class="n">str2bool</span><span class="o">.</span><span class="n">str2bool</span><span class="p">(</span> <span class="n">model</span><span class="o">.</span><span class="n">plot</span><span class="p">)</span>
+    <span class="c1"># TAR</span>
+    <span class="n">model</span><span class="o">.</span><span class="n">tar</span> <span class="o">=</span> <span class="n">str2bool</span><span class="o">.</span><span class="n">str2bool</span><span class="p">(</span> <span class="n">model</span><span class="o">.</span><span class="n">tar</span><span class="p">)</span>
+    <span class="c1"># PRINT RESULTS</span>
+    <span class="n">model</span><span class="o">.</span><span class="n">print_result</span> <span class="o">=</span> <span class="n">str2bool</span><span class="o">.</span><span class="n">str2bool</span><span class="p">(</span> <span class="n">model</span><span class="o">.</span><span class="n">print_result</span><span class="p">)</span>
+
+    <span class="c1">###############################################################################</span>
+    <span class="c1"># GEOMETRY</span>
+    <span class="c1">###############################################################################</span>
+    <span class="k">if</span> <span class="n">model</span><span class="o">.</span><span class="n">geometry_range_lon</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">model</span><span class="o">.</span><span class="n">geometry_range_lon</span> <span class="o">=</span> <span class="n">range_lon</span> <span class="o">=</span> <span class="n">pyacs</span><span class="o">.</span><span class="n">lib</span><span class="o">.</span><span class="n">utils</span><span class="o">.</span><span class="n">str2list_float</span><span class="p">(</span> <span class="n">model</span><span class="o">.</span><span class="n">geometry_range_lon</span> <span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">model</span><span class="o">.</span><span class="n">geometry_range_lat</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">model</span><span class="o">.</span><span class="n">geometry_range_lat</span> <span class="o">=</span> <span class="n">range_lat</span> <span class="o">=</span> <span class="n">pyacs</span><span class="o">.</span><span class="n">lib</span><span class="o">.</span><span class="n">utils</span><span class="o">.</span><span class="n">str2list_float</span><span class="p">(</span> <span class="n">model</span><span class="o">.</span><span class="n">geometry_range_lat</span> <span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">model</span><span class="o">.</span><span class="n">geometry_range_depth</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">model</span><span class="o">.</span><span class="n">geometry_range_depth</span> <span class="o">=</span> <span class="n">range_lat</span> <span class="o">=</span> <span class="n">pyacs</span><span class="o">.</span><span class="n">lib</span><span class="o">.</span><span class="n">utils</span><span class="o">.</span><span class="n">str2list_float</span><span class="p">(</span> <span class="n">model</span><span class="o">.</span><span class="n">geometry_range_depth</span> <span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">model</span><span class="o">.</span><span class="n">geometry_remove_idx</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">model</span><span class="o">.</span><span class="n">geometry_remove_idx</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span> <span class="n">pyacs</span><span class="o">.</span><span class="n">lib</span><span class="o">.</span><span class="n">utils</span><span class="o">.</span><span class="n">str2list_float</span><span class="p">(</span> <span class="n">model</span><span class="o">.</span><span class="n">geometry_remove_idx</span> <span class="p">)</span> <span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">int</span> <span class="p">)</span> 
+    
+    <span class="c1">###############################################################################</span>
+    <span class="c1"># DATA</span>
+    <span class="c1">###############################################################################</span>
+    <span class="c1"># UP</span>
+    <span class="k">if</span> <span class="n">model</span><span class="o">.</span><span class="n">up</span> <span class="o">==</span> <span class="s1">&#39;YES&#39;</span><span class="p">:</span><span class="n">model</span><span class="o">.</span><span class="n">up</span> <span class="o">=</span> <span class="kc">True</span>
+    <span class="k">if</span> <span class="n">model</span><span class="o">.</span><span class="n">up</span> <span class="o">==</span> <span class="s1">&#39;NO&#39;</span> <span class="p">:</span><span class="n">model</span><span class="o">.</span><span class="n">up</span> <span class="o">=</span> <span class="kc">False</span>
+    
+    <span class="c1"># OFFSET</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">model</span><span class="o">.</span><span class="n">offset</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span> <span class="n">model</span><span class="o">.</span><span class="n">offset</span> <span class="p">)</span>
+    <span class="k">except</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;[ERROR]: offset must be float.&quot;</span><span class="p">)</span>
+        <span class="kn">import</span> <span class="nn">sys</span>
+        <span class="n">sys</span><span class="o">.</span><span class="n">exit</span><span class="p">()</span>
+
+    <span class="c1"># INTERSEISMIC</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">model</span><span class="o">.</span><span class="n">interseismic</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span> <span class="n">model</span><span class="o">.</span><span class="n">interseismic</span> <span class="p">)</span>
+    <span class="k">except</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;[ERROR]: interseismic must be float.&quot;</span><span class="p">)</span>
+        <span class="kn">import</span> <span class="nn">sys</span>
+        <span class="n">sys</span><span class="o">.</span><span class="n">exit</span><span class="p">()</span>
+
+    <span class="c1"># EXCLUDE_GPS</span>
+    <span class="k">if</span> <span class="n">model</span><span class="o">.</span><span class="n">lexclude_gps</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">if</span> <span class="nb">type</span><span class="p">(</span> <span class="n">model</span><span class="o">.</span><span class="n">lexclude_gps</span> <span class="p">)</span> <span class="o">!=</span> <span class="nb">list</span><span class="p">:</span>
+            <span class="n">model</span><span class="o">.</span><span class="n">lexclude_gps</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">lexclude_gps</span><span class="o">.</span><span class="n">split</span><span class="p">()</span>
+    
+    <span class="c1"># CONVERT TO FLOAT</span>
+    <span class="n">lopt_float</span> <span class="o">=</span> <span class="p">[</span> <span class="s1">&#39;s_up&#39;</span><span class="p">,</span><span class="s1">&#39;s_h&#39;</span><span class="p">,</span><span class="s1">&#39;dc&#39;</span><span class="p">,</span><span class="s1">&#39;tau&#39;</span><span class="p">,</span><span class="s1">&#39;rake_constraint&#39;</span> <span class="p">]</span>
+    
+    <span class="k">for</span> <span class="n">option</span> <span class="ow">in</span> <span class="n">lopt_float</span><span class="p">:</span>
+        <span class="n">model</span><span class="o">.</span><span class="vm">__dict__</span><span class="p">[</span> <span class="n">option</span> <span class="p">]</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span> <span class="n">model</span><span class="o">.</span><span class="vm">__dict__</span><span class="p">[</span> <span class="n">option</span> <span class="p">]</span> <span class="p">)</span>
+
+    <span class="c1">###############################################################################</span>
+    <span class="c1"># ALGORITHM</span>
+    <span class="c1">###############################################################################</span>
+    <span class="c1"># CONVERT TO INT</span>
+    <span class="n">lopt_int</span> <span class="o">=</span> <span class="p">[</span> <span class="s1">&#39;build&#39;</span> <span class="p">]</span>
+    
+    <span class="k">for</span> <span class="n">option</span> <span class="ow">in</span> <span class="n">lopt_int</span><span class="p">:</span>
+        <span class="n">model</span><span class="o">.</span><span class="vm">__dict__</span><span class="p">[</span> <span class="n">option</span> <span class="p">]</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span> <span class="n">model</span><span class="o">.</span><span class="vm">__dict__</span><span class="p">[</span> <span class="n">option</span> <span class="p">]</span> <span class="p">)</span>
+
+    <span class="c1">###############################################################################</span>
+    <span class="c1"># MANDATORY ARGUMENTS</span>
+    <span class="c1">###############################################################################</span>
+
+    <span class="n">mandatory_missing</span> <span class="o">=</span> <span class="kc">False</span>
+
+    <span class="n">lmandatory_options</span> <span class="o">=</span> <span class="p">[</span> \
+                          <span class="c1"># INPUT</span>
+                          <span class="s1">&#39;input_npz&#39;</span> <span class="p">,</span>\
+                          <span class="c1"># DATA</span>
+                           <span class="s1">&#39;dir_ts&#39;</span> <span class="p">,</span><span class="s1">&#39;up&#39;</span><span class="p">,</span><span class="s1">&#39;s_up&#39;</span><span class="p">,</span><span class="s1">&#39;s_h&#39;</span><span class="p">,</span><span class="s1">&#39;offset&#39;</span><span class="p">,</span>\
+                          <span class="c1"># REGULARIZATION </span>
+                           <span class="s1">&#39;dc&#39;</span><span class="p">,</span><span class="s1">&#39;sigma&#39;</span><span class="p">,</span><span class="s1">&#39;cm_type&#39;</span><span class="p">,</span><span class="s1">&#39;cm_norm&#39;</span><span class="p">,</span><span class="s1">&#39;tau&#39;</span><span class="p">,</span><span class="s1">&#39;m0&#39;</span><span class="p">,</span>\
+                          <span class="c1"># RAKE</span>
+                          <span class="s1">&#39;rake_type&#39;</span><span class="p">,</span><span class="s1">&#39;rake_value&#39;</span><span class="p">,</span>\
+                          <span class="c1"># DATES</span>
+                          <span class="s1">&#39;dates&#39;</span><span class="p">,</span><span class="s1">&#39;rounding&#39;</span><span class="p">,</span>\
+                          <span class="c1">#ALGO</span>
+                          <span class="s1">&#39;nnls&#39;</span><span class="p">,</span><span class="s1">&#39;build&#39;</span><span class="p">,</span>\
+                          <span class="c1"># GENERAL</span>
+                          <span class="s1">&#39;verbose&#39;</span><span class="p">,</span><span class="s1">&#39;debug&#39;</span><span class="p">,</span><span class="s1">&#39;no_opt&#39;</span><span class="p">,</span><span class="s1">&#39;save&#39;</span>
+                           <span class="p">]</span>
+
+    <span class="k">for</span> <span class="n">option</span> <span class="ow">in</span> <span class="n">lmandatory_options</span><span class="p">:</span>
+        <span class="n">option_value</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span>  <span class="n">model</span> <span class="p">,</span> <span class="n">option</span> <span class="p">)</span>
+        <span class="k">if</span> <span class="n">option_value</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span> <span class="n">red</span><span class="p">(</span><span class="s2">&quot;[PYEQ ERROR] option not understood or missing: </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">option</span> <span class="p">)</span> <span class="p">)</span>
+            <span class="n">mandatory_missing</span> <span class="o">=</span> <span class="kc">True</span>
+    
+    <span class="k">if</span> <span class="n">mandatory_missing</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="n">red</span><span class="p">(</span><span class="s2">&quot;[PYEQ ERROR]: STOP.&quot;</span><span class="p">))</span>
+        <span class="n">sys</span><span class="o">.</span><span class="n">exit</span><span class="p">()</span>
+
+    <span class="k">return</span> <span class="n">model</span></div>
+</pre></div>
+
+           </div>
+           
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        
+        &copy; Copyright 2016, Jean-Mathieu Nocquet IRD/Geoazur
+
+    </p>
+  </div>
+    
+    
+    
+    Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

@@ -1,0 +1,948 @@
+\documentclass{article}
+\usepackage[utf8]{inputenc}
+
+\title{Notes sur PYACS kinamtics}
+\author{Jean-Mathieu Nocquet}
+\date{June 2019 - Update August 2019}
+
+\usepackage{natbib}
+\usepackage{graphicx}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{mathdots}
+\usepackage{program}
+
+\begin{document}
+
+\maketitle
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Introduction}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Model setting}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+In the following we will note for any matrix $A^2 = A^T A$
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{Notation}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{equation}
+\begin{array}{ccl}
+    m   &: & \text{vector of model parameters}\\
+    m_0   &: & \text{vector of prior model parameters}\\
+    N_m &: &\text{length of the vector } m\\
+    d   &: & \text{vector of observations}\\
+    N_d &: & \text{length of observation vector}\\
+    n_m &: & \text{number of subfaults}\\
+    g &: & \text{model matrix }, g \hspace{3pt}m=d\\
+    n_t &: & \text{number of observation dates}\\
+    t_k &: & k^{th} \text{date of observation}\\
+    d_k &: & \text{observation vector at date }t_k\\
+    T_k &: & k^{th} \text{ date of model slip}\\
+    A^2 &: & \text{for any matrix }A, A^2=A^T A\\
+    C_d &: & \text{data covariance matrix}\\
+    C_m &: & \text{model covariance matrix}\\
+    C_d^{-1/2}& :  &: (C_d^{-1/2})^T C_d^{-1/2} = C_d^{-1}  \\
+    C_m^{-1/2}& :  &: (C_m^{-1/2})^T C_m^{-1/2} = C_m^{-1}  \\
+    G   & :  &: C_d^{-1/2}g  \\
+    D   & :  &: C_d^{-1/2}D  \\
+
+%
+%    & \text{}\\
+%    & \text{}\\
+%    & \text{}\\
+%    & \text{}\\
+%    ns & \text{ : number of subfaults}\\
+%    q & \text{ : number of model time steps}\\
+%    r & = ns \times q \text{ : number of model parameters}\\
+\end{array}
+\end{equation}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{Static problem and notations}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+The forward problem linearly relates slip along the fault to the surface displacement through matrix $g$. Noting $m$ the vector of slip along $N_m$ sub-faults, and $N_d$ displacement observations in vector $d$, we have:
+
+\begin{equation}
+g \hspace{3pt} m = d
+\label{eq:linear_obs_sys}
+\end{equation}
+
+In the following, I will refer equation (\ref{eq:linear_obs_sys}) as the linear observation system. Equation (\ref{eq:linear_obs_sys}) is solved using least-squares by minimizing the likehood function:
+
+\begin{equation}
+2L(m) =(g \hspace{3pt} m-d)^{T}C_{d}^{-1}(g \hspace{3pt} m-d)
+\end{equation}
+
+where $C_d$ is the data covariance matrix. However, most often, $N_m \gt N_d$ and we need to add regularization constraints. In the following, I choose a regularization constraint in the form:
+
+\begin{equation}
+(m-m_{0})^{T}C_{m}^{-1}(m-m_{0})
+\end{equation}
+
+where $C_m$ is a model covariance matrix including correlation of slip between subfaults and $m_0$ is an a priori model. With this choice, we solve the problem by minimizing:
+
+\begin{equation}
+\begin{array}{lclll}
+2S(m) & = & & (g \hspace{3pt} m-d)^{T}C_{d}^{-1}(g \hspace{3pt} m-d) \\ [.2cm]
+           &    & +  & (m-m_{0})^{T}C_{m}^{-1}(m-m_{0}) \label{eq:Sm}
+\end{array}
+\end{equation}
+
+I define the square roots $C_{d}^{-1/2}$ and $C_{m}^{-1/2}$ so that:
+
+\begin{equation}
+\left(C_{d}^{-1/2}\right)^{T}C_{d}^{-1/2}=C_{d}^{-1}
+\end{equation}
+
+\begin{equation}
+\left(C_{m}^{-1/2}\right)^{T}C_{m}^{-1/2}=C_{m}^{-1}
+\end{equation}
+
+Inserting $C_{d}^{-1/2}$ and $C_{m}^{-1/2}$ into equation (\ref{eq:Sm}), we have:
+
+\begin{equation}
+\begin{array}{lcl}
+2S(m) & = & (g \hspace{3pt} m-d)^{T}C_{d}^{-1}(g \hspace{3pt} m-d)+(m-m_{0})^{T}C_{m}^{-1}(m-m_{0})\\[.2cm]
+           & = & (C_{d}^{-1/2}g \hspace{3pt} m-C_{d}^{-1/2}d)^{T}(C_{d}^{-1/2}g \hspace{3pt} m-C_{d}^{-1/2}d)\\[.2cm]
+           &    & +(C_{m}^{-1/2}m-C_{m}^{-1/2}m_{0})^{T}(C_{m}^{-1/2}m-C_{m}^{-1/2}m_{0})\\
+\end{array}
+\end{equation}
+
+Defining $G=C_{d}^{-1/2}g$ and $D=C_{d}^{-1/2}d$, this equation writes:
+
+\begin{equation}
+\begin{array}{ccc}
+2S(m) =(G \hspace{3pt} m-D)^{T}(G \hspace{3pt} m-D)\\
+ & +(C_{m}^{-1/2}m-C_{m}^{-1/2}m_{0})^{T}(C_{m}^{-1/2}m-C_{m}^{-1/2}m_{0})
+\end{array}
+\end{equation}
+
+The associated linear system to be solved is:
+
+\begin{equation}
+\left[\begin{array}{cc}
+G\\
+C_{m}^{-1/2}
+\end{array}\right]
+%
+m
+=
+\left[\begin{array}{c}
+D\\
+C_{m}^{-1/2}m_{0}
+\end{array}\right]
+\label{reduced_linear_system}
+\end{equation}
+
+The normal system associated with this linear system is:
+
+\begin{equation}
+\left[\begin{array}{c}
+G^T G + C_{m}^{-1}
+\end{array}\right]
+m
+=
+\left[\begin{array}{c}
+D + m_{0}^{T}C_{m}
+\end{array}\right]
+\label{eq:normal_system_static}
+\end{equation}
+The solution 
+This can be solved with NNLS.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{From static to dynamic case}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+I now note $d=[d_1, d_2, \cdots, d_k, \cdots, d_{n_t}]$, the vector of displacement time series with respect to the first observation, that is at $t_0=0$, $d_0=0$. For now, I assume that there is no missing data, so that all vectors $d_k$ have the same length. Equations for the case of missing data will be derived in sections XX and YY. I note $\Delta m = [\Delta m_1, \Delta m_2, \cdots , \Delta m_k, \cdots, \Delta m_{n_t}]$ where $\Delta m_k$ is the incremental slip vector corresponding to observation between time $t_{k-1}$ and $t_k$. The displacement at date $t_k$ is the sum of all incremental slips before $t_k$ multiplied by $g$:
+
+\begin{equation}
+\left[
+\begin{array}{ccccccc}
+g & g & \cdots & g & 0 & \cdots & 0
+\end{array}
+\right]
+ \Delta m = d_k
+\end{equation}
+
+Further assuming that the data covariance $C_d$ remain is the same at all dates $t_k$, 
+
+From equation (\ref{reduced_linear_system}), the associated linear system for observation becomes:
+
+\begin{equation}
+\left[
+\begin{array}{ccccccc}
+G & 0  & \cdots & 0 & \cdots & 0 \\
+G & G  & \cdots & 0 & \cdots & 0 \\
+\vdots & \vdots  & \ddots & \vdots & \cdots & \vdots \\
+G & G  & \cdots & G & \cdots & 0 \\
+\vdots & \vdots  & \vdots & \vdots & \ddots & \vdots \\
+G & G  & \cdots & G & \cdots & G \\
+\end{array}
+\right]%
+\left[
+\begin{array}{c}
+\Delta m_1 \\
+\Delta m_2 \\
+\vdots \\
+\Delta m_k \\
+\vdots \\
+\Delta m_{n_t} \\
+\end{array}
+\right]
+=
+\left[
+\begin{array}{c}
+D_1\\
+D_2\\
+\vdots\\
+D_k\\
+\vdots\\
+D_{n_t}\\
+\end{array}
+\right]
+\end{equation}
+
+The associated normal system is:
+
+\begin{equation}
+\left[ 
+\begin{array}{cccccc}
+nG^2     & (n-1)G^2  & \cdots & (n-k)G^2 & \cdots & G^2 \\
+(n-1)G^2 & (n-2)G^2  & \cdots & (n-k)G^2 & \cdots & G^2 \\
+\vdots   & \vdots    & \ddots & \vdots   & \vdots & \vdots \\
+(n-k)G^2 & (n-k)G^2  & \cdots & (n-k)G^2 & \cdots & G^2 \\
+\vdots   & \vdots    & \ddots & \vdots   & \vdots & \vdots \\
+G^2      & G^2       & \cdots & G^2      & \cdots & G^2 \\
+\end{array} \right] 
+%
+\left[
+\begin{array}{c}
+\Delta m_1 \\
+\Delta m_2 \\
+\vdots \\
+\Delta m_k \\
+\vdots \\
+\Delta m_{n_t} \\
+\end{array}
+\right]
+=
+\left[ \begin{array}{c}
+G^T \cdot \sum \limits_{i=1}^{n}D_i\\
+G^T \cdot \sum \limits_{i=2}^{n}D_i\\
+\vdots\\
+G^T \cdot \sum \limits_{i=k}^{n}D_i\\
+\vdots \\
+G^T \cdot D_n\\
+\end{array} \right] 
+\end{equation}
+
+The lower part of the normal system is:
+
+\begin{equation}
+\left[ \begin{array}{ccccc}
+C_{m}^{-1} & 0  & 0 & \cdots & 0 \\
+0 & C_{m}^{-1}  & 0 & \cdots & 0 \\
+0 & 0  & C_{m}^{-1} & \ddots & 0 \\
+\vdots & \vdots  & 0 & \ddots & 0 \\
+0 & 0  & 0 &... & C_{m}^{-1} \\
+\end{array} \right] 
+%
+\left[ \begin{array}{c}
+\Delta m_1 \\
+\Delta m_2 \\
+\Delta m_3 \\
+\vdots \\
+\Delta m_p \\
+\end{array} \right] 
+=
+\left[ \begin{array}{c}
+C_{m}^{-1}m_{0_1}\\
+C_{m}^{-1}m_{0_2}\\
+C_{m}^{-1}m_{0_3}\\
+\vdots \\
+C_{m}^{-1}m_{0_n}\\
+\end{array} \right] 
+\end{equation}
+
+The resulting normal system is the sum of the two subsystems.
+
+\subsection{Modified normal system because of missing observation}
+In the previous section, we made the assumption that all data are present. There are two changes:
+\begin{itemize}
+    \item missing observation
+    \item late start of data for a given site
+\end{itemize}
+
+\subsection{Different time step for model and data}
+
+\subsection{Adding constant estimation}
+
+\subsection{Building the normal system through a loop}
+
+Another way to write the linear system:
+
+For a given date, we saw that the observation equation is:
+
+\begin{equation}
+\left[ \begin{array}{cccccccc}
+G_i & G_i  & G_i & \cdots & G_i & 0 & \cdots & 0 \\
+\end{array} \right] 
+%
+\Delta m\\
+=
+d_i
+\end{equation}
+
+where $G_i$ is obtained by removing the rows corresponding to missing observation at time step $i$.
+The normal equation is:
+
+\begin{equation}
+\left[
+\begin{array}{cccccccc}
+G_i^2 & G_i^2  & G_i^2 & \cdots & G_i^2 & 0 & \cdots & 0\\
+G_i^2 & G_i^2  & G_i^2 & \cdots & G_i^2 & 0 & \cdots & 0\\
+G_i^2 & G_i^2  & G_i^2 & \cdots & G_i^2 & 0 & \cdots & 0\\
+\vdots & \vdots  & \vdots & \ddots & \vdots & \vdots & \cdots &  \vdots\\
+G_i^2 & G_i^2  & G_i^2 & \cdots & G_i^2 & 0 & \cdots & 0\\
+0 & 0  & 0 & \cdots & 0 & 0 & \cdots & 0\\
+\vdots & \vdots  & \vdots & \vdots & \vdots & \vdots & \vdots &  \vdots\\
+0 & 0  & 0 & \cdots & 0 & 0 & \cdots &  0\\
+\end{array}
+\right]
+%
+\Delta m
+=
+\left[
+\begin{array}{c}
+G_i^T d_i\\
+G_i^T d_i\\
+G_i^T d_i\\
+\vdots\\
+G_i^T d_i\\
+0\\
+\vdots\\
+0\\
+\end{array}
+\right]
+\end{equation}
+
+So making the system step by step:
+at step 1:
+
+\begin{equation}
+\left[
+\begin{array}{cccccccc}
+G_1^T G_1 & 0  & 0 & \cdots & 0 & 0 & \cdots & 0\\
+0 & 0  & 0 & \cdots & 0 & 0 & \cdots & 0\\
+0 & 0  & 0 & \cdots & 0 & 0 & \cdots & 0\\
+\vdots & \vdots  & \vdots & \ddots & \vdots & \vdots & \cdots &  \vdots\\
+0 & 0  & 0 & \cdots & 0 & 0 & \cdots & 0\\
+0 & 0  & 0 & \cdots & 0 & 0 & \cdots & 0\\
+\vdots & \vdots  & \vdots & \vdots & \vdots & \vdots & \vdots &  \vdots\\
+0 & 0  & 0 & \cdots & 0 & 0 & \cdots &  0\\
+\end{array}
+\right]
+%
+\Delta m
+=
+\left[
+\begin{array}{c}
+G_1^T d_1\\
+0\\
+0\\
+\vdots\\
+0\\
+0\\
+\vdots\\
+0\\
+\end{array}
+\right]
+\end{equation}
+
+At step 2:
+the contribution associated with observation at t2 is:
+
+\begin{equation}
+\left[
+\begin{array}{cccccccc}
+G_2^T G_2 & G_2^T G_2  & 0 & \cdots & 0 & 0 & \cdots & 0\\
+G_2^T G_2 & G_2^T G_2  & 0 & \cdots & 0 & 0 & \cdots & 0\\
+0 & 0  & 0 & \cdots & 0 & 0 & \cdots & 0\\
+\vdots & \vdots  & \vdots & \ddots & \vdots & \vdots & \cdots &  \vdots\\
+0 & 0  & 0 & \cdots & 0 & 0 & \cdots & 0\\
+0 & 0  & 0 & \cdots & 0 & 0 & \cdots & 0\\
+\vdots & \vdots  & \vdots & \vdots & \vdots & \vdots & \vdots &  \vdots\\
+0 & 0  & 0 & \cdots & 0 & 0 & \cdots &  0\\
+\end{array}
+\right]
+%
+\Delta m
+=
+\left[
+\begin{array}{c}
+G_2^T d_2\\
+G_2^T d_2\\
+0\\
+\vdots\\
+0\\
+0\\
+\vdots\\
+0\\
+\end{array}
+\right]
+\end{equation}
+So the system with two observation steps is:
+\begin{equation}
+\left[
+\begin{array}{cccccccc}
+G_1^T G_1 + G_2^T G_2 & G_2^T G_2  & 0 & \cdots & 0 & 0 & \cdots & 0\\
+G_2^T G_2 & G_2^T G_2  & 0 & \cdots & 0 & 0 & \cdots & 0\\
+0 & 0  & 0 & \cdots & 0 & 0 & \cdots & 0\\
+\vdots & \vdots  & \vdots & \ddots & \vdots & \vdots & \cdots &  \vdots\\
+0 & 0  & 0 & \cdots & 0 & 0 & \cdots & 0\\
+0 & 0  & 0 & \cdots & 0 & 0 & \cdots & 0\\
+\vdots & \vdots  & \vdots & \vdots & \vdots & \vdots & \vdots &  \vdots\\
+0 & 0  & 0 & \cdots & 0 & 0 & \cdots &  0\\
+\end{array}
+\right]
+%
+\Delta m
+=
+\left[
+\begin{array}{c}
+G_1^T d_1 + G_2^T d_2\\
+G_2^T d_2\\
+0\\
+\vdots\\
+0\\
+0\\
+\vdots\\
+0\\
+\end{array}
+\right]
+\end{equation}
+
+For the step 3, the individual contribution is:
+
+\begin{equation}
+\left[
+\begin{array}{cccccccc}
+G_3^T G_3 & G_3^T G_3  & G_3^T G_3 & 0 & 0 & 0 & \cdots & 0\\
+G_3^T G_3 & G_3^T G_3  & G_3^T G_3 & \cdots & 0 & 0 & \cdots & 0\\
+G_3^T G_3 & G_3^T G_3  & G_3^T G_3 & \cdots & 0 & 0 & \cdots & 0\\
+\vdots & \vdots  & \vdots & \ddots & \vdots & \vdots & \cdots &  \vdots\\
+0 & 0  & 0 & \cdots & 0 & 0 & \cdots & 0\\
+0 & 0  & 0 & \cdots & 0 & 0 & \cdots & 0\\
+\vdots & \vdots  & \vdots & \vdots & \vdots & \vdots & \vdots &  \vdots\\
+0 & 0  & 0 & \cdots & 0 & 0 & \cdots &  0\\
+\end{array}
+\right]
+%
+\Delta m
+=
+\left[
+\begin{array}{c}
+G_3^T d_3\\
+G_3^T d_3\\
+G_3^T d_3\\
+\vdots\\
+0\\
+0\\
+\vdots\\
+0\\
+\end{array}
+\right]
+\end{equation}
+The normal system at step 3 is:
+
+\begin{equation}
+\left[
+\begin{array}{cccccccc}
+\sum \limits_{k=1}^{3} G_k^T G_k & \sum \limits_{k=2}^{3} G_k^T G_k   & \sum \limits_{k=3}^{3} G_k^T G_k & 0 & 0 & 0 & \cdots & 0\\
+\sum \limits_{k=2}^{3} G_k^T G_k  & \sum \limits_{k=2}^{3} G_k^T G_k & \sum \limits_{k=3}^{3} G_k^T G_k & \cdots & 0 & 0 & \cdots & 0\\
+\sum \limits_{k=3}^{3} G_k^T G_k & \sum \limits_{k=3}^{3} G_k^T G_k  & \sum \limits_{k=3}^{3} G_k^T G_k & \cdots & 0 & 0 & \cdots & 0\\
+\vdots & \vdots  & \vdots & \ddots & \vdots & \vdots & \cdots &  \vdots\\
+0 & 0  & 0 & \cdots & 0 & 0 & \cdots & 0\\
+0 & 0  & 0 & \cdots & 0 & 0 & \cdots & 0\\
+\vdots & \vdots  & \vdots & \vdots & \vdots & \vdots & \vdots &  \vdots\\
+0 & 0  & 0 & \cdots & 0 & 0 & \cdots &  0\\
+\end{array}
+\right]
+%
+\Delta m
+=
+\left[
+\begin{array}{c}
+\sum \limits_{k=1}^3 G_k^T d_k\\
+\sum \limits_{k=2}^3 G_k^T d_k\\
+\sum \limits_{k=3}^3 G_k^T d_k\\
+\vdots\\
+0\\
+0\\
+\vdots\\
+0\\
+\end{array}
+\right]
+\end{equation}
+
+By extension at step $i$, the normal system is:
+\begin{equation}
+\left[
+\begin{array}{cccccccc}
+\sum \limits_{k=1}^i G_k^T G_k & \sum \limits_{k=2}^i G_k^T G_k  & \sum \limits_{k=3}^i G_k^T G_k & \cdots & G_i^T G_i & 0 & \cdots & 0\\
+
+\sum \limits_{k=2}^i G_k^T G_k  & \sum \limits_{k=2}^i G_k^T G_k & \sum \limits_{k=3}^i G_k^T G_k & \cdots & G_i^T G_i & 0 & \cdots & 0\\
+
+\sum \limits_{k=3}^i G_k^T G_k & \sum \limits_{k=3}^i G_k^T G_k & \sum \limits_{k=3}^i G_k^T G_k  &  \cdots & G_i^T G_i & 0 & \cdots & 0\\
+
+\vdots & \vdots  & \vdots & \ddots & \vdots & \vdots & \cdots &  \vdots\\
+G_i^T G_i & G_i^T G_i  & G_i^T G_i & \cdots & G_i^T G_i & 0 & \cdots & 0\\
+
+0 & 0  & 0 & \cdots & 0 & 0 & \cdots & 0\\
+
+\vdots & \vdots  & \vdots & \vdots & \vdots & \vdots & \vdots &  \vdots\\
+0 & 0  & 0 & \cdots & 0 & 0 & \cdots &  0\\
+\end{array}
+\right]
+%
+\Delta m
+=
+\left[
+\begin{array}{c}
+\sum \limits_{k=1}^i G_k^T d_k\\
+\sum \limits_{k=2}^i G_k^T d_k\\
+\sum \limits_{k=3}^i G_k^T d_k\\
+\vdots\\
+\sum \limits_{k=i}^i G_k^T d_k\\
+0\\
+\vdots\\
+0\\
+\end{array}
+\right]
+\end{equation}
+
+and at the final normal system at step $n$:
+
+\begin{equation}
+\left[
+\begin{array}{cccccccc}
+\sum \limits_{k=1}^n G_k^2 & \sum \limits_{k=2}^n G_k^2  & \sum \limits_{k=3}^n G_k^2 & \cdots & \sum \limits_{k=i}^n G_k^2 & \cdots & \sum \limits_{k=n-1}^n G_k^2 & G_n^2\\
+
+\sum \limits_{k=2}^n G_k^2  & \sum \limits_{k=2}^n G_k^2 & \sum \limits_{k=3}^n G_k^2 & \cdots & \sum \limits_{k=i}^n G_k^2 & \cdots & \sum \limits_{k=n-1}^n G_k^2 & G_n^2\\
+
+\sum \limits_{k=3}^n G_k^2 & \sum \limits_{k=3}^n G_k^2 & \sum \limits_{k=3}^n G_k^2  &  \cdots & \sum \limits_{k=i}^n G_k^2 & \cdots &  \sum \limits_{k=n-1}^n G_k^2 & G_n^2\\
+
+\vdots & \vdots  & \vdots & \ddots & \vdots & \vdots & \cdots &  \vdots\\
+
+\sum \limits_{k=i}^n G_k^2 & \sum \limits_{k=i}^n G_k^2 & \sum \limits_{k=i}^n G_k^2  &  \cdots & \sum \limits_{k=i}^n G_k^2 & \cdots &  \sum \limits_{k=n-1}^n G_k^2 & G_n^2\\
+
+\vdots & \vdots  & \vdots & \vdots & \vdots & \vdots & \vdots &  \vdots\\
+
+\sum \limits_{k=n-1}^n G_k^2 & \sum \limits_{k=n-1}^n G_k^2 & \sum \limits_{k=n-1}^n G_k^2  &  \cdots & \sum \limits_{k=n-1}^n G_k^2 & \cdots &  \sum \limits_{k=n-1}^n G_k^2 & G_n^2\\
+
+G_n^2 & G_n^2 & G_n^2  &  \cdots & G_n^2 & \cdots &  G_n^2 & G_n^2\\
+
+
+\end{array}
+\right]
+%
+\Delta m
+=
+\left[
+\begin{array}{c}
+\sum \limits_{k=1}^n G_k^T d_k\\
+\sum \limits_{k=2}^n G_k^T d_k\\
+\sum \limits_{k=3}^n G_k^T d_k\\
+\vdots\\
+\sum \limits_{k=i}^n G_k^T d_k\\
+\vdots\\
+\sum \limits_{k=n-1}^n G_k^T d_k\\
+G_n^T d_n\\
+\end{array}
+\right]
+\end{equation}
+
+
+\section{Adding a constant}
+
+The individual observation equation becomes:
+
+\begin{equation}
+\left[ \begin{array}{ccccccccc}
+G_i & G_i  & G_i & \cdots & G_i & 0 & \cdots & 0 & \Theta_i \\
+\end{array} \right] 
+%
+\left[
+\begin{array}{c}
+\Delta m\\
+c\\
+\end{array}
+\right]
+=
+\left[
+\begin{array}{c}
+d_i\end{array}
+\right]
+\end{equation}
+
+where $\Theta_i$ is the identity matrix where row corresponding missing data at date $t_i$ are removed. We have $\Theta_i d_i=d_i$.
+
+The individual normal system is:
+\begin{equation}
+\left[
+\begin{array}{cccccccc|c}
+G_i^2 & G_i^2  & G_i^2 & \cdots & G_i^2 & 0 & \cdots & 0 & \Theta_i^T\\
+G_i^2 & G_i^2  & G_i^2 & \cdots & G_i^2 & 0 & \cdots & 0 & \Theta_i^T\\
+G_i^2 & G_i^2  & G_i^2 & \cdots & G_i^2 & 0 & \cdots & 0 & \Theta_i^T\\
+\vdots & \vdots  & \vdots & \ddots & \vdots & \vdots & \cdots &  \vdots & \vdots\\
+G_i^2 & G_i^2  & G_i^2 & \cdots & G_i^2 & 0 & \cdots & 0 & \Theta_i^T\\
+0 & 0  & 0 & \cdots & 0 & 0 & \cdots & 0 & 0 \\ 
+\vdots & \vdots  & \vdots & \vdots & \vdots & \vdots & \vdots &  \vdots & \vdots\\
+0 & 0  & 0 & \cdots & 0 & 0 & \cdots &  0 & 0\\ \hline
+\Theta_i & \Theta_i  & \Theta_i & \cdots & \Theta_i & \Theta_i & \cdots &  \Theta_i & \Theta_i^2\\
+\end{array}
+\right]
+%
+\left[
+\begin{array}{c}
+\Delta m\\
+c\\
+\end{array}
+\right]
+=
+\left[
+\begin{array}{c}
+G_i^T d_i\\
+G_i^T d_i\\
+G_i^T d_i\\
+\vdots\\
+G_i^T d_i\\
+0\\
+\vdots\\
+0\\ \hline
+\Theta_i^T d_i
+\end{array}
+\right]
+\end{equation}
+
+The full normal system becomes:
+\begin{equation}
+\left[
+\begin{array}{ccccc|c}
+\sum \limits_{k=1}^n G_k^2 & \sum \limits_{k=2}^n \Theta_k^2  & \cdots & \sum \limits_{k=n-1}^n G_k^2 & G_n^2 & \sum \limits_{k=1}^n \Theta_k^T\\
+
+\sum \limits_{k=2}^n G_k^2 & \sum \limits_{k=2}^n G_k^2  & \cdots & \sum \limits_{k=n-1}^n G_k^2 & G_n^2 & \sum \limits_{k=2}^n \Theta_k^T\\
+
+\vdots & \vdots  &  \ddots & \vdots & \vdots &  \vdots\\
+
+\sum \limits_{k=n-1}^n G_k^2 & \sum \limits_{k=n-1}^n G_k^2 &   \cdots & \sum \limits_{k=n-1}^n G_k^2 & G_n^2 & \sum \limits_{k=n-1}^n \Theta_k^T\\
+
+G_n^2 & G_n^2 &  \cdots & G_n^2 & G_n^2 & \Theta_n^T\\ \hline
+
+\sum \limits_{k=1}^n \Theta_k & \sum \limits_{k=2}^n \Theta_k & \cdots & \sum \limits_{k=n-1}^n \Theta_k & \Theta_n & \sum \limits_{k=1}^n \Theta_k^2 \\
+
+\end{array}
+\right]
+%
+\left[
+\begin{array}{c}
+\Delta m\\
+c\\
+\end{array}
+\right]
+=
+\left[
+\begin{array}{c}
+\sum \limits_{k=1}^n G_k^T d_k\\
+\sum \limits_{k=2}^n G_k^T d_k\\
+\vdots\\
+\sum \limits_{k=n-1}^n G_k^T d_k\\
+G_n^T d_n\\ \hline
+\sum \limits_{k=1}^n \Theta_k^T d_k\\
+\end{array}
+\right]
+\end{equation}
+
+\section{Variable model time step}
+
+%\begin{figure}
+%    \centering
+%   \includegraphics[width=150mm]{pyeq_fig1.png}
+%    \caption{Caption}
+%    \label{fig:my_label}
+%\end{figure}
+
+From figure, the observation $d_k$ at time $tk$ occurring at the model time step $i$, between model dates $T_{i-1}$ and $T_i$ has equation:
+
+\begin{equation}
+    \left[
+    \begin{array}{ccccccc}
+        G_k \Delta T_1 &
+        G_k \Delta T_2 &
+        \cdots &
+        G_k(t_k - T_{i-1}) &
+        0 &
+        \cdots &
+        0
+    \end{array}
+    \right]
+    \Delta m
+    =
+    d_k
+\end{equation}
+
+In this case, I define two functions as follow:
+
+\begin{align}
+\Gamma(t) & =  [\Delta T_1, \Delta T_2, \cdots, t - T_i, \Delta T_{i+1}, \cdots, \Delta T_{q}]\\
+i(t) & =  i
+\end{align}
+where $T_i$ is the last model time before $t_k$ ($T_i=sup (T_j \le t_k)_{j \in [0,q]}$).
+For the sake of clarity, I note:
+
+\begin{align}
+\Gamma_{t_k} & =  [\Delta T_1, \Delta T_2, \cdots, t_k - T_i, \Delta T_{i+1}, \cdots, \Delta T_{q}]\\
+i(t_k) & =  i
+\end{align}
+
+In other word, $\Gamma_{t_k}$ is the vector of model step duration, except for the step number corresponding to the period of $t_k$, where the total duration is replaced by the fractional duration $t_k - T_i = \alpha_k \Delta T_i$   and $i(t_k)$ gives the step number where $t_k$ is.
+
+With these notations, the observation equation becomes:
+
+\begin{equation}
+    \left[
+    \begin{array}{ccccccc}
+        G_k \Gamma_{t_k,2}&
+        G_k \Gamma_{t_k,2}&
+        \cdots &
+        G_k \Gamma_{t_k,i(t_k)} &
+        0 &
+        \cdots &
+        0
+    \end{array}
+    \right]
+    \Delta m
+    =
+    d_k
+\end{equation}
+
+The individual normal equation is:
+
+\begin{equation}
+\left[
+\begin{array}{ccccccc}
+G_k^2 \Gamma^2_{t_k,1} & 
+G_k^2 \Gamma_{t_k,1} \Gamma_{t_k,2}  &
+\cdots &
+G_k^2 \Gamma_{t_k,1} \Gamma_{t_k,i(t_k)} &
+0 &
+\cdots &
+0\\
+
+G_k^2 \Gamma_{t_k,1} \Gamma_{t_k,2} &
+G_k^2 \Gamma_{t_k,2}^2  &
+\cdots &
+G_k^2 \Gamma_{t_k,2} \Gamma_{t_k,i(t_k)} & 0 & \cdots & 0\\
+
+\vdots &
+\vdots  &
+\ddots & \vdots & \vdots & \cdots &  \vdots\\
+
+G_k^2 \Gamma_{t_k,1} \Gamma_{t_k,i(t_k)} & 
+G_k^2 \Gamma_{t_k,2} \Gamma_{t_k,i(t_k)} &
+\cdots & G_k^2 \Gamma_{t_k,i(t_k)}^2 & 0 & \cdots & 0\\
+
+0 &
+0  &
+\cdots & 0 & 0 & \cdots & 0\\
+
+\vdots &
+\vdots  &
+\vdots & \vdots & \vdots & \vdots &  \vdots\\
+
+0 &
+0  &
+\cdots & 0 & 0 & \cdots &  0\\
+\end{array}
+\right]
+%
+\Delta m
+=\\
+\left[
+\begin{array}{c}
+G_k^T \Gamma_{t_k,1} d_k\\
+G_k^T \Gamma_{t_k,2} d_k\\
+\vdots\\
+G_k^T \Gamma_{t_k,i(t_k)} d_k\\
+0\\
+\vdots\\
+0\\
+\end{array}
+\right]
+\end{equation}
+
+I note
+\begin{equation}
+    K(j) = min(k \in [1,n]\text{ , }t_k \ge T_j) 
+\end{equation}
+The final normal system is:
+
+\begin{equation}
+\left[
+\begin{array}{cccccc}
+\sum \limits_{k=1}^n G_k^2 \Gamma_{t_k,1}^2 & 
+\sum \limits_{k=K(2)}^n G_k^2 \Gamma_{t_k,1} \Gamma_{t_k,2} &
+\cdots &
+\sum \limits_{k=K(n)}^n G_k^2 \Gamma_{t_k,1} \Gamma_{t_k,i(t_k)}\\
+
+\sum \limits_{k=1}^n G_k^2 \Gamma_{t_k,1} \Gamma_{t_k,2} & 
+\sum \limits_{k=K(2)}^n G_k^2 \Gamma_{t_k,2}^2 &
+\cdots &
+\sum \limits_{k=K(n)}^n G_k^2 \Gamma_{t_k,2} \Gamma_{t_k,i(t_k)}\\
+
+\vdots & \vdots & \vdots & \vdots \\
+
+\sum \limits_{k=K(n)}^n G_k^2 \Gamma_{t_k,1} \Gamma_{t_k,i(t_k)} &
+\sum \limits_{k=K(n)}^n G_k^2 \Gamma_{t_k,2} \Gamma_{t_k,i(t_k)} &
+\cdots &
+\sum \limits_{k=K(n)}^n G_k^2 \Gamma(t_k)^2_{i(t_k)}
+\end{array}
+\right]
+%
+\Delta m
+=
+\left[
+\begin{array}{c}
+\sum \limits_{k=1}^n G_k^T \Gamma_{t_k,1} d_k\\
+\sum \limits_{k=K(2)}^n G_k^T \Gamma_{t_k,2} d_k\\
+\vdots\\
+\sum \limits_{k=K(n)}^n G_k^T \Gamma_{t_k,i(t_k)} d_k\\
+\end{array}
+\right]
+\end{equation}
+
+We note that the last column is:
+
+\begin{equation}
+\Gamma_{t_k,i(t_k)}
+\sum \limits_{k=K(n)}^n 
+\left[
+\begin{array}{c}
+G^2_k\\
+G^2_k\\
+\vdots\\
+G^2_k
+\end{array}
+\right] 
+\times
+\Gamma(t_k)
+\end{equation}
+
+where $\times$ denotes the term-by-term product (check if it is inner product).
+
+
+In practice, we start filling the last column:
+\begin{align*}
+    ns & \text{ : number of subfaults}\\
+    q & \text{ : number of model time steps}\\
+    r & = ns \times q \text{ : number of model parameters}\\
+\end{align*}
+\begin{program}
+\mbox{Algorithm to build the normal system:}
+\BEGIN \\ %
+  G^2 \xleftarrow{} G^T G
+  C = 0_{ r , ns}
+  |initialize | \Gamma
+  \FOR i=q \TO 1 \STEP -1 \DO
+     G_i^2 \xleftarrow{} G \rcomment{remove rows and columns from $G^2$ for missing observations}
+     G_i^T \xleftarrow{} G^T \rcomment{remove rows from $G$ for missing observations}
+     
+     \Gamma \xleftarrow{} \Gamma()
+\PROC |expt|(x,n) \BODY
+          z:=1;
+          \DO \IF n=0 \THEN \EXIT \FI;
+             \DO \IF |odd|(n) \THEN \EXIT \FI;
+\COMMENT{This is a comment statement};
+                n:=n/2; x:=x*x \OD;
+             \{ n>0 \};
+             n:=n-1; z:=z*x \OD;
+          |print|(z) \ENDPROC
+\END
+\end{program}
+
+
+
+\section{Regularization}
+
+\section{Interseismic modeling}
+
+%\section{Introduction}
+%
+%On suit les etapes classiques d'une inversion:
+%\begin{itemize}
+%    \item[A.] preparation des donnees
+%    \item[B.] Formation du modele direct
+%    \item[C.] Inversion
+%\end{itemize}
+%
+%\section{Preparation des donnees}
+%
+%Les series temporelles de position GNSS, apres quelques corrections refletent le glissement sur la faille et ses variations dans le temps. Les corrections a apporter sont:
+%\begin{itemize}
+%    \item les series temporelles de geodesie spatiales sont exprimees dans un referentiel global, appele l'ITRF. Il faut transformer les coordonnees pour qu'elles soient exprimees par rapport a la partie "stable" de la plaque chevauchante. Dans ce referentiel, des sites GNSS loin de la faille de subduction ont des vitesses et des mouvements nuls.
+%    \item les surcharges, essentiellement liees a l'hydrologie continentale (e.g. les pluies en Amazonie), induisent un signal periodique annuel que l'on doit filtrer ou modeliser puis retirer aux series temporelles.
+%\end{itemize}
+%
+%\section{Probleme direct}
+%
+%Une fois ces corrections appliquees, l'etape suivante est de construire le probleme direct, ou l'on va relier les deplacements observes au glissement sur la faille par une fonction. On commence par reflechir a ce qui se passe sur un pas de temps, par exemple une journee, sur la composante Est dans le cas de l'Equateur.
+%
+%Pendant cette journee qui va de la date $t_0$ a $t_1$, le deplacement pour la station $i$ est $d^{i}_{t_0 -> t_1}$ et chaque sous-faille $j$ de la subduction glisse dela quanitite $\Delta m^{j}__{t_0 - t_1}$.
+%
+%Pour relier $d^{i}_{t_0 -> t_1}$ et $\Delta m^{j}_{t_0 -> t_1}$, on considere 3 cas:
+%\begin{itemize}
+%    \item[1.] le glissement sur la petite faille $j$ a lieu a la vitesse de glissement long-terme de la faille $V_{pl}$ (couplage de 0). A ce moment la , il n'y a pas de deplacement et donc $d^{i}_{t_0 -> t_1}=0$. C'est le regime Â« neutre Â».
+%
+%    \item[2.]le glissement sur la petite faille $j$ a lieu a une vitesse inferieure a $V_{pl}$ (couplage entre 100\% et 0\%). Ce cas inclut une glissement nul (couplage de 100\%). Dans ce cas,  le deplacement $d^{i}_{t_0 - t_1}$ est positif (le point se deplacement vers l'Est, c'est a dire vers l'interieur de la plaque chevauchante). Ce mouvement peut aªtre modelise avec le concept de back-slip (Savage 1983) par un glissement de la dislocation $j$ en faille normale. Dans ce modele, un couplage de 100\% est modelise par un glissement en faille normale avec un glissement egal a $V_{pl} \times (t_1 - t_0)$ que l'on peut aussi ecrire comme un glissement en faille inverse de valeur $-V_{pl} \times (t_1 - t_0)$. Un couplage de $\alpha\%$ ($\alpha$ entre 0 et 1) correspond donc a un glissement sur la sous faille $j$ sur la journee ($t_0 -> t_1$) $m^{j}_{t_0 -> t_1} = -\alpha \times V_{pl} \times (t_1 - t_0)$. Ce regime est celui de l'accumulation des contraintes et de deficit de glissement. On calcule le deplacement $d^{i}_{t_0 -> t_1}=0$ en multipliant ce glissement par la fonction de Green du milieu elastique considere qui relie un glissement unitaire sur la sous-faille $j$ au deplacement a la station GNSS $j$: $d^{i}_{t_0 -> t_1}= G^{i}_{j} m^{j}_{t_0 -> t_1}$.
+%
+%    \item[3.] le glissement sur la petite faille $j$ a lieu a une vitesse superieure a $V_{pl}$. Ce regime est classiquement celui des transitoires (seismes lents et glissement post-sismique) et des seismes. Il correspond au rela¢chement des contraintes autour de l'interface.Dans ce cas, c'est tout simple, le glissement est inverse et on a directement $d^{i}_{t_0 -> t_1}= G^{i}_{j} m^{j}_{t_0 -> t_1}$
+%\end{itemize}
+%
+%L'ensemble du systeme d'equation correspondant au probleme direct est obtenu:
+%\begin{itemize}
+%    \item en sommant les contributions de toutes les sous-failles $j$
+%    \item en ecrivant le systeme pour toutes les stations GNSS $i$
+%    \item en ecrivant les equations sur tous les pas de temps
+%\end{itemize}
+%
+%\section{Inversion}
+%
+%Le nombre d'inconnus dans le probleme est donc $m \times p$ ou $m$ est le nombre de sus-failles et $p$ le nombre de pas de temps.
+%Ce probleme est sous-determine, c'est a dire que le nombre d'observations (station GNSS x nombre de pas de temps) est tres inferieur au nombre d'inconnus. Il faut donc ajouter des contraintes de regularisation. La regularisation minimum consiste a ecrire que a chaque pas de temps $t_l->t_m$, le glissement incremental est spatialement correle. On modelise cette correlation par une matrice modele ($C_m$) calculee par une fonction exponentielle decroissante $C_m(j,k) = \sigma ^2 \times exp(-d_{j,k}/D_c)$ ou $\sigma$ est une valeur en $mm/\sqrt(jour)$ correspondant a une valeur de glissement par pas de temps, $d_{j,k}$ est la distance entre les sous-faille $j$ et $k$ et $D_c$ une distance critique a partir de laquelle on considere que le glissement entre deux sous-failles est independant. On peut aussi ajouter une contrainte de regularisation temporelle, mais il semble que cette contrainte ne soit pas requise pour obtenir des bons resultats d'apres des tests preliminaires.
+%
+%Le probleme final s'ecrit sous la forme de deux systemes lineaires  $ Gm = d $ ($C_d$) et $m=m_0$ ($C_m$) ou $m_0$ est un modele de reference a priori, que l'on peut prendre nul si l'on n'a pas d'information. On resout ce systeme par moindres-carres en minimisant la fonction coa»t: $S(m) = (Gm-d)^T C^{-1} (Gm-d) + (m-m_0)^T C_m^{-1} (m-m0)$, avec la condition que chaque glissement incremental $m_i$ doit aªtre superieur a $-V_{pl}*\Delta_t$. Un dernier changement de variable permet de ramener cette derniere a une simple contrainte de non negativite pour laquelle de nombreux algorithmes sont disponibles.
+%
+%
+%\section{Resultat} 
+%
+%Cette methode permet donc d'obtenir pour chaque pas de temps, la carte de glissement sur le plan de faille expliquant au mieux les deplacements observes dans les series temporelles des points GNSS. Elle permet:
+%\begin{itemize}
+%    \item de quantifier spatialement les zones qui accumulent du deficit de glissement et celle qui glissent de maniere constante a la vitesse des plaques (zone en creep permanent).
+%    \item de connaitre les zones qui ont des comportements transitoires et de connaa®tre la dynamique de ces glissements. En particulier, on peut savoir si ces glissements transitoires se propagent, s'ils ont des accelerations douces ou rapides. On peut aussi evaluer leur chute de contrainte a partir de leur etendue spatiale et de leur glissement pour mieux evaluer la physique des seismes lents.
+%\end{itemize}
+
+%\begin{figure}[h!]
+%\centering
+%\includegraphics[scale=1.7]{universe}
+%\caption{The Universe}
+%\label{fig:universe}
+%\end{figure}
+
+
+%\bibliographystyle{plain}
+%\bibliography{references}
+\end{document}

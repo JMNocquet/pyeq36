@@ -1,0 +1,296 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>pyeq.lib.print_log_kinematic module &mdash; pyeq 0.51.8 documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+
+  
+  
+  
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+        <script src="_static/jquery.js"></script>
+        <script src="_static/underscore.js"></script>
+        <script src="_static/doctools.js"></script>
+        <script src="_static/language_data.js"></script>
+    
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="pyeq.lib.print_log_kinematic2 module" href="pyeq.lib.print_log_kinematic2.html" />
+    <link rel="prev" title="pyeq.lib.make_inversion module" href="pyeq.lib.make_inversion.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="index.html" class="icon icon-home" alt="Documentation Home"> pyeq
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                0.51.8
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="foreword.html">PYEQ: full time-dependent slip inversion</a></li>
+<li class="toctree-l1"><a class="reference internal" href="behaviour.html">Options controlling the overall behaviour</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tutorial_static_inversion.html">Tutorial static inversion</a></li>
+<li class="toctree-l1"><a class="reference internal" href="dates.html">dates</a></li>
+<li class="toctree-l1"><a class="reference internal" href="roxane.html">Roxane’s notes on PYEQ</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="modules.html">for developpers</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="pyeq.html">pyeq package</a><ul class="current">
+<li class="toctree-l3 current"><a class="reference internal" href="pyeq.html#subpackages">Subpackages</a><ul class="current">
+<li class="toctree-l4 current"><a class="reference internal" href="pyeq.lib.html">pyeq.lib package</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="pyeq.html#module-pyeq">Module contents</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">pyeq</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="index.html" class="icon icon-home"></a> &raquo;</li>
+        
+          <li><a href="modules.html">for developpers</a> &raquo;</li>
+        
+          <li><a href="pyeq.html">pyeq package</a> &raquo;</li>
+        
+          <li><a href="pyeq.lib.html">pyeq.lib package</a> &raquo;</li>
+        
+      <li>pyeq.lib.print_log_kinematic module</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="_sources/pyeq.lib.print_log_kinematic.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="module-pyeq.lib.print_log_kinematic">
+<span id="pyeq-lib-print-log-kinematic-module"></span><h1>pyeq.lib.print_log_kinematic module<a class="headerlink" href="#module-pyeq.lib.print_log_kinematic" title="Permalink to this headline">¶</a></h1>
+<p>Print kinematic inversion results</p>
+<dl class="py function">
+<dt id="pyeq.lib.print_log_kinematic.interp_slip_at_dates">
+<code class="sig-prename descclassname">pyeq.lib.print_log_kinematic.</code><code class="sig-name descname">interp_slip_at_dates</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">SLIP</span></em>, <em class="sig-param"><span class="n">slip_dates</span></em>, <em class="sig-param"><span class="n">dates</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pyeq/lib/print_log_kinematic.html#interp_slip_at_dates"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyeq.lib.print_log_kinematic.interp_slip_at_dates" title="Permalink to this definition">¶</a></dt>
+<dd><p>Given a slip increment provided a a 1D vector, with dates slip_dates, calculates the slip predicted at dates using linear interpolation</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>SLIP</strong> – a 1D numpy vector of slip increments with nstep x nfaults size</p></li>
+<li><p><strong>slip_dates</strong> – a 1D numpy vector of slip dates of size nstep + 1</p></li>
+<li><p><strong>dates</strong> – a 1D numpy vector with interpolation dates</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>a 2D numpy vector of n_dates as row and nfault as columns</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="pyeq.lib.print_log_kinematic.predict_disp_from_model">
+<code class="sig-prename descclassname">pyeq.lib.print_log_kinematic.</code><code class="sig-name descname">predict_disp_from_model</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">SLIP</span></em>, <em class="sig-param"><span class="n">G</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pyeq/lib/print_log_kinematic.html#predict_disp_from_model"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyeq.lib.print_log_kinematic.predict_disp_from_model" title="Permalink to this definition">¶</a></dt>
+<dd><p>Given a slip model provided as a 1D vector, with Greens function G, returns the displacement prediction</p>
+<p>np.dot(G,SLIP)
+So the result is a vector with size G.shape[0]
+if SLIP is a matrix with SLIP at different times ordered by columns
+returns np.matmul(G,SLIP)</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>SLIP</strong> – a 1D or 2D numpy array of slip</p></li>
+<li><p><strong>G</strong> – Grren’s function matrix</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>a numpy array</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="pyeq.lib.print_log_kinematic.predict_time_series_from_model">
+<code class="sig-prename descclassname">pyeq.lib.print_log_kinematic.</code><code class="sig-name descname">predict_time_series_from_model</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">SLIP</span></em>, <em class="sig-param"><span class="n">slip_dates</span></em>, <em class="sig-param"><span class="n">GREEN</span></em>, <em class="sig-param"><span class="n">NAME_OBS</span></em>, <em class="sig-param"><span class="n">gts</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pyeq/lib/print_log_kinematic.html#predict_time_series_from_model"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyeq.lib.print_log_kinematic.predict_time_series_from_model" title="Permalink to this definition">¶</a></dt>
+<dd><p>Given 
+- a slip increment provided as a 1D vector, with dates slip_dates, 
+- The Green’s function tensor
+- the NAME_OBS vector (giving the index of a site in the Green’s tensor)
+- a time series in pyacs gts format
+Returns:
+- a gts time series of model predictions at the dates of the time series
+- a gts time series of model-obs</p>
+</dd></dl>
+
+<dl class="py function">
+<dt id="pyeq.lib.print_log_kinematic.print_kinematic_inversion_results">
+<code class="sig-prename descclassname">pyeq.lib.print_log_kinematic.</code><code class="sig-name descname">print_kinematic_inversion_results</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">SLIP</span></em>, <em class="sig-param"><span class="n">input_npz</span></em>, <em class="sig-param"><span class="n">inv_CM_step</span></em>, <em class="sig-param"><span class="n">w</span></em>, <em class="sig-param"><span class="n">odir</span></em>, <em class="sig-param"><span class="n">name</span></em>, <em class="sig-param"><span class="n">np_dates</span></em>, <em class="sig-param"><span class="n">H_inversion_info</span></em>, <em class="sig-param"><span class="n">daily</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pyeq/lib/print_log_kinematic.html#print_kinematic_inversion_results"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyeq.lib.print_log_kinematic.print_kinematic_inversion_results" title="Permalink to this definition">¶</a></dt>
+<dd><p>Print kinematic inversion results 4</p>
+</dd></dl>
+
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="pyeq.lib.print_log_kinematic2.html" class="btn btn-neutral float-right" title="pyeq.lib.print_log_kinematic2 module" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="pyeq.lib.make_inversion.html" class="btn btn-neutral float-left" title="pyeq.lib.make_inversion module" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        
+        &copy; Copyright 2016, Jean-Mathieu Nocquet IRD/Geoazur
+
+    </p>
+  </div>
+    
+    
+    
+    Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

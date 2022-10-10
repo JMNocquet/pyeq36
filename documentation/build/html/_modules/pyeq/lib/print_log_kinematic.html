@@ -1,0 +1,1109 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>pyeq.lib.print_log_kinematic &mdash; pyeq 0.51.8 documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+
+  
+  
+  
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="../../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
+        <script src="../../../_static/jquery.js"></script>
+        <script src="../../../_static/underscore.js"></script>
+        <script src="../../../_static/doctools.js"></script>
+        <script src="../../../_static/language_data.js"></script>
+    
+    <script type="text/javascript" src="../../../_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../../../index.html" class="icon icon-home" alt="Documentation Home"> pyeq
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                0.51.8
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../foreword.html">PYEQ: full time-dependent slip inversion</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../behaviour.html">Options controlling the overall behaviour</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../tutorial_static_inversion.html">Tutorial static inversion</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../dates.html">dates</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../roxane.html">Roxane’s notes on PYEQ</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../modules.html">for developpers</a></li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">pyeq</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../../index.html" class="icon icon-home"></a> &raquo;</li>
+        
+          <li><a href="../../index.html">Module code</a> &raquo;</li>
+        
+      <li>pyeq.lib.print_log_kinematic</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>Source code for pyeq.lib.print_log_kinematic</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Print kinematic inversion results</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+
+<span class="c1">###############################################################################</span>
+<div class="viewcode-block" id="interp_slip_at_dates"><a class="viewcode-back" href="../../../pyeq.lib.print_log_kinematic.html#pyeq.lib.print_log_kinematic.interp_slip_at_dates">[docs]</a><span class="k">def</span> <span class="nf">interp_slip_at_dates</span><span class="p">(</span><span class="n">SLIP</span><span class="p">,</span> <span class="n">slip_dates</span><span class="p">,</span> <span class="n">dates</span><span class="p">):</span>
+<span class="c1">###############################################################################</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Given a slip increment provided a a 1D vector, with dates slip_dates, calculates the slip predicted at dates using linear interpolation </span>
+<span class="sd">    </span>
+<span class="sd">    :param SLIP: a 1D numpy vector of slip increments with nstep x nfaults size</span>
+<span class="sd">    :param slip_dates: a 1D numpy vector of slip dates of size nstep + 1</span>
+<span class="sd">    :param dates: a 1D numpy vector with interpolation dates</span>
+<span class="sd">    </span>
+<span class="sd">    :return: a 2D numpy vector of n_dates as row and nfault as columns</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    
+    <span class="c1">#print slip_dates</span>
+    <span class="c1">#print dates</span>
+    
+    <span class="c1"># import</span>
+    
+    <span class="kn">import</span> <span class="nn">scipy.interpolate</span>
+    
+    <span class="c1"># nstep and nfaults</span>
+    
+    <span class="n">nstep</span> <span class="o">=</span> <span class="n">slip_dates</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">-</span> <span class="mi">1</span>
+    <span class="n">nfaults</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span> <span class="n">SLIP</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">/</span> <span class="n">nstep</span> <span class="p">)</span>
+    <span class="c1"># incremental slip as a 2D array</span>
+    
+    <span class="n">ISLIP</span> <span class="o">=</span> <span class="n">SLIP</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span><span class="n">nfaults</span><span class="p">)</span><span class="o">.</span><span class="n">T</span>
+    
+    <span class="c1"># calculates the cumulative slip at slip dates</span>
+    
+    <span class="n">CSLIP</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">nfaults</span><span class="p">,</span><span class="n">slip_dates</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]))</span>
+    <span class="k">for</span>  <span class="n">i</span> <span class="ow">in</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">slip_dates</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">])[</span><span class="mi">1</span><span class="p">:]:</span>
+        <span class="n">CSLIP</span><span class="p">[:,</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">CSLIP</span><span class="p">[:,</span><span class="n">i</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">+</span> <span class="n">ISLIP</span><span class="p">[:,</span><span class="n">i</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+    
+    <span class="c1">#print &#39;CSLIP max &#39;, np.max(CSLIP)</span>
+        
+    <span class="c1"># now do the interpolation</span>
+    
+    <span class="n">f</span><span class="o">=</span><span class="n">scipy</span><span class="o">.</span><span class="n">interpolate</span><span class="o">.</span><span class="n">interp1d</span><span class="p">(</span><span class="n">slip_dates</span><span class="p">,</span><span class="n">CSLIP</span><span class="p">,</span><span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+    
+    <span class="k">return</span><span class="p">(</span> <span class="n">f</span><span class="p">(</span><span class="n">dates</span><span class="p">)</span> <span class="p">)</span></div>
+
+<span class="c1">###############################################################################</span>
+<div class="viewcode-block" id="predict_disp_from_model"><a class="viewcode-back" href="../../../pyeq.lib.print_log_kinematic.html#pyeq.lib.print_log_kinematic.predict_disp_from_model">[docs]</a><span class="k">def</span> <span class="nf">predict_disp_from_model</span><span class="p">(</span><span class="n">SLIP</span><span class="p">,</span> <span class="n">G</span><span class="p">):</span>
+<span class="c1">###############################################################################</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Given a slip model provided as a 1D vector, with Greens function G, returns the displacement prediction </span>
+<span class="sd">    </span>
+<span class="sd">    np.dot(G,SLIP)</span>
+<span class="sd">    So the result is a vector with size G.shape[0]</span>
+<span class="sd">    if SLIP is a matrix with SLIP at different times ordered by columns</span>
+<span class="sd">    returns np.matmul(G,SLIP)</span>
+<span class="sd">    </span>
+<span class="sd">    :param SLIP: a 1D or 2D numpy array of slip</span>
+<span class="sd">    :param G: Grren&#39;s function matrix</span>
+<span class="sd">    </span>
+<span class="sd">    :return: a numpy array</span>
+<span class="sd">    &quot;&quot;&quot;</span></div>
+
+
+
+<span class="c1">###############################################################################</span>
+<div class="viewcode-block" id="predict_time_series_from_model"><a class="viewcode-back" href="../../../pyeq.lib.print_log_kinematic.html#pyeq.lib.print_log_kinematic.predict_time_series_from_model">[docs]</a><span class="k">def</span> <span class="nf">predict_time_series_from_model</span><span class="p">(</span><span class="n">SLIP</span><span class="p">,</span> <span class="n">slip_dates</span><span class="p">,</span> <span class="n">GREEN</span><span class="p">,</span> <span class="n">NAME_OBS</span><span class="p">,</span> <span class="n">gts</span><span class="p">):</span>
+<span class="c1">###############################################################################</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Given </span>
+<span class="sd">    - a slip increment provided as a 1D vector, with dates slip_dates, </span>
+<span class="sd">    - The Green&#39;s function tensor</span>
+<span class="sd">    - the NAME_OBS vector (giving the index of a site in the Green&#39;s tensor)</span>
+<span class="sd">    - a time series in pyacs gts format</span>
+<span class="sd">    Returns:</span>
+<span class="sd">    - a gts time series of model predictions at the dates of the time series</span>
+<span class="sd">    - a gts time series of model-obs</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    
+    <span class="c1"># import</span>
+    
+    <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+    
+    <span class="c1"># Get the model at the dates of the time series</span>
+    
+    <span class="n">MODEL</span> <span class="o">=</span> <span class="n">interp_slip_at_dates</span><span class="p">(</span><span class="n">SLIP</span><span class="p">,</span> <span class="n">slip_dates</span><span class="p">,</span> <span class="n">gts</span><span class="o">.</span><span class="n">data</span><span class="p">[:,</span><span class="mi">0</span><span class="p">])</span>
+    
+    <span class="c1"># Get the Green matrix for the gts site</span>
+    
+    <span class="n">site_number</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">argwhere</span><span class="p">(</span><span class="n">NAME_OBS</span><span class="o">==</span><span class="n">gts</span><span class="o">.</span><span class="n">code</span><span class="o">.</span><span class="n">upper</span><span class="p">())[</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">]</span> 
+    
+    <span class="c1"># the 3 rows of GREEN at the main rake (last indice at 0) corresponding to the site </span>
+
+<span class="c1">#    print &#39;shape of GREEN &#39;, GREEN.shape</span>
+    <span class="n">G</span> <span class="o">=</span> <span class="n">GREEN</span><span class="p">[</span><span class="n">site_number</span><span class="p">,:,:,</span><span class="mi">0</span><span class="p">]</span>
+<span class="c1">#    print &#39;shape of G &#39;, G.shape</span>
+
+    <span class="c1"># since gts is NEU and GREEN is ENU, swap </span>
+<span class="c1">#    print G.T[:,:10]</span>
+    <span class="n">NEU_G</span> <span class="o">=</span> <span class="n">G</span><span class="o">.</span><span class="n">T</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+    <span class="n">NEU_G</span><span class="p">[</span><span class="mi">0</span><span class="p">,:]</span> <span class="p">,</span> <span class="n">NEU_G</span><span class="p">[</span><span class="mi">1</span><span class="p">,:]</span> <span class="o">=</span> <span class="n">G</span><span class="o">.</span><span class="n">T</span><span class="p">[</span><span class="mi">1</span><span class="p">,:]</span> <span class="p">,</span> <span class="n">G</span><span class="o">.</span><span class="n">T</span><span class="p">[</span><span class="mi">0</span><span class="p">,:]</span>  
+<span class="c1">#    print &#39;NEU_G &#39;, NEU_G[:,:10]</span>
+    <span class="c1"># return the product</span>
+    
+<span class="c1">#    print G.shape, MODEL.shape, np.dot(G.T,MODEL).shape</span>
+    
+    <span class="k">return</span> <span class="p">(</span> <span class="n">np</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">NEU_G</span><span class="p">,</span><span class="n">MODEL</span><span class="p">)</span><span class="o">.</span><span class="n">T</span> <span class="p">)</span></div>
+
+
+
+
+
+<span class="c1">###############################################################################</span>
+<div class="viewcode-block" id="print_kinematic_inversion_results"><a class="viewcode-back" href="../../../pyeq.lib.print_log_kinematic.html#pyeq.lib.print_log_kinematic.print_kinematic_inversion_results">[docs]</a><span class="k">def</span> <span class="nf">print_kinematic_inversion_results</span><span class="p">(</span><span class="n">SLIP</span><span class="p">,</span> <span class="n">input_npz</span><span class="p">,</span> <span class="n">inv_CM_step</span><span class="p">,</span> <span class="n">w</span><span class="p">,</span> <span class="n">odir</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">np_dates</span><span class="p">,</span> <span class="n">H_inversion_info</span><span class="p">,</span><span class="n">daily</span><span class="p">):</span>
+<span class="c1">###############################################################################</span>
+
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Print kinematic inversion results 4</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+
+    <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;-- Writing solution in directory&#39;</span><span class="p">,</span><span class="n">odir</span><span class="p">)</span>
+
+    <span class="c1"># IMPORT</span>
+    
+    <span class="kn">import</span> <span class="nn">pyacs.lib.astrotime</span> <span class="k">as</span> <span class="nn">AT</span>
+    <span class="kn">from</span> <span class="nn">datetime</span> <span class="kn">import</span> <span class="n">datetime</span><span class="p">,</span><span class="n">timedelta</span>
+    
+    <span class="kn">from</span> <span class="nn">os</span> <span class="kn">import</span> <span class="n">mkdir</span><span class="p">,</span> <span class="n">path</span>
+<span class="c1">#    import shutil</span>
+<span class="c1">#    import pyacs.gts</span>
+    <span class="kn">import</span> <span class="nn">pyacs</span>
+    <span class="kn">from</span> <span class="nn">shutil</span> <span class="kn">import</span> <span class="n">copyfile</span>
+    <span class="kn">import</span> <span class="nn">copy</span>
+    <span class="kn">import</span> <span class="nn">os</span>
+    <span class="kn">import</span> <span class="nn">shapefile</span>
+    <span class="kn">from</span> <span class="nn">pyeq.lib</span> <span class="kn">import</span> <span class="n">eq_disloc_3d</span> <span class="k">as</span> <span class="n">DL</span>
+    <span class="kn">from</span> <span class="nn">pyacs.lib.vel_field</span> <span class="kn">import</span> <span class="n">Velocity_Field</span> <span class="k">as</span> <span class="n">VF</span>
+    <span class="kn">from</span> <span class="nn">pyacs.lib.gmtpoint</span> <span class="kn">import</span> <span class="n">GMT_Point</span>
+
+    <span class="c1"># PARAMETERS</span>
+
+    <span class="n">date_tol</span><span class="o">=</span><span class="mf">0.00001</span>
+    <span class="n">mu</span><span class="o">=</span><span class="mf">3.0E10</span>
+
+    <span class="c1"># DATE FORMAT</span>
+    
+    <span class="n">s_strdate</span> <span class="o">=</span> <span class="n">AT</span><span class="o">.</span><span class="n">decyear2datetime</span><span class="p">(</span><span class="n">np_dates</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+    <span class="n">s_doy</span><span class="p">,</span> <span class="n">_</span>  <span class="o">=</span> <span class="n">AT</span><span class="o">.</span><span class="n">decyear2dayno</span><span class="p">(</span><span class="n">np_dates</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+
+    <span class="n">e_strdate</span> <span class="o">=</span> <span class="n">AT</span><span class="o">.</span><span class="n">decyear2datetime</span><span class="p">(</span><span class="n">np_dates</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>
+    <span class="n">e_doy</span><span class="p">,</span> <span class="n">_</span>  <span class="o">=</span> <span class="n">AT</span><span class="o">.</span><span class="n">decyear2dayno</span><span class="p">(</span><span class="n">np_dates</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>
+    
+    <span class="n">time_step_diff</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">diff</span><span class="p">(</span><span class="n">np_dates</span><span class="p">)</span> <span class="o">*</span> <span class="mf">365.25</span>
+    
+    <span class="n">median_time_step</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">median</span><span class="p">(</span><span class="n">time_step_diff</span><span class="p">)</span>
+    <span class="n">shortest_time_step</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">min</span><span class="p">(</span><span class="n">time_step_diff</span><span class="p">)</span>
+    <span class="n">longest_time_step</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">time_step_diff</span><span class="p">)</span>
+
+
+    <span class="c1"># CREATE OUTPUT DIRECTORIES</span>
+
+    <span class="n">odir</span> <span class="o">=</span> <span class="n">odir</span> <span class="o">+</span> <span class="s1">&#39;_&#39;</span> <span class="o">+</span> <span class="p">(</span><span class="s2">&quot;</span><span class="si">%d%03d</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span> <span class="nb">int</span><span class="p">(</span><span class="n">np_dates</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span> <span class="p">,</span> <span class="n">s_doy</span> <span class="p">))</span> <span class="o">+</span> <span class="s1">&#39;_&#39;</span> <span class="o">+</span> <span class="p">(</span><span class="s2">&quot;</span><span class="si">%03d</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="nb">int</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">rint</span><span class="p">(</span><span class="n">shortest_time_step</span><span class="p">))</span> <span class="p">)</span> <span class="o">+</span> <span class="s1">&#39;d_&#39;</span> <span class="o">+</span> <span class="p">(</span><span class="s2">&quot;</span><span class="si">%d%03d</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span> <span class="nb">int</span><span class="p">(</span><span class="n">np_dates</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span> <span class="p">,</span> <span class="n">e_doy</span> <span class="p">))</span>
+
+    <span class="c1"># results directory</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">odir</span><span class="p">):</span><span class="n">mkdir</span><span class="p">(</span><span class="n">odir</span><span class="p">)</span>
+    
+    <span class="c1"># info directory</span>
+    
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">odir</span><span class="o">+</span><span class="s1">&#39;/info&#39;</span><span class="p">):</span><span class="n">mkdir</span><span class="p">(</span><span class="n">odir</span><span class="o">+</span><span class="s1">&#39;/info&#39;</span><span class="p">)</span>
+    
+    <span class="c1"># GPS time series results directory</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">odir</span><span class="o">+</span><span class="s1">&#39;/time_series&#39;</span><span class="p">):</span><span class="n">mkdir</span><span class="p">(</span><span class="n">odir</span><span class="o">+</span><span class="s1">&#39;/time_series&#39;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">odir</span><span class="o">+</span><span class="s1">&#39;/time_series/obs&#39;</span><span class="p">):</span><span class="n">mkdir</span><span class="p">(</span><span class="n">odir</span><span class="o">+</span><span class="s1">&#39;/time_series/obs&#39;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">odir</span><span class="o">+</span><span class="s1">&#39;/time_series/model&#39;</span><span class="p">):</span><span class="n">mkdir</span><span class="p">(</span><span class="n">odir</span><span class="o">+</span><span class="s1">&#39;/time_series/model&#39;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">odir</span><span class="o">+</span><span class="s1">&#39;/time_series/res&#39;</span><span class="p">):</span><span class="n">mkdir</span><span class="p">(</span><span class="n">odir</span><span class="o">+</span><span class="s1">&#39;/time_series/res&#39;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">odir</span><span class="o">+</span><span class="s1">&#39;/time_series/plot&#39;</span><span class="p">):</span><span class="n">mkdir</span><span class="p">(</span><span class="n">odir</span><span class="o">+</span><span class="s1">&#39;/time_series/plot&#39;</span><span class="p">)</span>
+
+    <span class="c1"># slip results directory</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">odir</span><span class="o">+</span><span class="s1">&#39;/slip&#39;</span><span class="p">):</span><span class="n">mkdir</span><span class="p">(</span><span class="n">odir</span><span class="o">+</span><span class="s1">&#39;/slip&#39;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">odir</span><span class="o">+</span><span class="s1">&#39;/slip/incremental&#39;</span><span class="p">):</span><span class="n">mkdir</span><span class="p">(</span><span class="n">odir</span><span class="o">+</span><span class="s1">&#39;/slip/incremental&#39;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">odir</span><span class="o">+</span><span class="s1">&#39;/slip/cumulative&#39;</span><span class="p">):</span><span class="n">mkdir</span><span class="p">(</span><span class="n">odir</span><span class="o">+</span><span class="s1">&#39;/slip/cumulative&#39;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">odir</span><span class="o">+</span><span class="s1">&#39;/slip/rate&#39;</span><span class="p">):</span><span class="n">mkdir</span><span class="p">(</span><span class="n">odir</span><span class="o">+</span><span class="s1">&#39;/slip/rate&#39;</span><span class="p">)</span>
+    
+    <span class="c1"># slip time series results directory</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">odir</span><span class="o">+</span><span class="s1">&#39;/slip_time_series&#39;</span><span class="p">):</span><span class="n">mkdir</span><span class="p">(</span><span class="n">odir</span><span class="o">+</span><span class="s1">&#39;/slip_time_series&#39;</span><span class="p">)</span>
+
+    <span class="c1"># stf results directory</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">odir</span><span class="o">+</span><span class="s1">&#39;/stf&#39;</span><span class="p">):</span><span class="n">mkdir</span><span class="p">(</span><span class="n">odir</span><span class="o">+</span><span class="s1">&#39;/stf&#39;</span><span class="p">)</span>
+
+    <span class="c1"># sum results directory</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">odir</span><span class="o">+</span><span class="s1">&#39;/summary&#39;</span><span class="p">):</span><span class="n">mkdir</span><span class="p">(</span><span class="n">odir</span><span class="o">+</span><span class="s1">&#39;/summary&#39;</span><span class="p">)</span>
+    <span class="n">fsumn</span><span class="o">=</span><span class="n">odir</span><span class="o">+</span><span class="s1">&#39;/summary/&#39;</span><span class="o">+</span><span class="n">name</span><span class="o">+</span><span class="s1">&#39;_sum.dat&#39;</span>
+
+    <span class="c1"># displacements directory</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">odir</span><span class="o">+</span><span class="s1">&#39;/displacement&#39;</span><span class="p">):</span><span class="n">mkdir</span><span class="p">(</span><span class="n">odir</span><span class="o">+</span><span class="s1">&#39;/displacement&#39;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">odir</span><span class="o">+</span><span class="s1">&#39;/displacement/cumulative&#39;</span><span class="p">):</span><span class="n">mkdir</span><span class="p">(</span><span class="n">odir</span><span class="o">+</span><span class="s1">&#39;/displacement/cumulative&#39;</span><span class="p">)</span>
+
+    <span class="c1"># npz directory</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">odir</span><span class="o">+</span><span class="s1">&#39;/npz&#39;</span><span class="p">):</span><span class="n">mkdir</span><span class="p">(</span><span class="n">odir</span><span class="o">+</span><span class="s1">&#39;/npz&#39;</span><span class="p">)</span>
+
+
+
+
+    <span class="c1">###################################################################</span>
+    <span class="c1"># READING INPUT NPZ FILES</span>
+    <span class="c1">###################################################################</span>
+    
+    <span class="kn">import</span> <span class="nn">pyeq.lib.npz</span>
+    
+    <span class="n">GEOMETRY</span><span class="p">,</span> <span class="n">Dm</span><span class="p">,</span> <span class="n">GREEN</span><span class="p">,</span> <span class="n">GREEN_UP</span><span class="p">,</span> <span class="n">OBS</span><span class="p">,</span> <span class="n">NAME_OBS</span><span class="p">,</span> <span class="n">OBS_UP</span><span class="p">,</span> <span class="n">NAME_OBS_UP</span> <span class="o">=</span> <span class="n">pyeq</span><span class="o">.</span><span class="n">lib</span><span class="o">.</span><span class="n">npz</span><span class="o">.</span><span class="n">read_pyeq_input_npz</span><span class="p">(</span> <span class="n">input_npz</span> <span class="p">)</span>
+
+    <span class="c1"># converts array to recarray</span>
+    
+    <span class="n">names</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;rdis_long&#39;</span><span class="p">,</span><span class="s1">&#39;rdis_lat&#39;</span><span class="p">,</span><span class="s1">&#39;rdis_depth&#39;</span><span class="p">,</span><span class="s1">&#39;rdis_length&#39;</span><span class="p">,</span><span class="s1">&#39;rdis_width&#39;</span><span class="p">,</span>\
+           <span class="s1">&#39;rdis_area&#39;</span><span class="p">,</span><span class="s1">&#39;ratio_rdis_tdis&#39;</span><span class="p">,</span><span class="s1">&#39;strike&#39;</span><span class="p">,</span><span class="s1">&#39;dip&#39;</span><span class="p">,</span>\
+           <span class="s1">&#39;centroid_long&#39;</span><span class="p">,</span><span class="s1">&#39;centroid_lat&#39;</span><span class="p">,</span><span class="s1">&#39;centroid_depth&#39;</span><span class="p">,</span>\
+           <span class="s1">&#39;tdis_long1&#39;</span><span class="p">,</span><span class="s1">&#39;tdis_lat1&#39;</span><span class="p">,</span><span class="s1">&#39;tdis_depth1&#39;</span><span class="p">,</span>\
+           <span class="s1">&#39;tdis_long2&#39;</span><span class="p">,</span><span class="s1">&#39;tdis_lat2&#39;</span><span class="p">,</span><span class="s1">&#39;tdis_depth2&#39;</span><span class="p">,</span>\
+           <span class="s1">&#39;tdis_long3&#39;</span><span class="p">,</span><span class="s1">&#39;tdis_lat3&#39;</span><span class="p">,</span><span class="s1">&#39;tdis_depth3&#39;</span><span class="p">,</span><span class="s1">&#39;tdis_area&#39;</span><span class="p">]</span>
+    
+    <span class="kn">import</span> <span class="nn">pyeq.lib.lib_inversion</span>
+    <span class="n">SGEOMETRY</span><span class="o">=</span><span class="n">pyeq</span><span class="o">.</span><span class="n">lib</span><span class="o">.</span><span class="n">lib_inversion</span><span class="o">.</span><span class="n">numpy_array_2_numpy_recarray</span><span class="p">(</span><span class="n">GEOMETRY</span><span class="p">,</span><span class="n">names</span><span class="p">)</span>
+
+<span class="c1">#         try:</span>
+<span class="c1">#             f = file(input_npy,&quot;rb&quot;)</span>
+<span class="c1">#             GEOMETRY=np.load(f)</span>
+<span class="c1">#             Dm=np.load(f)</span>
+<span class="c1">#             GREEN=np.load(f)</span>
+<span class="c1">#             GREEN_UP=np.load(f)</span>
+<span class="c1">#             OBS=np.load(f)</span>
+<span class="c1">#             NAME_OBS=np.load(f)</span>
+<span class="c1">#             OBS_UP=np.load(f)</span>
+<span class="c1">#             NAME_OBS_UP=np.load(f)</span>
+<span class="c1">#             f.close()</span>
+<span class="c1">#         except:</span>
+<span class="c1">#             print(&quot;!!! Could not read &quot;, input_npy)</span>
+<span class="c1">#             import sys</span>
+<span class="c1">#             sys.exit()</span>
+<span class="c1">#         </span>
+<span class="c1">#         SGEOMETRY=np.rec.array(GEOMETRY)</span>
+
+
+    <span class="kn">import</span> <span class="nn">pyeq.lib.lib_inversion</span>
+    <span class="n">GEOMETRY</span><span class="o">=</span><span class="n">pyeq</span><span class="o">.</span><span class="n">lib</span><span class="o">.</span><span class="n">lib_inversion</span><span class="o">.</span><span class="n">numpy_recarray_2_numpy_array</span><span class="p">(</span><span class="n">SGEOMETRY</span><span class="p">)</span>
+    <span class="n">nfaults</span><span class="o">=</span><span class="n">GEOMETRY</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="n">n_fields_geometry</span><span class="o">=</span><span class="n">GEOMETRY</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+
+    <span class="c1"># END INITIALIZATION</span>
+    
+    <span class="c1">###########################################################################</span>
+
+    <span class="c1"># SAVE WARNING FILE</span>
+    
+    <span class="n">fwarning</span><span class="o">=</span><span class="nb">open</span><span class="p">(</span><span class="n">odir</span><span class="o">+</span><span class="s1">&#39;/info/warning.dat&#39;</span><span class="p">,</span><span class="s1">&#39;w&#39;</span><span class="p">)</span>
+    <span class="n">fwarning</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">H_inversion_info</span><span class="p">[</span><span class="s1">&#39;warning&#39;</span><span class="p">])</span>
+    <span class="n">fwarning</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+
+    <span class="c1"># SAVE SOME NPY FILES in NPY DIR</span>
+    
+    <span class="n">np</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="n">odir</span><span class="o">+</span><span class="s1">&#39;/npz/sol_slip.npz&#39;</span><span class="p">,</span><span class="n">SLIP</span><span class="p">)</span>
+    <span class="n">np</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="n">odir</span><span class="o">+</span><span class="s1">&#39;/npz/np_dates.npz&#39;</span><span class="p">,</span><span class="n">np_dates</span><span class="p">)</span>
+    <span class="n">copyfile</span><span class="p">(</span><span class="n">input_npz</span><span class="p">,</span> <span class="n">odir</span><span class="o">+</span><span class="s1">&#39;/npz/input.npz&#39;</span><span class="p">)</span>
+<span class="c1">#    np.save(odir+&#39;/npy/input.npy&#39;, input_npy)</span>
+
+    <span class="c1"># SAVE A FILE WITH ALL USEFUL DATES IN INFO DIR</span>
+
+    <span class="n">np_dates_step</span><span class="o">=</span><span class="n">copy</span><span class="o">.</span><span class="n">deepcopy</span><span class="p">(</span><span class="n">np_dates</span><span class="p">)</span>
+    <span class="n">np_dates_step</span><span class="o">=</span><span class="n">np_dates_step</span><span class="p">[</span><span class="mi">1</span><span class="p">:]</span>
+    <span class="n">np_step_duration_day</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">diff</span><span class="p">(</span><span class="n">np_dates</span><span class="p">)</span> <span class="o">*</span> <span class="mf">365.25</span>
+
+    <span class="n">np_dates_text</span>      <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span> <span class="p">(</span><span class="n">np_dates_step</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="p">,</span> <span class="mi">8</span> <span class="p">)</span> <span class="p">)</span>
+    <span class="n">np_dates_text</span><span class="p">[:,</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span> <span class="n">np_dates_step</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="p">)</span>
+    <span class="n">np_dates_text</span><span class="p">[:,</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">np_dates</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+    <span class="n">np_dates_text</span><span class="p">[:,</span><span class="mi">2</span><span class="p">]</span> <span class="o">=</span> <span class="n">np_dates</span><span class="p">[</span><span class="mi">1</span><span class="p">:]</span>
+    <span class="n">np_dates_text</span><span class="p">[:,</span><span class="mi">3</span><span class="p">]</span> <span class="o">=</span> <span class="n">np_step_duration_day</span>
+    <span class="n">np_dates_text</span><span class="p">[:,</span><span class="mi">4</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">trunc</span><span class="p">(</span> <span class="n">np_dates</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="p">)</span>
+    <span class="n">np_dates_text</span><span class="p">[:,</span><span class="mi">5</span><span class="p">]</span> <span class="o">=</span> <span class="n">AT</span><span class="o">.</span><span class="n">decyear2dayno</span><span class="p">(</span><span class="n">np_dates</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">])[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="n">np_dates_text</span><span class="p">[:,</span><span class="mi">6</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">trunc</span><span class="p">(</span> <span class="n">np_dates</span><span class="p">[</span><span class="mi">1</span><span class="p">:]</span> <span class="p">)</span>
+    <span class="n">np_dates_text</span><span class="p">[:,</span><span class="mi">7</span><span class="p">]</span> <span class="o">=</span> <span class="n">AT</span><span class="o">.</span><span class="n">decyear2dayno</span><span class="p">(</span><span class="n">np_dates</span><span class="p">[</span><span class="mi">1</span><span class="p">:])[</span><span class="mi">0</span><span class="p">]</span>
+    
+    <span class="n">str_header</span><span class="o">=</span><span class="s1">&#39;step st_decyear  ed_decyear delta(d) st_date_yr_doy end_date_yr_doy&#39;</span>
+    <span class="n">np</span><span class="o">.</span><span class="n">savetxt</span><span class="p">(</span><span class="n">odir</span><span class="o">+</span><span class="s1">&#39;/info/dates.dat&#39;</span><span class="p">,</span> <span class="n">np_dates_text</span><span class="p">,</span> <span class="n">header</span><span class="o">=</span><span class="n">str_header</span><span class="p">,</span> <span class="n">fmt</span><span class="o">=</span><span class="s2">&quot;</span><span class="si">%05d</span><span class="s2"> </span><span class="si">%10.6lf</span><span class="s2"> </span><span class="si">%10.6lf</span><span class="s2"> </span><span class="si">%5.1lf</span><span class="s2">      </span><span class="si">%4.0lf</span><span class="s2"> </span><span class="si">%3.0lf</span><span class="s2">        </span><span class="si">%4.0lf</span><span class="s2"> </span><span class="si">%3.0lf</span><span class="s2">&quot;</span><span class="p">)</span>
+    
+    <span class="c1"># SAVE GEOMETRY IN INFO DIR</span>
+
+    <span class="n">Hdtype</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;names&#39;</span><span class="p">:[</span><span class="s1">&#39;    rdis_long&#39;</span><span class="p">,</span><span class="s1">&#39;   rdis_lat&#39;</span><span class="p">,</span><span class="s1">&#39;rdis_depth&#39;</span><span class="p">,</span>\
+                    <span class="s1">&#39;rdis_length&#39;</span><span class="p">,</span><span class="s1">&#39;rdis_width&#39;</span><span class="p">,</span><span class="s1">&#39; rdis_area&#39;</span><span class="p">,</span><span class="s1">&#39;ratio_rdis_tdis&#39;</span><span class="p">,</span>\
+                    <span class="s1">&#39;   strike&#39;</span><span class="p">,</span><span class="s1">&#39;       dip&#39;</span><span class="p">,</span>\
+                    <span class="s1">&#39;centroid_long&#39;</span><span class="p">,</span><span class="s1">&#39;centroid_lat&#39;</span><span class="p">,</span><span class="s1">&#39;centroid_depth&#39;</span><span class="p">,</span>\
+                    <span class="s1">&#39;tdis_long1&#39;</span><span class="p">,</span> <span class="s1">&#39; tdis_lat1&#39;</span><span class="p">,</span><span class="s1">&#39;tdis_depth1&#39;</span><span class="p">,</span> \
+                    <span class="s1">&#39;tdis_long2&#39;</span><span class="p">,</span><span class="s1">&#39; tdis_lat2&#39;</span><span class="p">,</span><span class="s1">&#39;tdis_depth2&#39;</span><span class="p">,</span> \
+                    <span class="s1">&#39;tdis_long3&#39;</span><span class="p">,</span><span class="s1">&#39; tdis_lat3&#39;</span><span class="p">,</span><span class="s1">&#39;tdis_depth3&#39;</span><span class="p">,</span> \
+                    <span class="s1">&#39; tdis_area&#39;</span><span class="p">],</span>\
+             <span class="s1">&#39;formats&#39;</span><span class="p">:[</span><span class="s1">&#39;f&#39;</span><span class="p">,</span><span class="s1">&#39;f&#39;</span><span class="p">,</span><span class="s1">&#39;f&#39;</span><span class="p">,</span><span class="s1">&#39;f&#39;</span><span class="p">,</span><span class="s1">&#39;f&#39;</span><span class="p">,</span><span class="s1">&#39;f&#39;</span><span class="p">,</span><span class="s1">&#39;f&#39;</span><span class="p">,</span><span class="s1">&#39;f&#39;</span><span class="p">,</span><span class="s1">&#39;f&#39;</span><span class="p">,</span><span class="s1">&#39;f&#39;</span><span class="p">,</span><span class="s1">&#39;f&#39;</span><span class="p">,</span><span class="s1">&#39;f&#39;</span><span class="p">,</span><span class="s1">&#39;f&#39;</span><span class="p">,</span><span class="s1">&#39;f&#39;</span><span class="p">,</span><span class="s1">&#39;f&#39;</span><span class="p">,</span><span class="s1">&#39;f&#39;</span><span class="p">,</span><span class="s1">&#39;f&#39;</span><span class="p">,</span><span class="s1">&#39;f&#39;</span><span class="p">,</span><span class="s1">&#39;f&#39;</span><span class="p">,</span><span class="s1">&#39;f&#39;</span><span class="p">,</span><span class="s1">&#39;f&#39;</span><span class="p">,</span><span class="s1">&#39;f&#39;</span><span class="p">]}</span>
+    
+    <span class="n">GEOMETRY_TXT</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">GEOMETRY</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span><span class="n">GEOMETRY</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">+</span><span class="mi">1</span><span class="p">))</span>
+    <span class="n">GEOMETRY_TXT</span><span class="p">[:,</span><span class="mi">0</span><span class="p">]</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">GEOMETRY</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+    <span class="n">GEOMETRY_TXT</span><span class="p">[:,</span><span class="mi">1</span><span class="p">:]</span><span class="o">=</span><span class="n">GEOMETRY</span>
+    <span class="n">header_cols</span><span class="o">=</span><span class="s1">&#39; &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">Hdtype</span><span class="p">[</span><span class="s1">&#39;names&#39;</span><span class="p">])</span>
+    <span class="n">format_header</span><span class="o">=</span><span class="s1">&#39;</span><span class="si">%04d</span><span class="s1"> </span><span class="si">%10.5lf</span><span class="s1"> </span><span class="si">%10.5lf</span><span class="s1">      </span><span class="si">%6.2lf</span><span class="s1"> </span><span class="se">\</span>
+<span class="s1">         </span><span class="si">%6.2lf</span><span class="s1">     </span><span class="si">%6.2lf</span><span class="s1">    </span><span class="si">%6.2lf</span><span class="s1">          </span><span class="si">%6.2lf</span><span class="se">\</span>
+<span class="s1">        </span><span class="si">%6.2lf</span><span class="s1"> </span><span class="si">%10.2lf</span><span class="s1"> </span><span class="se">\</span>
+<span class="s1">       </span><span class="si">%10.5lf</span><span class="s1">   </span><span class="si">%10.5lf</span><span class="s1">         </span><span class="si">%6.2lf</span><span class="s1"> </span><span class="se">\</span>
+<span class="s1">    </span><span class="si">%10.5lf</span><span class="s1"> </span><span class="si">%10.5lf</span><span class="s1">      </span><span class="si">%6.2lf</span><span class="s1"> </span><span class="se">\</span>
+<span class="s1">    </span><span class="si">%10.5lf</span><span class="s1"> </span><span class="si">%10.5lf</span><span class="s1">      </span><span class="si">%6.2lf</span><span class="s1"> </span><span class="se">\</span>
+<span class="s1">    </span><span class="si">%10.5lf</span><span class="s1"> </span><span class="si">%10.5lf</span><span class="s1">      </span><span class="si">%6.2lf</span><span class="s1"> </span><span class="se">\</span>
+<span class="s1">       </span><span class="si">%6.2lf</span><span class="s1"> &#39;</span>
+    
+    <span class="n">np</span><span class="o">.</span><span class="n">savetxt</span><span class="p">(</span><span class="n">odir</span><span class="o">+</span><span class="s1">&#39;/info/geometry.dat&#39;</span><span class="p">,</span> <span class="n">GEOMETRY_TXT</span><span class="p">,</span> <span class="n">fmt</span><span class="o">=</span><span class="n">format_header</span><span class="p">,</span> <span class="n">header</span><span class="o">=</span><span class="n">header_cols</span><span class="p">)</span>
+    
+    
+    <span class="c1"># DELTA_SLIP &amp; SLIP</span>
+    
+    <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;-- calculating slip&#39;</span><span class="p">)</span>
+
+    <span class="n">CUMULATIVE_SLIP_TIME_STEP</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">nfaults</span><span class="p">,</span><span class="mi">3</span><span class="p">))</span>
+    <span class="n">DELTA_SLIP_TIME_STEP</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">nfaults</span><span class="p">,</span><span class="mi">3</span><span class="p">))</span>
+
+    <span class="n">DELTA_SLIP_TIME_STEP</span><span class="p">[:,</span><span class="mi">0</span><span class="p">]</span><span class="o">=</span><span class="n">SGEOMETRY</span><span class="o">.</span><span class="n">centroid_long</span>
+    <span class="n">DELTA_SLIP_TIME_STEP</span><span class="p">[:,</span><span class="mi">1</span><span class="p">]</span><span class="o">=</span><span class="n">SGEOMETRY</span><span class="o">.</span><span class="n">centroid_lat</span>
+
+    <span class="n">CUMULATIVE_SLIP_TIME_STEP</span><span class="p">[:,</span><span class="mi">0</span><span class="p">]</span><span class="o">=</span><span class="n">SGEOMETRY</span><span class="o">.</span><span class="n">centroid_long</span>
+    <span class="n">CUMULATIVE_SLIP_TIME_STEP</span><span class="p">[:,</span><span class="mi">1</span><span class="p">]</span><span class="o">=</span><span class="n">SGEOMETRY</span><span class="o">.</span><span class="n">centroid_lat</span>
+
+    <span class="n">DELTA_SLIP_PER_TIME_STEP</span><span class="o">=</span><span class="n">SLIP</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span><span class="n">nfaults</span><span class="p">)</span><span class="o">.</span><span class="n">T</span>
+    
+    <span class="c1"># STF &amp; CSTF</span>
+
+    <span class="n">STF_INC</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">np_dates_step</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">+</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">))</span>
+    <span class="n">STF</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">np_dates_step</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">+</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">))</span>
+    <span class="n">CSTF</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">np_dates_step</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">+</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">))</span>
+    
+    <span class="n">STF</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">]</span><span class="o">=</span><span class="n">np_dates</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="n">CSTF</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">]</span><span class="o">=</span><span class="n">np_dates</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+    
+    <span class="c1"># SLIP TIME SERIES</span>
+
+    <span class="n">rate_slip_max</span> <span class="o">=</span> <span class="mf">0.</span>
+    <span class="n">rate_slip_min</span> <span class="o">=</span> <span class="mf">1.E6</span>
+    <span class="n">i_rate_slip_max</span> <span class="o">=</span> <span class="mi">0</span>
+
+    <span class="n">inc_slip_max</span> <span class="o">=</span> <span class="mf">0.</span>
+    <span class="n">inc_slip_min</span> <span class="o">=</span> <span class="mf">1.E6</span>
+    <span class="n">i_inc_slip_max</span> <span class="o">=</span> <span class="mi">0</span>
+
+
+    <span class="n">SLIP_TIME_SERIES</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span> <span class="nb">int</span><span class="p">(</span><span class="n">SLIP</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">/</span><span class="p">(</span><span class="n">np_dates</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">-</span><span class="mi">1</span><span class="p">)),</span><span class="n">np_dates</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]))</span>
+
+    <span class="n">date_ref</span><span class="o">=</span><span class="n">np_dates</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+
+    <span class="c1"># loop on dates    </span>
+
+    <span class="n">i</span><span class="o">=</span><span class="mi">0</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">np_dates_step</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]):</span>
+        <span class="n">date</span><span class="o">=</span><span class="n">np_dates_step</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+
+        <span class="p">(</span><span class="n">mday</span><span class="p">,</span><span class="n">month</span><span class="p">,</span><span class="n">ut</span><span class="p">)</span><span class="o">=</span><span class="n">AT</span><span class="o">.</span><span class="n">decyear2cal</span><span class="p">(</span><span class="n">date</span><span class="p">)</span>
+        <span class="p">(</span><span class="n">noday</span><span class="p">,</span><span class="n">ut</span><span class="p">)</span><span class="o">=</span><span class="n">AT</span><span class="o">.</span><span class="n">decyear2dayno</span><span class="p">(</span><span class="n">date</span><span class="p">)</span>    
+        <span class="n">date_info</span><span class="o">=</span><span class="p">(</span><span class="s2">&quot;time step #</span><span class="si">%04d</span><span class="s2"> date </span><span class="si">%10.5lf</span><span class="s2"> </span><span class="si">%02d</span><span class="s2">-</span><span class="si">%02d</span><span class="s2">-</span><span class="si">%04d</span><span class="s2">-</span><span class="si">%.1lf</span><span class="s2"> doy </span><span class="si">%03d</span><span class="s2"> | days since reference date +</span><span class="si">%4.1lf</span><span class="s2"> &quot;</span> <span class="o">%</span> \
+                   <span class="p">(</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">,</span><span class="n">date</span><span class="p">,</span><span class="n">mday</span><span class="p">,</span><span class="n">month</span><span class="p">,</span><span class="nb">int</span><span class="p">(</span><span class="n">date</span><span class="p">),</span><span class="n">ut</span><span class="p">,</span><span class="n">noday</span><span class="p">,(</span><span class="n">date</span><span class="o">-</span><span class="n">date_ref</span><span class="p">)</span><span class="o">*</span><span class="mf">365.25</span><span class="p">))</span>
+        
+        <span class="c1"># INCREMENTAL SLIP</span>
+        <span class="n">DELTA_SLIP_TIME_STEP</span><span class="p">[:,</span><span class="mi">2</span><span class="p">]</span><span class="o">=</span><span class="n">DELTA_SLIP_PER_TIME_STEP</span><span class="p">[:,</span><span class="n">i</span><span class="p">]</span>
+        <span class="n">fname</span><span class="o">=</span><span class="n">odir</span><span class="o">+</span><span class="s2">&quot;/slip/incremental/&quot;</span><span class="o">+</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%04d</span><span class="s2">_delta_slip.dat&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">))</span>
+        <span class="n">np</span><span class="o">.</span><span class="n">savetxt</span><span class="p">(</span><span class="n">fname</span><span class="p">,</span> <span class="n">DELTA_SLIP_TIME_STEP</span><span class="p">,</span> <span class="n">fmt</span><span class="o">=</span><span class="s2">&quot;</span><span class="si">%10.5lf</span><span class="s2"> </span><span class="si">%10.5lf</span><span class="s2"> </span><span class="si">%10.1lf</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">header</span><span class="o">=</span><span class="n">date_info</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">DELTA_SLIP_PER_TIME_STEP</span><span class="p">[:,</span><span class="n">i</span><span class="p">])</span> <span class="o">&gt;</span> <span class="n">inc_slip_max</span><span class="p">:</span>
+            <span class="n">inc_slip_max</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">DELTA_SLIP_PER_TIME_STEP</span><span class="p">[:,</span><span class="n">i</span><span class="p">])</span>
+            <span class="n">i_inc_slip_max</span> <span class="o">=</span> <span class="n">i</span>
+    
+        <span class="c1"># SLIP RATE</span>
+        
+        <span class="n">fname</span><span class="o">=</span><span class="n">odir</span><span class="o">+</span><span class="s2">&quot;/slip/rate/&quot;</span><span class="o">+</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%04d</span><span class="s2">_rate_slip.dat&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">))</span>
+        <span class="n">np</span><span class="o">.</span><span class="n">savetxt</span><span class="p">(</span><span class="n">fname</span><span class="p">,</span> <span class="n">DELTA_SLIP_TIME_STEP</span> <span class="o">/</span> <span class="n">np_step_duration_day</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">fmt</span><span class="o">=</span><span class="s2">&quot;</span><span class="si">%10.5lf</span><span class="s2"> </span><span class="si">%10.5lf</span><span class="s2"> </span><span class="si">%10.1lf</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">header</span><span class="o">=</span><span class="n">date_info</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">DELTA_SLIP_PER_TIME_STEP</span><span class="p">[:,</span><span class="n">i</span><span class="p">]</span> <span class="o">/</span> <span class="n">np_step_duration_day</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="p">)</span> <span class="o">&gt;</span> <span class="n">rate_slip_max</span><span class="p">:</span>
+            <span class="n">rate_slip_max</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">DELTA_SLIP_PER_TIME_STEP</span><span class="p">[:,</span><span class="n">i</span><span class="p">]</span>  <span class="o">/</span> <span class="n">np_step_duration_day</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="p">)</span>
+            <span class="n">i_rate_slip_max</span> <span class="o">=</span> <span class="n">i</span>
+        
+        <span class="c1"># CUMULATIVE SLIP</span>
+        <span class="n">CUMULATIVE_SLIP_TIME_STEP</span><span class="p">[:,</span><span class="mi">2</span><span class="p">]</span><span class="o">=</span><span class="n">CUMULATIVE_SLIP_TIME_STEP</span><span class="p">[:,</span><span class="mi">2</span><span class="p">]</span><span class="o">+</span><span class="n">DELTA_SLIP_PER_TIME_STEP</span><span class="p">[:,</span><span class="n">i</span><span class="p">]</span>
+
+        <span class="n">fname</span><span class="o">=</span><span class="n">odir</span><span class="o">+</span><span class="s2">&quot;/slip/cumulative/&quot;</span><span class="o">+</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%04d</span><span class="s2">_cumulative_slip.dat&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">))</span>
+        <span class="n">np</span><span class="o">.</span><span class="n">savetxt</span><span class="p">(</span><span class="n">fname</span><span class="p">,</span> <span class="n">CUMULATIVE_SLIP_TIME_STEP</span><span class="p">,</span> <span class="n">fmt</span><span class="o">=</span><span class="s2">&quot;</span><span class="si">%10.5lf</span><span class="s2"> </span><span class="si">%10.5lf</span><span class="s2"> </span><span class="si">%10.1lf</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">header</span><span class="o">=</span><span class="n">date_info</span><span class="p">)</span>
+        
+        <span class="c1"># SLIP TIME SERIES</span>
+        <span class="n">SLIP_TIME_SERIES</span><span class="p">[:,</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">]</span><span class="o">=</span><span class="n">CUMULATIVE_SLIP_TIME_STEP</span><span class="p">[:,</span><span class="mi">2</span><span class="p">]</span>
+        
+        <span class="c1"># STF &amp; CSTF</span>
+        
+        <span class="n">STF</span><span class="p">[</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">]</span><span class="o">=</span><span class="n">date</span>
+        <span class="n">STF_INC</span><span class="p">[</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">]</span><span class="o">=</span><span class="n">date</span>
+        <span class="n">STF_INC</span><span class="p">[</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">]</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">mu</span><span class="o">*</span><span class="n">SGEOMETRY</span><span class="o">.</span><span class="n">tdis_area</span><span class="o">*</span><span class="mf">1.0E6</span><span class="o">*</span><span class="n">DELTA_SLIP_PER_TIME_STEP</span><span class="p">[:,</span><span class="n">i</span><span class="p">]</span><span class="o">*</span><span class="mf">1.0E-3</span><span class="p">)</span>
+        <span class="n">STF</span><span class="p">[</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">]</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">mu</span><span class="o">*</span><span class="n">SGEOMETRY</span><span class="o">.</span><span class="n">tdis_area</span><span class="o">*</span><span class="mf">1.0E6</span><span class="o">*</span><span class="n">DELTA_SLIP_PER_TIME_STEP</span><span class="p">[:,</span><span class="n">i</span><span class="p">]</span><span class="o">/</span> <span class="n">np_step_duration_day</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">*</span><span class="mf">1.0E-3</span><span class="p">)</span>
+
+        <span class="n">CSTF</span><span class="p">[</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">]</span><span class="o">=</span><span class="n">date</span>
+        <span class="n">CSTF</span><span class="p">[</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">]</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">mu</span><span class="o">*</span><span class="n">SGEOMETRY</span><span class="o">.</span><span class="n">tdis_area</span><span class="o">*</span><span class="mf">1.0E6</span><span class="o">*</span><span class="n">CUMULATIVE_SLIP_TIME_STEP</span><span class="p">[:,</span><span class="mi">2</span><span class="p">]</span><span class="o">*</span><span class="mf">1.0E-3</span><span class="p">)</span>
+
+    <span class="c1"># SAVE STF &amp; CSTF</span>
+
+    <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;-- saving stf &amp; cstf&#39;</span><span class="p">)</span>
+
+    <span class="n">fname</span><span class="o">=</span><span class="n">odir</span><span class="o">+</span><span class="s2">&quot;/stf/STF.dat&quot;</span>
+    <span class="n">np</span><span class="o">.</span><span class="n">savetxt</span><span class="p">(</span><span class="n">fname</span><span class="p">,</span><span class="n">STF</span><span class="p">,</span><span class="n">fmt</span><span class="o">=</span><span class="s2">&quot;</span><span class="si">%10.5lf</span><span class="s2"> </span><span class="si">%10.2E</span><span class="s2">&quot;</span><span class="p">)</span>    
+        
+    <span class="n">fname</span><span class="o">=</span><span class="n">odir</span><span class="o">+</span><span class="s2">&quot;/stf/CSTF.dat&quot;</span>
+    <span class="n">np</span><span class="o">.</span><span class="n">savetxt</span><span class="p">(</span><span class="n">fname</span><span class="p">,</span><span class="n">CSTF</span><span class="p">,</span><span class="n">fmt</span><span class="o">=</span><span class="s2">&quot;</span><span class="si">%10.5lf</span><span class="s2"> </span><span class="si">%10.2E</span><span class="s2">&quot;</span><span class="p">)</span>    
+
+    <span class="c1"># SAVE SLIP TIME SERIES</span>
+
+    <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;-- saving slip time series&#39;</span><span class="p">)</span>
+
+    <span class="k">for</span> <span class="n">isubfault</span> <span class="ow">in</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">SLIP_TIME_SERIES</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]):</span>
+        <span class="n">STS</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">np_dates</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span><span class="mi">2</span><span class="p">))</span>
+        <span class="n">STS</span><span class="p">[:,</span><span class="mi">0</span><span class="p">]</span><span class="o">=</span><span class="n">np_dates</span>
+        <span class="n">STS</span><span class="p">[:,</span><span class="mi">1</span><span class="p">]</span><span class="o">=</span><span class="n">SLIP_TIME_SERIES</span><span class="p">[</span><span class="n">isubfault</span><span class="p">,:]</span>
+        <span class="n">np</span><span class="o">.</span><span class="n">savetxt</span><span class="p">((</span><span class="s2">&quot;</span><span class="si">%s</span><span class="s2">/slip_time_series/</span><span class="si">%04d</span><span class="s2">_ts_cumulative_slip.dat&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">odir</span><span class="p">,</span><span class="n">isubfault</span><span class="p">)),</span> <span class="n">STS</span><span class="p">,</span> <span class="n">fmt</span><span class="o">=</span><span class="s2">&quot;</span><span class="si">%10.5lf</span><span class="s2"> </span><span class="si">%10.1lf</span><span class="s2">&quot;</span><span class="p">)</span>
+
+    <span class="c1"># REGULARIZATION TIME SERIES AND CHI2</span>
+    
+    <span class="kn">import</span> <span class="nn">pyeq.lib.lib_inversion</span>
+    
+    <span class="n">chi2_regularization</span> <span class="o">=</span> <span class="mf">0.0</span>
+    
+    <span class="n">ts_regularization</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span> <span class="p">(</span><span class="n">np_dates_step</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="p">,</span> <span class="mi">12</span><span class="p">)</span> <span class="p">)</span>
+    <span class="n">ts_regularization</span><span class="p">[:,:</span><span class="n">np_dates_text</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]]</span> <span class="o">=</span> <span class="n">np_dates_text</span>
+    
+    <span class="kn">import</span> <span class="nn">pyacs.lib.glinalg</span>
+    <span class="n">CM</span> <span class="o">=</span> <span class="n">pyacs</span><span class="o">.</span><span class="n">lib</span><span class="o">.</span><span class="n">glinalg</span><span class="o">.</span><span class="n">cov_to_invcov</span><span class="p">(</span><span class="n">inv_CM_step</span><span class="p">)</span>
+    
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span> <span class="n">np_dates_step</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="p">):</span>
+        <span class="c1"># calculates (m-m0).T Cm^-1*w (m-m0) for step i</span>
+        <span class="n">chi2_model</span> <span class="o">=</span> <span class="n">pyeq</span><span class="o">.</span><span class="n">lib</span><span class="o">.</span><span class="n">lib_inversion</span><span class="o">.</span><span class="n">sp</span><span class="p">(</span><span class="n">DELTA_SLIP_PER_TIME_STEP</span><span class="p">[:,</span><span class="n">i</span><span class="p">]</span> <span class="p">,</span> <span class="n">w</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">*</span> <span class="n">inv_CM_step</span><span class="p">)</span>
+        <span class="n">ts_regularization</span><span class="p">[</span><span class="n">i</span><span class="p">,</span><span class="mi">8</span><span class="p">]</span> <span class="o">=</span> <span class="n">chi2_model</span>
+        <span class="n">ts_regularization</span><span class="p">[</span><span class="n">i</span><span class="p">,</span><span class="mi">9</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">diag</span><span class="p">(</span><span class="n">CM</span><span class="p">)))</span>
+        <span class="n">ts_regularization</span><span class="p">[</span><span class="n">i</span><span class="p">,</span><span class="mi">10</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">DELTA_SLIP_PER_TIME_STEP</span><span class="p">[:,</span><span class="n">i</span><span class="p">])</span>
+        <span class="n">ts_regularization</span><span class="p">[</span><span class="n">i</span><span class="p">,</span><span class="mi">11</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span> <span class="n">chi2_model</span> <span class="o">/</span> <span class="nb">float</span><span class="p">(</span> <span class="n">CM</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span> <span class="p">)</span>
+        <span class="n">chi2_regularization</span> <span class="o">=</span> <span class="n">chi2_regularization</span> <span class="o">+</span> <span class="n">ts_regularization</span><span class="p">[</span><span class="n">i</span><span class="p">,</span><span class="mi">1</span><span class="p">]</span>
+    
+    <span class="n">np</span><span class="o">.</span><span class="n">savetxt</span><span class="p">(</span> <span class="n">odir</span><span class="o">+</span><span class="s1">&#39;/info/regularization_time_series.dat&#39;</span><span class="p">,</span> <span class="n">ts_regularization</span> <span class="p">,</span> <span class="n">header</span><span class="o">=</span><span class="n">str_header</span><span class="o">+</span><span class="s1">&#39;      m0t Cm-1 m0  sigma  max_slip_inc  reduced_chi2&#39;</span><span class="p">,</span> \
+                <span class="n">fmt</span><span class="o">=</span><span class="s2">&quot;</span><span class="si">%05d</span><span class="s2"> </span><span class="si">%10.6lf</span><span class="s2"> </span><span class="si">%10.6lf</span><span class="s2"> </span><span class="si">%5.1lf</span><span class="s2">      </span><span class="si">%4.0lf</span><span class="s2"> </span><span class="si">%3.0lf</span><span class="s2">        </span><span class="si">%4.0lf</span><span class="s2"> </span><span class="si">%3.0lf</span><span class="s2">       </span><span class="si">%13.3lf</span><span class="s2"> </span><span class="si">%8.3lf</span><span class="s2">     </span><span class="si">%8.3lf</span><span class="s2">      </span><span class="si">%8.3lf</span><span class="s2">&quot;</span><span class="p">)</span>
+    
+
+    <span class="c1"># MODEL AND O-C TIME SERIES</span>
+    
+    <span class="kn">import</span> <span class="nn">pyeq.lib.green_tensor</span>
+    
+    <span class="n">NEW_GREEN</span> <span class="o">=</span> <span class="n">pyeq</span><span class="o">.</span><span class="n">lib</span><span class="o">.</span><span class="n">green_tensor</span><span class="o">.</span><span class="n">GREEN_ENU_TO_GREEN_RAKE_MAIN_RAKE_CONJUGATE</span><span class="p">(</span><span class="n">GREEN</span><span class="p">,</span> <span class="n">GEOMETRY</span><span class="p">,</span> <span class="n">SGEOMETRY</span><span class="p">,</span> \
+                                    <span class="n">H_inversion_info</span><span class="p">[</span><span class="s1">&#39;rake_type&#39;</span><span class="p">],</span> <span class="n">H_inversion_info</span><span class="p">[</span><span class="s1">&#39;rake_value&#39;</span><span class="p">])</span>
+
+    
+    
+    
+    <span class="kn">from</span> <span class="nn">pyacs.gts.Sgts</span> <span class="kn">import</span> <span class="n">Sgts</span>
+    <span class="kn">from</span> <span class="nn">pyacs.gts.Gts</span> <span class="kn">import</span> <span class="n">Gts</span>
+    <span class="kn">import</span> <span class="nn">pyacs.lib.coordinates</span>
+
+    <span class="n">tts</span><span class="o">=</span><span class="n">Sgts</span><span class="p">(</span><span class="n">ts_dir</span><span class="o">=</span><span class="n">H_inversion_info</span><span class="p">[</span><span class="s1">&#39;dir_ts&#39;</span><span class="p">],</span><span class="n">xyz</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">daily</span><span class="p">:</span>
+        <span class="n">ts</span><span class="o">=</span><span class="n">tts</span><span class="o">.</span><span class="n">gts</span><span class="p">(</span><span class="s1">&#39;force_daily&#39;</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">ts</span><span class="o">=</span><span class="n">tts</span>
+
+    <span class="c1"># populates X0, Y0, Z0 of the time series</span>
+    
+    <span class="k">for</span> <span class="n">gts</span> <span class="ow">in</span> <span class="n">ts</span><span class="o">.</span><span class="n">lGts</span><span class="p">():</span>
+        <span class="n">site_number</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">argwhere</span><span class="p">(</span><span class="n">NAME_OBS</span><span class="o">==</span><span class="n">gts</span><span class="o">.</span><span class="n">code</span><span class="o">.</span><span class="n">upper</span><span class="p">())[</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">]</span> 
+        <span class="n">lon</span> <span class="o">=</span> <span class="n">OBS</span><span class="p">[</span><span class="n">site_number</span><span class="p">,</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">lat</span> <span class="o">=</span> <span class="n">OBS</span><span class="p">[</span><span class="n">site_number</span><span class="p">,</span><span class="mi">1</span><span class="p">]</span>
+        <span class="n">he</span>  <span class="o">=</span> <span class="mf">0.0</span>
+        <span class="n">X0</span><span class="p">,</span><span class="n">Y0</span><span class="p">,</span><span class="n">Z0</span> <span class="o">=</span> <span class="n">pyacs</span><span class="o">.</span><span class="n">lib</span><span class="o">.</span><span class="n">coordinates</span><span class="o">.</span><span class="n">geo2xyz</span><span class="p">(</span><span class="n">lon</span><span class="p">,</span> <span class="n">lat</span><span class="p">,</span> <span class="n">he</span><span class="p">,</span> <span class="n">unit</span><span class="o">=</span><span class="s1">&#39;dec_deg&#39;</span><span class="p">)</span>
+        <span class="n">gts</span><span class="o">.</span><span class="n">X0</span> <span class="o">=</span> <span class="n">X0</span> 
+        <span class="n">gts</span><span class="o">.</span><span class="n">Y0</span> <span class="o">=</span> <span class="n">Y0</span> 
+        <span class="n">gts</span><span class="o">.</span><span class="n">Z0</span> <span class="o">=</span> <span class="n">Z0</span> 
+
+        <span class="n">gts</span><span class="o">.</span><span class="n">lon</span> <span class="o">=</span> <span class="n">lon</span>
+        <span class="n">gts</span><span class="o">.</span><span class="n">lat</span> <span class="o">=</span> <span class="n">lat</span>
+        <span class="n">gts</span><span class="o">.</span><span class="n">h</span>  <span class="o">=</span> <span class="n">he</span>
+    
+    <span class="n">H_code_wrms</span> <span class="o">=</span> <span class="p">{}</span>
+
+    <span class="n">ngps</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="n">ngps_nodata</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="n">chi2_obs</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="n">n_obs</span> <span class="o">=</span> <span class="mi">0</span>
+    
+    <span class="n">bias_max</span> <span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">0.</span><span class="p">,</span><span class="mf">0.</span><span class="p">,</span><span class="mf">0.</span><span class="p">])</span>
+    <span class="n">bias_max_code</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span>
+    <span class="n">bias_mean</span> <span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">0.</span><span class="p">,</span><span class="mf">0.</span><span class="p">,</span><span class="mf">0.</span><span class="p">])</span>
+
+    <span class="n">wrms_max</span> <span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">0.</span><span class="p">,</span><span class="mf">0.</span><span class="p">,</span><span class="mf">0.</span><span class="p">])</span>
+    <span class="n">wrms_max_code</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span>
+
+    <span class="c1"># loop on time series</span>
+    
+    <span class="c1"># np_dates in seconds</span>
+    
+    <span class="n">lldate</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="c1"># get reference date in datetime format</span>
+    <span class="n">lref</span><span class="o">=</span><span class="p">[]</span>
+    <span class="k">for</span> <span class="n">gts</span> <span class="ow">in</span> <span class="n">ts</span><span class="o">.</span><span class="n">lGts</span><span class="p">():</span>
+        <span class="n">lref</span><span class="o">.</span><span class="n">append</span><span class="p">(</span> <span class="n">gts</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">]</span> <span class="p">)</span>
+    
+    <span class="n">ref_datetime</span> <span class="o">=</span> <span class="n">AT</span><span class="o">.</span><span class="n">decyear2datetime</span><span class="p">(</span> <span class="n">np</span><span class="o">.</span><span class="n">min</span><span class="p">(</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">lref</span><span class="p">)</span> <span class="p">)</span>  <span class="p">)</span>
+    
+    <span class="c1"># get an np_array of dates in seconds    </span>
+    <span class="n">np_dates_s</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span> <span class="p">[]</span> <span class="p">)</span>
+    <span class="k">for</span> <span class="n">gts</span> <span class="ow">in</span> <span class="n">ts</span><span class="o">.</span><span class="n">lGts</span><span class="p">():</span>
+        
+        <span class="n">np_dates_datetime</span> <span class="o">=</span> <span class="n">AT</span><span class="o">.</span><span class="n">decyear2datetime</span><span class="p">(</span><span class="n">gts</span><span class="o">.</span><span class="n">data</span><span class="p">[:,</span><span class="mi">0</span><span class="p">])</span> <span class="o">-</span> <span class="n">ref_datetime</span>
+        <span class="n">np_dates_s_tmp</span> <span class="o">=</span>  <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="nb">map</span><span class="p">(</span><span class="nb">int</span><span class="p">,[</span><span class="n">x</span><span class="o">.</span><span class="n">total_seconds</span><span class="p">()</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">np_dates_datetime</span><span class="p">])))</span>
+        <span class="n">np_dates_s</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">unique</span><span class="p">(</span> <span class="n">np</span><span class="o">.</span><span class="n">hstack</span><span class="p">(</span> <span class="p">(</span><span class="n">np_dates_s</span> <span class="p">,</span> <span class="n">np_dates_s_tmp</span> <span class="p">)</span> <span class="p">)</span> <span class="p">)</span>
+
+        
+    <span class="c1"># list of observed displacement field</span>
+    <span class="n">l_obs_disp</span> <span class="o">=</span> <span class="p">{}</span>
+    <span class="c1"># list of modeled displacement field</span>
+    <span class="n">l_model_disp</span> <span class="o">=</span> <span class="p">{}</span>
+    
+    
+    <span class="k">for</span> <span class="n">gts</span> <span class="ow">in</span> <span class="n">ts</span><span class="o">.</span><span class="n">lGts</span><span class="p">():</span>
+        
+        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;-- printing modeled and residual time series for &#39;</span><span class="p">,</span><span class="n">gts</span><span class="o">.</span><span class="n">code</span><span class="p">)</span>
+
+        <span class="n">new_gts</span> <span class="o">=</span> <span class="n">gts</span><span class="o">.</span><span class="n">extract_periods</span><span class="p">(</span> <span class="p">[</span><span class="n">np_dates</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">-</span><span class="n">date_tol</span><span class="o">/</span><span class="mf">365.25</span> <span class="p">,</span> <span class="n">np_dates</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">+</span> <span class="n">date_tol</span><span class="o">/</span><span class="mf">365.25</span><span class="p">]</span> <span class="p">,</span><span class="n">verbose</span> <span class="o">=</span> <span class="kc">False</span> <span class="p">)</span>
+        
+        <span class="c1"># time series has no data, skip</span>
+        <span class="k">if</span> <span class="n">new_gts</span><span class="o">.</span><span class="n">data</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">ngps_nodata</span> <span class="o">=</span> <span class="n">ngps_nodata</span> <span class="o">+</span> <span class="mi">1</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;! WARNING: no data found at requested time for site &#39;</span><span class="p">,</span><span class="n">gts</span><span class="o">.</span><span class="n">code</span><span class="p">,</span><span class="n">gts</span><span class="o">.</span><span class="n">ifile</span><span class="p">)</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;! WARNING: site &#39;</span><span class="p">,</span><span class="n">gts</span><span class="o">.</span><span class="n">code</span><span class="p">,</span><span class="s1">&#39; will be skipped in the inversion&#39;</span><span class="p">)</span>
+            <span class="k">continue</span>
+        <span class="c1"># time series has only 1 data, skip</span>
+        <span class="k">elif</span> <span class="n">new_gts</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="n">ngps_nodata</span> <span class="o">=</span> <span class="n">ngps_nodata</span> <span class="o">+</span> <span class="mi">1</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;! WARNING: only one date found at requested time for site &#39;</span><span class="p">,</span><span class="n">gts</span><span class="o">.</span><span class="n">code</span><span class="p">,</span><span class="n">gts</span><span class="o">.</span><span class="n">ifile</span><span class="p">)</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;! WARNING: site &#39;</span><span class="p">,</span><span class="n">gts</span><span class="o">.</span><span class="n">code</span><span class="p">,</span><span class="s1">&#39; will be skipped in the inversion&#39;</span><span class="p">)</span>
+            <span class="k">continue</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="c1"># set dN, dE, dU to 0.0 at the first date</span>
+            <span class="n">new_gts</span><span class="o">.</span><span class="n">data</span><span class="p">[:,</span><span class="mi">1</span><span class="p">:</span><span class="mi">4</span><span class="p">]</span> <span class="o">=</span> <span class="n">new_gts</span><span class="o">.</span><span class="n">data</span><span class="p">[:,</span><span class="mi">1</span><span class="p">:</span><span class="mi">4</span><span class="p">]</span> <span class="o">-</span> <span class="n">new_gts</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">:</span><span class="mi">4</span><span class="p">]</span>
+            <span class="n">ngps</span> <span class="o">=</span> <span class="n">ngps</span> <span class="o">+</span> <span class="mi">1</span>
+        
+        <span class="c1"># case up component rescaled</span>
+        
+        <span class="k">if</span> <span class="n">H_inversion_info</span><span class="p">[</span><span class="s1">&#39;up&#39;</span><span class="p">][</span><span class="mi">0</span><span class="p">]:</span>
+            <span class="n">new_gts</span><span class="o">.</span><span class="n">data</span><span class="p">[:,</span><span class="mi">6</span><span class="p">]</span> <span class="o">=</span> <span class="n">new_gts</span><span class="o">.</span><span class="n">data</span><span class="p">[:,</span><span class="mi">6</span><span class="p">]</span> <span class="o">*</span> <span class="mf">0.0</span> <span class="o">+</span> <span class="n">H_inversion_info</span><span class="p">[</span><span class="s1">&#39;up&#39;</span><span class="p">][</span><span class="mi">1</span><span class="p">]</span>
+        
+        <span class="n">new_gts</span><span class="o">.</span><span class="n">write_pos</span><span class="p">(</span><span class="n">idir</span><span class="o">=</span><span class="n">odir</span><span class="o">+</span><span class="s1">&#39;/time_series/obs&#39;</span><span class="p">,</span> <span class="n">force</span><span class="o">=</span><span class="s1">&#39;data&#39;</span> <span class="p">,</span> <span class="n">add_key</span><span class="o">=</span><span class="s1">&#39;obs&#39;</span><span class="p">,)</span>
+      
+        <span class="n">MODEL_TS</span> <span class="o">=</span> <span class="n">predict_time_series_from_model</span><span class="p">(</span><span class="n">SLIP</span><span class="p">,</span> <span class="n">np_dates</span><span class="p">,</span> <span class="n">NEW_GREEN</span><span class="p">,</span> <span class="n">NAME_OBS</span><span class="p">,</span> <span class="n">new_gts</span><span class="p">)</span> <span class="o">*</span> <span class="mf">1E-3</span>
+        
+        <span class="c1"># MODEL_TS gives the prediction from the slip since the first date of the model</span>
+        <span class="c1"># BUT, to compare to observation, we want the model since the first observation time</span>
+        
+        <span class="n">MODEL_TS</span> <span class="o">=</span> <span class="n">MODEL_TS</span> <span class="o">-</span> <span class="n">MODEL_TS</span><span class="p">[</span><span class="mi">0</span><span class="p">,:]</span>
+        
+        <span class="n">RES_TS</span>   <span class="o">=</span> <span class="n">new_gts</span><span class="o">.</span><span class="n">data</span><span class="p">[:,</span><span class="mi">1</span><span class="p">:</span><span class="mi">4</span><span class="p">]</span> <span class="o">-</span> <span class="n">MODEL_TS</span>
+        <span class="n">RES_TS</span> <span class="o">=</span> <span class="n">RES_TS</span> <span class="o">*</span> <span class="mf">1.E3</span>
+    
+        <span class="n">bias_tmp</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">RES_TS</span><span class="p">,</span><span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+        <span class="n">bias_mean</span> <span class="o">=</span> <span class="n">bias_mean</span> <span class="o">+</span> <span class="n">bias_tmp</span>
+
+        
+        <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span> <span class="n">bias_tmp</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span> <span class="o">&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span> <span class="n">bias_max</span><span class="o">**</span><span class="mi">2</span> <span class="p">):</span>
+            <span class="n">bias_max</span> <span class="o">=</span> <span class="n">bias_tmp</span>
+            <span class="n">bias_max_code</span> <span class="o">=</span> <span class="n">gts</span><span class="o">.</span><span class="n">code</span>
+            
+        
+        <span class="c1"># chi2_obs</span>
+        <span class="c1"># if up used        </span>
+        <span class="k">if</span> <span class="n">H_inversion_info</span><span class="p">[</span><span class="s1">&#39;up&#39;</span><span class="p">][</span><span class="mi">0</span><span class="p">]:</span>
+            <span class="n">RES_TS</span><span class="p">[:,</span><span class="mi">2</span><span class="p">]</span> <span class="o">=</span> <span class="n">RES_TS</span><span class="p">[:,</span><span class="mi">2</span><span class="p">]</span> <span class="o">/</span> <span class="n">H_inversion_info</span><span class="p">[</span><span class="s1">&#39;up&#39;</span><span class="p">][</span><span class="mi">1</span><span class="p">]</span>
+            <span class="n">chi2_obs</span> <span class="o">=</span> <span class="n">chi2_obs</span> <span class="o">+</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">RES_TS</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span>
+            <span class="n">n_obs</span> <span class="o">=</span> <span class="n">n_obs</span> <span class="o">+</span> <span class="n">RES_TS</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">*</span> <span class="mi">3</span>
+        <span class="c1"># else up not used</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">RES_TS</span><span class="p">[:,</span><span class="mi">2</span><span class="p">]</span> <span class="o">=</span> <span class="n">RES_TS</span><span class="p">[:,</span><span class="mi">2</span><span class="p">]</span> <span class="o">*</span> <span class="mf">0.0</span>
+            <span class="n">chi2_obs</span> <span class="o">=</span> <span class="n">chi2_obs</span> <span class="o">+</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">RES_TS</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span>
+            <span class="n">n_obs</span> <span class="o">=</span> <span class="n">n_obs</span> <span class="o">+</span> <span class="n">RES_TS</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">*</span> <span class="mi">2</span>
+            
+        
+        <span class="n">p_gts</span> <span class="o">=</span> <span class="n">new_gts</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+        <span class="n">p_gts</span><span class="o">.</span><span class="n">data</span><span class="p">[:,</span><span class="mi">1</span><span class="p">:</span><span class="mi">4</span><span class="p">]</span> <span class="o">=</span> <span class="n">MODEL_TS</span>
+        <span class="n">p_gts</span><span class="o">.</span><span class="n">write_pos</span><span class="p">(</span><span class="n">idir</span><span class="o">=</span><span class="n">odir</span><span class="o">+</span><span class="s1">&#39;/time_series/model&#39;</span><span class="p">,</span><span class="n">add_key</span><span class="o">=</span><span class="s1">&#39;model&#39;</span><span class="p">,)</span>
+        
+        <span class="c1"># make png plot of obs time series with model superimposed</span>
+        <span class="n">png</span> <span class="o">=</span> <span class="n">odir</span><span class="o">+</span><span class="s1">&#39;/time_series/plot/&#39;</span><span class="o">+</span><span class="n">gts</span><span class="o">.</span><span class="n">code</span><span class="o">+</span><span class="s1">&#39;.png&#39;</span>
+        <span class="c1">#new_gts.plot(superimposed=p_gts,save=png,center=False)</span>
+
+        <span class="c1"># OBS AND MODELED DISPLACEMENTS PSVELO FILES</span>
+        
+        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;-- making obs and modeled displacements for &#39;</span> <span class="p">,</span> <span class="n">new_gts</span><span class="o">.</span><span class="n">code</span><span class="p">)</span>
+        
+        <span class="c1"># get seconds</span>
+        
+        <span class="n">np_dates_datetime</span> <span class="o">=</span> <span class="n">AT</span><span class="o">.</span><span class="n">decyear2datetime</span><span class="p">(</span><span class="n">new_gts</span><span class="o">.</span><span class="n">data</span><span class="p">[:,</span><span class="mi">0</span><span class="p">])</span> <span class="o">-</span> <span class="n">ref_datetime</span>
+        <span class="n">np_dates_seconds_gts</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="nb">map</span><span class="p">(</span><span class="nb">int</span><span class="p">,[</span><span class="n">x</span><span class="o">.</span><span class="n">total_seconds</span><span class="p">()</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">np_dates_datetime</span><span class="p">])))</span>
+
+        <span class="c1"># populates Velocity Fields</span>
+        
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span> <span class="n">np_dates_seconds_gts</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="p">):</span>
+            
+            <span class="k">if</span> <span class="n">np_dates_seconds_gts</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">l_obs_disp</span><span class="p">:</span>
+                <span class="n">l_obs_disp</span><span class="p">[</span> <span class="n">np_dates_seconds_gts</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="p">]</span> <span class="o">=</span> <span class="n">VF</span><span class="p">()</span>
+                 
+            <span class="n">M</span> <span class="o">=</span> <span class="n">GMT_Point</span><span class="p">(</span> <span class="n">code</span><span class="o">=</span><span class="n">gts</span><span class="o">.</span><span class="n">code</span><span class="p">,</span> <span class="n">lon</span><span class="o">=</span><span class="n">new_gts</span><span class="o">.</span><span class="n">lon</span><span class="p">,</span> <span class="n">lat</span><span class="o">=</span><span class="n">new_gts</span><span class="o">.</span><span class="n">lat</span><span class="p">,</span> <span class="n">Ve</span><span class="o">=</span><span class="n">new_gts</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="n">i</span><span class="p">,</span><span class="mi">2</span><span class="p">]</span><span class="o">*</span><span class="mf">1.E3</span> <span class="p">,</span> <span class="n">Vn</span><span class="o">=</span><span class="n">new_gts</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="n">i</span><span class="p">,</span><span class="mi">1</span><span class="p">]</span><span class="o">*</span><span class="mf">1.E3</span><span class="p">,</span> <span class="n">Vu</span><span class="o">=</span><span class="n">new_gts</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="n">i</span><span class="p">,</span><span class="mi">3</span><span class="p">]</span><span class="o">*</span><span class="mf">1.E3</span> <span class="p">,</span> <span class="n">SVe</span><span class="o">=</span><span class="n">new_gts</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="n">i</span><span class="p">,</span><span class="mi">5</span><span class="p">]</span><span class="o">*</span><span class="mf">1.E3</span> <span class="p">,</span> <span class="n">SVn</span><span class="o">=</span><span class="n">new_gts</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="n">i</span><span class="p">,</span><span class="mi">4</span><span class="p">]</span><span class="o">*</span><span class="mf">1.E3</span><span class="p">,</span> <span class="n">SVu</span><span class="o">=</span><span class="n">new_gts</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="n">i</span><span class="p">,</span><span class="mi">6</span><span class="p">]</span><span class="o">*</span><span class="mf">1.E3</span><span class="p">)</span>
+            <span class="n">l_obs_disp</span><span class="p">[</span> <span class="n">np_dates_seconds_gts</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="p">]</span><span class="o">.</span><span class="n">add_point</span><span class="p">(</span> <span class="n">M</span> <span class="p">)</span>
+
+            <span class="k">if</span> <span class="n">np_dates_seconds_gts</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">l_model_disp</span><span class="p">:</span>
+                <span class="n">l_model_disp</span><span class="p">[</span> <span class="n">np_dates_seconds_gts</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="p">]</span> <span class="o">=</span> <span class="n">VF</span><span class="p">()</span>
+                 
+            <span class="n">M</span> <span class="o">=</span> <span class="n">GMT_Point</span><span class="p">(</span> <span class="n">code</span><span class="o">=</span><span class="n">gts</span><span class="o">.</span><span class="n">code</span><span class="p">,</span> <span class="n">lon</span><span class="o">=</span><span class="n">p_gts</span><span class="o">.</span><span class="n">lon</span><span class="p">,</span> <span class="n">lat</span><span class="o">=</span><span class="n">p_gts</span><span class="o">.</span><span class="n">lat</span><span class="p">,</span> <span class="n">Ve</span><span class="o">=</span><span class="n">p_gts</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="n">i</span><span class="p">,</span><span class="mi">2</span><span class="p">]</span><span class="o">*</span><span class="mf">1.E3</span> <span class="p">,</span> <span class="n">Vn</span><span class="o">=</span><span class="n">p_gts</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="n">i</span><span class="p">,</span><span class="mi">1</span><span class="p">]</span><span class="o">*</span><span class="mf">1.E3</span> <span class="p">,</span> <span class="n">Vu</span><span class="o">=</span><span class="n">p_gts</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="n">i</span><span class="p">,</span><span class="mi">3</span><span class="p">]</span><span class="o">*</span><span class="mf">1.E3</span> <span class="p">,</span> <span class="n">SVe</span><span class="o">=</span><span class="n">p_gts</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="n">i</span><span class="p">,</span><span class="mi">5</span><span class="p">]</span><span class="o">*</span><span class="mf">1.E3</span> <span class="p">,</span> <span class="n">SVn</span><span class="o">=</span><span class="n">p_gts</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="n">i</span><span class="p">,</span><span class="mi">4</span><span class="p">]</span><span class="o">*</span><span class="mf">1.E3</span> <span class="p">,</span> <span class="n">SVu</span><span class="o">=</span><span class="n">p_gts</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="n">i</span><span class="p">,</span><span class="mi">6</span><span class="p">]</span><span class="o">*</span><span class="mf">1.E3</span><span class="p">)</span>
+            <span class="n">l_model_disp</span><span class="p">[</span> <span class="n">np_dates_seconds_gts</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="p">]</span><span class="o">.</span><span class="n">add_point</span><span class="p">(</span> <span class="n">M</span> <span class="p">)</span>
+
+        <span class="c1"># residual time series                 </span>
+
+        <span class="n">p_gts</span><span class="o">.</span><span class="n">data</span><span class="p">[:,</span><span class="mi">1</span><span class="p">:</span><span class="mi">4</span><span class="p">]</span> <span class="o">=</span> <span class="n">RES_TS</span> <span class="o">*</span> <span class="mf">1.E-3</span>
+        <span class="n">p_gts</span><span class="o">.</span><span class="n">write_pos</span><span class="p">(</span><span class="n">idir</span><span class="o">=</span><span class="n">odir</span><span class="o">+</span><span class="s1">&#39;/time_series/res&#39;</span><span class="p">,</span><span class="n">add_key</span><span class="o">=</span><span class="s1">&#39;res&#39;</span><span class="p">,)</span>
+
+        <span class="c1"># wrms for current gts</span>
+        <span class="n">H_code_wrms</span><span class="p">[</span><span class="n">gts</span><span class="o">.</span><span class="n">code</span><span class="p">]</span> <span class="o">=</span> <span class="n">p_gts</span><span class="o">.</span><span class="n">wrms</span><span class="p">()</span><span class="o">*</span><span class="mf">1000.</span>
+
+        <span class="c1"># update the worst wrms site</span>
+        <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span> <span class="n">H_code_wrms</span><span class="p">[</span><span class="n">gts</span><span class="o">.</span><span class="n">code</span><span class="p">]</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span> <span class="o">&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span> <span class="n">wrms_max</span><span class="o">**</span><span class="mi">2</span> <span class="p">):</span>
+            <span class="n">wrms_max</span> <span class="o">=</span> <span class="n">H_code_wrms</span><span class="p">[</span><span class="n">gts</span><span class="o">.</span><span class="n">code</span><span class="p">]</span>
+            <span class="n">wrms_max_code</span> <span class="o">=</span> <span class="n">gts</span><span class="o">.</span><span class="n">code</span>
+ 
+        <span class="c1"># end loop on gts</span>
+    
+ 
+    <span class="n">bias_mean</span> <span class="o">=</span> <span class="n">bias_mean</span> <span class="o">/</span> <span class="n">ngps</span>
+    
+    <span class="c1"># SAVE DISPLACEMENT PSVELO FILES</span>
+    <span class="n">i</span><span class="o">=</span><span class="mi">0</span>
+    <span class="k">for</span> <span class="n">date_seconds</span> <span class="ow">in</span> <span class="nb">sorted</span><span class="p">(</span> <span class="n">l_obs_disp</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span> <span class="p">):</span>
+
+        <span class="n">cal_date</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">isoformat</span><span class="p">(</span> <span class="n">ref_datetime</span> <span class="o">+</span> <span class="n">timedelta</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="nb">int</span><span class="p">(</span> <span class="n">date_seconds</span> <span class="p">)</span> <span class="p">)</span> <span class="p">)</span> 
+        <span class="n">minutes</span> <span class="o">=</span> <span class="n">date_seconds</span> <span class="o">/</span> <span class="mf">60.</span>
+        <span class="n">hours</span> <span class="o">=</span> <span class="n">date_seconds</span> <span class="o">/</span> <span class="mf">3600.</span>
+        <span class="n">days</span>    <span class="o">=</span> <span class="n">date_seconds</span> <span class="o">/</span> <span class="p">(</span><span class="mf">3600.</span> <span class="o">*</span> <span class="mf">24.</span> <span class="p">)</span>
+        
+        <span class="n">my_comment</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;</span><span class="si">%s</span><span class="s2"> | seconds=</span><span class="si">%d</span><span class="s2"> | minutes=</span><span class="si">%.1lf</span><span class="s2"> | hours=</span><span class="si">%.1f</span><span class="s2"> | days=</span><span class="si">%.2f</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">cal_date</span><span class="p">,</span><span class="n">date_seconds</span><span class="p">,</span><span class="n">minutes</span><span class="p">,</span><span class="n">hours</span><span class="p">,</span><span class="n">days</span><span class="p">)</span> <span class="p">)</span>
+        
+        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;-- writing psvelo files for &#39;</span><span class="p">,</span> <span class="n">i</span><span class="p">,</span> <span class="s1">&#39; / &#39;</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span> <span class="nb">list</span><span class="p">(</span><span class="n">l_obs_disp</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span> <span class="p">))</span>
+        <span class="n">l_obs_disp</span><span class="p">[</span> <span class="n">date_seconds</span> <span class="p">]</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">out_file</span><span class="o">=</span> <span class="n">odir</span><span class="o">+</span><span class="s1">&#39;/displacement/cumulative/&#39;</span> <span class="o">+</span> <span class="p">(</span><span class="s2">&quot;</span><span class="si">%05d</span><span class="s2">_obs.gmt&quot;</span> <span class="o">%</span> <span class="n">i</span><span class="p">),</span><span class="n">comment</span><span class="o">=</span> <span class="n">my_comment</span> <span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">False</span> <span class="p">)</span>
+        <span class="n">l_model_disp</span><span class="p">[</span> <span class="n">date_seconds</span> <span class="p">]</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">out_file</span><span class="o">=</span> <span class="n">odir</span><span class="o">+</span><span class="s1">&#39;/displacement/cumulative/&#39;</span> <span class="o">+</span> <span class="p">(</span><span class="s2">&quot;</span><span class="si">%05d</span><span class="s2">_model.gmt&quot;</span> <span class="o">%</span> <span class="n">i</span><span class="p">),</span><span class="n">comment</span><span class="o">=</span> <span class="n">my_comment</span> <span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">False</span>  <span class="p">)</span>
+
+        <span class="n">l_obs_disp</span><span class="p">[</span> <span class="n">date_seconds</span> <span class="p">]</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">out_file</span><span class="o">=</span> <span class="n">odir</span><span class="o">+</span><span class="s1">&#39;/displacement/cumulative/&#39;</span> <span class="o">+</span> <span class="p">(</span><span class="s2">&quot;</span><span class="si">%05d</span><span class="s2">_obs_up.gmt&quot;</span> <span class="o">%</span> <span class="n">i</span><span class="p">),</span><span class="n">comment</span><span class="o">=</span> <span class="n">my_comment</span> <span class="p">,</span> <span class="n">up</span><span class="o">=</span><span class="kc">True</span> <span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">False</span>  <span class="p">)</span>
+        <span class="n">l_model_disp</span><span class="p">[</span> <span class="n">date_seconds</span> <span class="p">]</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">out_file</span><span class="o">=</span> <span class="n">odir</span><span class="o">+</span><span class="s1">&#39;/displacement/cumulative/&#39;</span> <span class="o">+</span> <span class="p">(</span><span class="s2">&quot;</span><span class="si">%05d</span><span class="s2">_model_up.gmt&quot;</span> <span class="o">%</span> <span class="n">i</span><span class="p">),</span><span class="n">comment</span><span class="o">=</span> <span class="n">my_comment</span> <span class="p">,</span> <span class="n">up</span><span class="o">=</span><span class="kc">True</span> <span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">False</span> <span class="p">)</span>
+
+
+
+        <span class="n">i</span> <span class="o">=</span> <span class="n">i</span> <span class="o">+</span> <span class="mi">1</span>
+
+    <span class="c1"># SAVE PYEQ_KINEMATICS COMMAND LINE IN INFO DIR</span>
+
+    <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;-- saving pyeq command line in &#39;</span><span class="p">,</span><span class="n">odir</span><span class="o">+</span><span class="s1">&#39;/info/command_line.dat&#39;</span><span class="p">)</span>
+    
+    <span class="n">fcmd</span><span class="o">=</span><span class="nb">open</span><span class="p">(</span><span class="n">odir</span><span class="o">+</span><span class="s1">&#39;/info/command_line.dat&#39;</span><span class="p">,</span><span class="s1">&#39;w&#39;</span><span class="p">)</span>
+    <span class="n">fcmd</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">H_inversion_info</span><span class="p">[</span><span class="s1">&#39;cmd_line&#39;</span><span class="p">])</span>
+    <span class="n">fcmd</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+
+
+    <span class="c1"># SAVE WRMS IF RESIDUALS IN INFO DIR</span>
+
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;-- saving wrms in &quot;</span><span class="p">,</span> <span class="n">odir</span><span class="o">+</span><span class="s1">&#39;/info/wrms.dat&#39;</span> <span class="p">)</span>
+    
+    <span class="n">fwrms</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="n">odir</span><span class="o">+</span><span class="s1">&#39;/info/wrms.dat&#39;</span><span class="p">,</span><span class="s1">&#39;w+&#39;</span><span class="p">)</span>
+    
+    <span class="n">fwrms</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;code  wrms_n (mm) wrms_e (mm) wrms_u (mm)</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="n">fwrms</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;-----------------------------------------</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+    
+    <span class="n">wrms_n_mean</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="n">wrms_e_mean</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="n">wrms_u_mean</span> <span class="o">=</span> <span class="mi">0</span>
+    
+    <span class="k">for</span> <span class="n">code</span> <span class="ow">in</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">H_code_wrms</span><span class="o">.</span><span class="n">keys</span><span class="p">()):</span>
+        <span class="n">fwrms</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%s</span><span class="s2"> </span><span class="si">%10.1lf</span><span class="s2"> </span><span class="si">%10.1lf</span><span class="s2"> </span><span class="si">%10.1lf</span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">code</span><span class="p">,</span><span class="n">H_code_wrms</span><span class="p">[</span><span class="n">code</span><span class="p">][</span><span class="mi">0</span><span class="p">],</span> <span class="n">H_code_wrms</span><span class="p">[</span><span class="n">code</span><span class="p">][</span><span class="mi">1</span><span class="p">],</span> <span class="n">H_code_wrms</span><span class="p">[</span><span class="n">code</span><span class="p">][</span><span class="mi">2</span><span class="p">]</span> <span class="p">))</span>
+
+        <span class="n">wrms_n_mean</span> <span class="o">+=</span> <span class="n">H_code_wrms</span><span class="p">[</span><span class="n">code</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">wrms_e_mean</span> <span class="o">+=</span> <span class="n">H_code_wrms</span><span class="p">[</span><span class="n">code</span><span class="p">][</span><span class="mi">1</span><span class="p">]</span>
+        <span class="n">wrms_u_mean</span> <span class="o">+=</span> <span class="n">H_code_wrms</span><span class="p">[</span><span class="n">code</span><span class="p">][</span><span class="mi">2</span><span class="p">]</span>
+
+    <span class="n">wrms_n_mean</span> <span class="o">=</span> <span class="n">wrms_n_mean</span> <span class="o">/</span> <span class="nb">len</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="n">H_code_wrms</span><span class="o">.</span><span class="n">keys</span><span class="p">()))</span>
+    <span class="n">wrms_e_mean</span> <span class="o">=</span> <span class="n">wrms_e_mean</span> <span class="o">/</span> <span class="nb">len</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="n">H_code_wrms</span><span class="o">.</span><span class="n">keys</span><span class="p">()))</span>
+    <span class="n">wrms_u_mean</span> <span class="o">=</span> <span class="n">wrms_u_mean</span> <span class="o">/</span> <span class="nb">len</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="n">H_code_wrms</span><span class="o">.</span><span class="n">keys</span><span class="p">()))</span>
+
+    <span class="n">fwrms</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;-----------------------------------------</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="n">fwrms</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;mean </span><span class="si">%10.1lf</span><span class="s2"> </span><span class="si">%10.1lf</span><span class="s2"> </span><span class="si">%10.1lf</span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">wrms_n_mean</span><span class="p">,</span><span class="n">wrms_e_mean</span><span class="p">,</span><span class="n">wrms_u_mean</span><span class="p">))</span>
+
+    <span class="n">fwrms</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+
+    
+    <span class="c1"># WRITE SUMMARY</span>
+
+    <span class="n">M0</span><span class="o">=</span><span class="n">CSTF</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+    <span class="n">magnitude</span><span class="o">=</span> <span class="mf">2.</span><span class="o">/</span><span class="mf">3.</span><span class="o">*</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">log10</span><span class="p">(</span><span class="n">M0</span><span class="p">)</span><span class="o">-</span><span class="mf">9.1</span><span class="p">)</span>
+
+    <span class="n">slip_max</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">CUMULATIVE_SLIP_TIME_STEP</span><span class="p">[:,</span><span class="mi">2</span><span class="p">])</span>
+    <span class="n">slip_min</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">min</span><span class="p">(</span><span class="n">CUMULATIVE_SLIP_TIME_STEP</span><span class="p">[:,</span><span class="mi">2</span><span class="p">])</span>
+
+
+    <span class="n">fsum</span><span class="o">=</span><span class="nb">open</span><span class="p">(</span><span class="n">fsumn</span><span class="p">,</span><span class="s1">&#39;w&#39;</span><span class="p">)</span>
+    
+    <span class="n">fsum</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">&#39;#--------------------------------------------------------------------------</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)</span>
+    <span class="n">fsum</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">&#39;# Inversion parameters: </span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)</span>
+    <span class="n">fsum</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">&#39;#--------------------------------------------------------------------------</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)</span>
+    <span class="n">fsum</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;    command line                     : </span><span class="si">%s</span><span class="s2"> </span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">odir</span><span class="o">+</span><span class="s1">&#39;/info/command_line.dat&#39;</span><span class="p">))</span>
+    <span class="n">fsum</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;    number of parameters estimated   : </span><span class="si">%d</span><span class="s2"> </span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">SLIP</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+    <span class="n">fsum</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;    memory used in Gb Linux/Mac OS X : </span><span class="si">%.1lf</span><span class="s2"> / </span><span class="si">%.1lf</span><span class="s2"> </span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">%</span>  <span class="p">(</span><span class="n">H_inversion_info</span><span class="p">[</span><span class="s1">&#39;memory_usage&#39;</span><span class="p">],</span> <span class="n">H_inversion_info</span><span class="p">[</span><span class="s1">&#39;memory_usage&#39;</span><span class="p">]</span><span class="o">/</span><span class="mi">1024</span><span class="p">)</span> <span class="p">)</span>
+    <span class="n">fsum</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;    inversion duration (s)           : </span><span class="si">%.1lf</span><span class="s2"> </span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">H_inversion_info</span><span class="p">[</span><span class="s1">&#39;time&#39;</span><span class="p">])</span>
+    <span class="n">fsum</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;    linear system building (s)       : </span><span class="si">%.1lf</span><span class="s2"> </span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">H_inversion_info</span><span class="p">[</span><span class="s1">&#39;time_ls&#39;</span><span class="p">])</span>
+    <span class="n">fsum</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;    nnls algorithm                   : </span><span class="si">%s</span><span class="s2"> </span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">H_inversion_info</span><span class="p">[</span><span class="s1">&#39;nnls&#39;</span><span class="p">])</span>
+    <span class="n">fsum</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;    input npz file                   : </span><span class="si">%s</span><span class="s2"> </span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">H_inversion_info</span><span class="p">[</span><span class="s1">&#39;input_npz&#39;</span><span class="p">])</span>
+    <span class="n">fsum</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;    rake_type (Euler or constant)    : </span><span class="si">%s</span><span class="s2"> </span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">H_inversion_info</span><span class="p">[</span><span class="s1">&#39;rake_type&#39;</span><span class="p">])</span>
+    <span class="n">fsum</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;    rake_value (Euler pole or value) : </span><span class="si">%s</span><span class="s2"> </span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">H_inversion_info</span><span class="p">[</span><span class="s1">&#39;rake_value&#39;</span><span class="p">])</span>
+    <span class="n">fsum</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;    rake_constraint (0=fixed, float) : </span><span class="si">%s</span><span class="s2"> </span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">H_inversion_info</span><span class="p">[</span><span class="s1">&#39;rake_constraint&#39;</span><span class="p">])</span>
+    <span class="n">fsum</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;    max_slip (0=from Euler,else user): </span><span class="si">%s</span><span class="s2"> </span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">H_inversion_info</span><span class="p">[</span><span class="s1">&#39;max_slip&#39;</span><span class="p">])</span>
+    <span class="n">fsum</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;    number of subfaults              : </span><span class="si">%d</span><span class="s2"> </span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">SGEOMETRY</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+    <span class="n">fsum</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;    number of GPS sites used         : </span><span class="si">%d</span><span class="s2"> </span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">ngps</span><span class="p">)</span>
+    <span class="n">fsum</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;    number of GPS sites without data : </span><span class="si">%d</span><span class="s2"> </span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">ngps_nodata</span><span class="p">)</span>
+    <span class="n">fsum</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;    number of time steps             : </span><span class="si">%d</span><span class="s2"> </span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">SLIP</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">/</span> <span class="n">SGEOMETRY</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]))</span>
+    <span class="n">fsum</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;    model start date                 : </span><span class="si">%.5lf</span><span class="s2"> </span><span class="si">%s</span><span class="s2"> doy </span><span class="si">%03d</span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">np_dates</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span><span class="n">s_strdate</span><span class="p">,</span><span class="n">s_doy</span><span class="p">))</span>
+    <span class="n">fsum</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;    model end   date                 : </span><span class="si">%.5lf</span><span class="s2"> </span><span class="si">%s</span><span class="s2"> doy </span><span class="si">%03d</span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">np_dates</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span><span class="n">e_strdate</span><span class="p">,</span><span class="n">e_doy</span><span class="p">))</span>
+    <span class="n">fsum</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;    median,shortest,longest time step: </span><span class="si">%.1lf</span><span class="s2"> </span><span class="si">%.1lf</span><span class="s2"> </span><span class="si">%.1lf</span><span class="s2"> days</span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">median_time_step</span><span class="p">,</span><span class="n">shortest_time_step</span><span class="p">,</span><span class="n">longest_time_step</span><span class="p">))</span>
+    <span class="n">fsum</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;    number of GPS horizontal obs.    : </span><span class="si">%d</span><span class="s2"> </span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">OBS</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+    <span class="k">if</span> <span class="n">H_inversion_info</span><span class="p">[</span><span class="s1">&#39;up&#39;</span><span class="p">][</span><span class="mi">0</span><span class="p">]:</span>
+        <span class="n">fsum</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;    vertical obs. used / scaling     : YES / </span><span class="si">%.1lf</span><span class="s2"> </span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">H_inversion_info</span><span class="p">[</span><span class="s1">&#39;up&#39;</span><span class="p">][</span><span class="mi">1</span><span class="p">])</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">fsum</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;    vertical obs. used / scaling     : NO  /       </span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+        
+    
+    <span class="n">fsum</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">&#39;#--------------------------------------------------------------------------</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)</span>
+    <span class="n">fsum</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">&#39;#   Inversion results: </span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)</span>
+    <span class="n">fsum</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">&#39;#--------------------------------------------------------------------------</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)</span>
+    <span class="n">fsum</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;    Cumulative Moment (N.m)          : </span><span class="si">%8.2E</span><span class="s2"> </span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">M0</span><span class="p">)</span>
+    <span class="n">fsum</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;    Equivalent Mw                    : </span><span class="si">%8.1f</span><span class="s2"> </span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">magnitude</span><span class="p">)</span>
+    <span class="n">i_mr_max</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">argmax</span><span class="p">(</span><span class="n">STF</span><span class="p">[:,</span><span class="mi">1</span><span class="p">])</span> 
+    
+    <span class="n">fsum</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;    max moment rate (N.m / day )     : </span><span class="si">%8.2E</span><span class="s2"> #</span><span class="si">%05d</span><span class="s2"> </span><span class="si">%d</span><span class="s2">_</span><span class="si">%03d</span><span class="s2">-</span><span class="si">%d</span><span class="s2">_</span><span class="si">%03d</span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">%</span> \
+               <span class="p">(</span><span class="n">STF</span><span class="p">[</span><span class="n">i_mr_max</span><span class="p">,</span><span class="mi">1</span><span class="p">],</span><span class="n">i_mr_max</span><span class="p">,</span><span class="n">np_dates_text</span><span class="p">[</span><span class="n">i_mr_max</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span><span class="mi">4</span><span class="p">],</span><span class="n">np_dates_text</span><span class="p">[</span><span class="n">i_mr_max</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span><span class="mi">5</span><span class="p">],</span>\
+                <span class="n">np_dates_text</span><span class="p">[</span><span class="n">i_mr_max</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span><span class="mi">6</span><span class="p">],</span><span class="n">np_dates_text</span><span class="p">[</span><span class="n">i_mr_max</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span><span class="mi">7</span><span class="p">]))</span>
+
+    <span class="n">magnitude_mr</span><span class="o">=</span> <span class="mf">2.</span><span class="o">/</span><span class="mf">3.</span><span class="o">*</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">log10</span><span class="p">(</span><span class="n">STF</span><span class="p">[</span><span class="n">i_mr_max</span><span class="p">,</span><span class="mi">1</span><span class="p">])</span><span class="o">-</span><span class="mf">9.1</span><span class="p">)</span>
+    <span class="n">fsum</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;    Equivalent Mw                    : </span><span class="si">%8.1f</span><span class="s2"> </span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">magnitude_mr</span><span class="p">)</span>
+    
+    <span class="n">fsum</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;    cumulative slip max  (mm)        : </span><span class="si">%8.1f</span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">slip_max</span><span class="p">)</span>
+    <span class="n">fsum</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;    cumulative slip min  (mm)        : </span><span class="si">%8.1f</span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">slip_min</span><span class="p">)</span>
+    <span class="n">fsum</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;    incremental slip max  (mm)       : </span><span class="si">%8.1f</span><span class="s2"> #</span><span class="si">%05d</span><span class="s2"> </span><span class="si">%d</span><span class="s2">_</span><span class="si">%03d</span><span class="s2">-</span><span class="si">%d</span><span class="s2">_</span><span class="si">%03d</span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">inc_slip_max</span><span class="p">,</span><span class="n">i_inc_slip_max</span><span class="p">,</span><span class="n">np_dates_text</span><span class="p">[</span><span class="n">i_inc_slip_max</span><span class="p">,</span><span class="mi">4</span><span class="p">],</span><span class="n">np_dates_text</span><span class="p">[</span><span class="n">i_inc_slip_max</span><span class="p">,</span><span class="mi">5</span><span class="p">],</span><span class="n">np_dates_text</span><span class="p">[</span><span class="n">i_inc_slip_max</span><span class="p">,</span><span class="mi">6</span><span class="p">],</span><span class="n">np_dates_text</span><span class="p">[</span><span class="n">i_inc_slip_max</span><span class="p">,</span><span class="mi">7</span><span class="p">]))</span>
+    <span class="n">fsum</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;    rate slip max  (mm/day)          : </span><span class="si">%8.1f</span><span class="s2"> #</span><span class="si">%05d</span><span class="s2"> </span><span class="si">%d</span><span class="s2">_</span><span class="si">%03d</span><span class="s2">-</span><span class="si">%d</span><span class="s2">_</span><span class="si">%03d</span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">rate_slip_max</span><span class="p">,</span><span class="n">i_rate_slip_max</span><span class="p">,</span><span class="n">np_dates_text</span><span class="p">[</span><span class="n">i_rate_slip_max</span><span class="p">,</span><span class="mi">4</span><span class="p">],</span><span class="n">np_dates_text</span><span class="p">[</span><span class="n">i_rate_slip_max</span><span class="p">,</span><span class="mi">5</span><span class="p">],</span><span class="n">np_dates_text</span><span class="p">[</span><span class="n">i_rate_slip_max</span><span class="p">,</span><span class="mi">6</span><span class="p">],</span><span class="n">np_dates_text</span><span class="p">[</span><span class="n">i_rate_slip_max</span><span class="p">,</span><span class="mi">7</span><span class="p">]))</span>
+    
+    <span class="n">fsum</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">&#39;#--------------------------------------------------------------------------</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)</span>
+    <span class="n">fsum</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">&#39;#   Inversion statistics: </span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)</span>
+    <span class="n">fsum</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">&#39;#--------------------------------------------------------------------------</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)</span>
+    <span class="n">fsum</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;    wrms mean north (mm)             : </span><span class="si">%8.1f</span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">wrms_n_mean</span><span class="p">))</span>
+    <span class="n">fsum</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;    wrms mean east  (mm)             : </span><span class="si">%8.1f</span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">wrms_e_mean</span><span class="p">))</span>
+    <span class="n">fsum</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;    wrms mean up    (mm)             : </span><span class="si">%8.1f</span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">wrms_u_mean</span><span class="p">)</span>
+
+    <span class="n">fsum</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;    wrms max north  (mm)             : </span><span class="si">%8.1f</span><span class="s2"> </span><span class="si">%s</span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">wrms_max</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span><span class="n">wrms_max_code</span><span class="p">))</span>
+    <span class="n">fsum</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;    wrms max  east  (mm)             : </span><span class="si">%8.1f</span><span class="s2"> </span><span class="si">%s</span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">wrms_max</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span><span class="n">wrms_max_code</span><span class="p">))</span>
+    <span class="n">fsum</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;    wrms max    up  (mm)             : </span><span class="si">%8.1f</span><span class="s2"> </span><span class="si">%s</span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">wrms_max</span><span class="p">[</span><span class="mi">2</span><span class="p">],</span><span class="n">wrms_max_code</span><span class="p">))</span>
+    
+    <span class="n">fsum</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;    bias mean north (mm)             : </span><span class="si">%8.1f</span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">bias_mean</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+    <span class="n">fsum</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;    bias mean  east (mm)             : </span><span class="si">%8.1f</span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">bias_mean</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+    <span class="n">fsum</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;    bias mean    up (mm)             : </span><span class="si">%8.1f</span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">bias_mean</span><span class="p">[</span><span class="mi">2</span><span class="p">])</span>
+
+    <span class="n">fsum</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;    bias max  north (mm)             : </span><span class="si">%8.1f</span><span class="s2"> </span><span class="si">%s</span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">bias_max</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span><span class="n">bias_max_code</span><span class="p">))</span>
+    <span class="n">fsum</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;    bias max   east (mm)             : </span><span class="si">%8.1f</span><span class="s2"> </span><span class="si">%s</span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">bias_max</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span><span class="n">bias_max_code</span><span class="p">))</span>
+    <span class="n">fsum</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;    bias max     up (mm)             : </span><span class="si">%8.1f</span><span class="s2"> </span><span class="si">%s</span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">bias_max</span><span class="p">[</span><span class="mi">2</span><span class="p">],</span><span class="n">bias_max_code</span><span class="p">))</span>
+
+    <span class="n">fsum</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;    chi2 obs                         : </span><span class="si">%8.1f</span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">chi2_obs</span><span class="p">)</span>
+    <span class="n">fsum</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;    number of observations           : </span><span class="si">%8d</span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">n_obs</span><span class="p">)</span>
+    <span class="n">fsum</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;    reduced chi2 obs                 : </span><span class="si">%8.2f</span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">chi2_obs</span> <span class="o">/</span> <span class="nb">float</span><span class="p">(</span><span class="n">n_obs</span><span class="p">)</span> <span class="p">))</span>
+    <span class="n">fsum</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;    chi2 regularization              : </span><span class="si">%8.1f</span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">chi2_regularization</span><span class="p">)</span>
+    <span class="n">fsum</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;    number of constraints            : </span><span class="si">%8d</span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span> <span class="n">SLIP</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">/</span> <span class="n">SGEOMETRY</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">*</span> <span class="n">nfaults</span><span class="p">)</span> <span class="p">)</span>
+    <span class="n">fsum</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;    reduced chi2 regularization      : </span><span class="si">%8.2f</span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">chi2_regularization</span> <span class="o">/</span> <span class="nb">float</span><span class="p">(</span><span class="n">SLIP</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">/</span> <span class="n">SGEOMETRY</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">*</span> <span class="n">nfaults</span><span class="p">)</span> <span class="p">))</span>
+    <span class="n">fsum</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;    chi2 all                         : </span><span class="si">%8.1f</span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">chi2_obs</span><span class="o">+</span><span class="n">chi2_regularization</span><span class="p">)</span> <span class="p">)</span>
+    <span class="n">fsum</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;    reduced chi2 all                 : </span><span class="si">%8.1f</span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span> <span class="p">(</span><span class="n">chi2_obs</span><span class="o">+</span><span class="n">chi2_regularization</span><span class="p">)</span> <span class="o">/</span> <span class="p">(</span> <span class="nb">float</span><span class="p">(</span><span class="n">n_obs</span><span class="p">)</span> <span class="o">+</span> <span class="nb">float</span><span class="p">(</span><span class="n">SLIP</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">/</span> <span class="n">SGEOMETRY</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">*</span> <span class="n">nfaults</span><span class="p">)</span> <span class="p">)</span> <span class="p">)</span> <span class="p">)</span>
+
+    <span class="n">fsum</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+    
+    <span class="c1"># PRINT RESULTS ON SCREEN</span>
+    
+    <span class="n">f</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="n">fsumn</span><span class="p">,</span> <span class="s2">&quot;r&quot;</span><span class="p">)</span>
+    <span class="n">text</span> <span class="o">=</span> <span class="n">f</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">text</span><span class="p">)</span>
+    <span class="n">f</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+    
+    <span class="c1"># GENERATE SHAPEFILES OF CUMULATIVE SLIP FOR MODEL DISPLAY IN QGIS</span>
+
+    <span class="n">one_degree</span><span class="o">=</span><span class="mf">111.1</span>
+    <span class="n">TRIANGLE</span><span class="o">=</span><span class="kc">True</span>    
+    
+    <span class="kn">import</span> <span class="nn">glob</span>
+    
+    <span class="n">lslip_dat</span><span class="o">=</span><span class="n">glob</span><span class="o">.</span><span class="n">glob</span><span class="p">(</span><span class="n">odir</span><span class="o">+</span><span class="s2">&quot;/slip/cumulative/*_cumulative_slip.dat&quot;</span><span class="p">)</span>
+
+    <span class="k">for</span> <span class="n">slip_dat</span> <span class="ow">in</span> <span class="n">lslip_dat</span><span class="p">:</span>
+    
+        <span class="n">SLIP</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">genfromtxt</span><span class="p">(</span><span class="n">slip_dat</span><span class="p">,</span><span class="n">comments</span><span class="o">=</span><span class="s1">&#39;#&#39;</span><span class="p">)</span>
+
+        <span class="n">lfaults</span><span class="o">=</span><span class="p">[]</span>
+        <span class="n">lrecord</span><span class="o">=</span><span class="p">[]</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">GEOMETRY</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]):</span>
+            <span class="p">(</span> <span class="n">rdis_long</span><span class="p">,</span> <span class="n">rdis_lat</span><span class="p">,</span> <span class="n">rdis_depth</span><span class="p">,</span> <span class="n">rdis_length</span><span class="p">,</span> <span class="n">rdis_width</span><span class="p">,</span>  <span class="n">rdis_area</span><span class="p">,</span> <span class="n">ratio_rdis_tdis</span><span class="p">,</span><span class="n">strike</span><span class="p">,</span><span class="n">dip</span><span class="p">,</span>\
+             <span class="n">centroid_long</span><span class="p">,</span> <span class="n">centroid_lat</span><span class="p">,</span> <span class="n">centroid_depth</span><span class="p">,</span>\
+             <span class="n">tdis_long1</span><span class="p">,</span><span class="n">tdis_lat1</span><span class="p">,</span><span class="n">tdis_depth1</span><span class="p">,</span><span class="n">tdis_long2</span><span class="p">,</span><span class="n">tdis_lat2</span><span class="p">,</span><span class="n">tdis_depth2</span><span class="p">,</span><span class="n">tdis_long3</span><span class="p">,</span><span class="n">tdis_lat3</span><span class="p">,</span><span class="n">tdis_depth3</span><span class="p">,</span><span class="n">tdis_area</span><span class="p">)</span>\
+             <span class="o">=</span><span class="n">GEOMETRY</span><span class="p">[</span><span class="n">i</span><span class="p">,:]</span>
+            <span class="n">depth</span><span class="o">=</span><span class="n">rdis_depth</span>
+        
+    
+            <span class="k">if</span> <span class="n">TRIANGLE</span><span class="p">:</span>
+                <span class="n">lfaults</span><span class="o">.</span><span class="n">append</span><span class="p">([</span> <span class="p">[</span><span class="n">tdis_long1</span><span class="p">,</span><span class="n">tdis_lat1</span><span class="p">],</span> <span class="p">[</span><span class="n">tdis_long2</span><span class="p">,</span><span class="n">tdis_lat2</span><span class="p">],</span> <span class="p">[</span><span class="n">tdis_long3</span><span class="p">,</span><span class="n">tdis_lat3</span><span class="p">]</span> <span class="p">])</span>
+                <span class="n">lrecord</span><span class="o">.</span><span class="n">append</span><span class="p">([</span><span class="n">i</span><span class="p">,</span><span class="n">centroid_depth</span><span class="p">,</span><span class="n">SLIP</span><span class="p">[</span><span class="n">i</span><span class="p">,</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span><span class="mi">0</span><span class="p">])</span>
+        
+            <span class="k">else</span><span class="p">:</span>
+            
+                <span class="c1"># creates a dislocation object</span>
+                <span class="n">disloc</span><span class="o">=</span><span class="n">DL</span><span class="o">.</span><span class="n">Dislocation</span><span class="p">(</span><span class="n">i</span><span class="p">,</span><span class="n">rdis_long</span><span class="p">,</span><span class="n">rdis_lat</span><span class="p">,</span><span class="n">rdis_depth</span><span class="o">/</span><span class="n">one_degree</span><span class="p">,</span> <span class="n">strike</span><span class="p">,</span> <span class="n">dip</span><span class="p">,</span> <span class="n">rdis_length</span><span class="o">/</span><span class="n">one_degree</span><span class="p">,</span> <span class="n">rdis_width</span><span class="o">/</span><span class="n">one_degree</span><span class="p">,</span><span class="n">rdis_area</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+                <span class="c1"># get the corners</span>
+                <span class="p">(</span><span class="n">X1</span><span class="p">,</span><span class="n">X2</span><span class="p">,</span><span class="n">X3</span><span class="p">,</span><span class="n">X4</span><span class="p">)</span><span class="o">=</span><span class="n">disloc</span><span class="o">.</span><span class="n">corners</span><span class="p">()</span>
+                <span class="n">lfaults</span><span class="o">.</span><span class="n">append</span><span class="p">([</span> <span class="p">[</span><span class="n">X1</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span><span class="n">X1</span><span class="p">[</span><span class="mi">1</span><span class="p">]],</span> <span class="p">[</span><span class="n">X2</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span><span class="n">X2</span><span class="p">[</span><span class="mi">1</span><span class="p">]],</span> <span class="p">[</span><span class="n">X3</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span><span class="n">X3</span><span class="p">[</span><span class="mi">1</span><span class="p">]],</span> <span class="p">[</span><span class="n">X4</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span><span class="n">X4</span><span class="p">[</span><span class="mi">1</span><span class="p">]],</span> <span class="p">[</span><span class="n">X1</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span><span class="n">X1</span><span class="p">[</span><span class="mi">1</span><span class="p">]]</span> <span class="p">])</span>
+                <span class="n">lrecord</span><span class="o">.</span><span class="n">append</span><span class="p">([</span><span class="n">i</span><span class="p">,</span><span class="n">depth</span><span class="p">,</span><span class="n">SLIP</span><span class="p">[</span><span class="n">i</span><span class="p">,</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span><span class="mi">0</span><span class="p">])</span>
+    
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;-- &quot;</span><span class="p">,</span><span class="nb">len</span><span class="p">(</span><span class="n">lfaults</span><span class="p">),</span><span class="s2">&quot; polygons read&quot;</span><span class="p">)</span>
+
+        <span class="c1">###################################################################</span>
+        <span class="c1"># WRITES GMT PSXY FILES</span>
+        <span class="c1"># This file can be then plotted with</span>
+        <span class="c1">#  psxy lima_simple_sigma_010_dc_050_m0_000_sol_coupling.gmt -V -R-81/-72/-16/-7 -JM14 -L -m -W0.2/0  -Clut_coupling.cpt &gt; test.ps</span>
+        <span class="c1"># triangles have not been tested yet</span>
+        <span class="c1">###################################################################</span>
+        
+        <span class="n">gmtfile</span><span class="o">=</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">abspath</span><span class="p">(</span><span class="n">slip_dat</span><span class="p">)</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;.&#39;</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span><span class="o">+</span><span class="s1">&#39;.gmt&#39;</span>
+
+        <span class="nb">print</span><span class="p">((</span><span class="s2">&quot;-- saving gmt file </span><span class="si">%s</span><span class="s2"> &quot;</span> <span class="o">%</span> <span class="n">gmtfile</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;/&#39;</span><span class="p">)[</span><span class="o">-</span><span class="mi">1</span><span class="p">]))</span>
+        <span class="n">f</span><span class="o">=</span><span class="nb">open</span><span class="p">(</span><span class="n">gmtfile</span><span class="p">,</span><span class="s1">&#39;w&#39;</span><span class="p">)</span>
+                
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">lfaults</span><span class="p">)):</span>
+            <span class="p">[</span><span class="n">index</span><span class="p">,</span><span class="n">depth</span><span class="p">,</span><span class="n">slip</span><span class="p">,</span><span class="n">rake</span><span class="p">]</span><span class="o">=</span><span class="n">lrecord</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+            <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">&#39;&gt; -Z</span><span class="si">%.3lf</span><span class="se">\n</span><span class="s1">&#39;</span><span class="o">%</span><span class="n">slip</span><span class="p">)</span>
+            <span class="n">fault</span><span class="o">=</span><span class="n">lfaults</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+            <span class="k">for</span> <span class="n">xy</span> <span class="ow">in</span> <span class="n">fault</span><span class="p">:</span>
+                <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%10.3lf</span><span class="s2"> </span><span class="si">%10.3lf</span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">%</span><span class="p">(</span><span class="n">xy</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span><span class="n">xy</span><span class="p">[</span><span class="mi">1</span><span class="p">]))</span>
+        <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">&#39;&gt;</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)</span>
+        <span class="n">f</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+
+        <span class="c1">###################################################################</span>
+        <span class="c1"># WRITES SHAPEFILES</span>
+        <span class="c1">###################################################################</span>
+
+        <span class="n">shp_file</span><span class="o">=</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">abspath</span><span class="p">(</span><span class="n">slip_dat</span><span class="p">)</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;.&#39;</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+ 
+       <span class="c1">###################################################################</span>
+        <span class="c1"># INITIALIZE SHAPEFILE</span>
+        <span class="c1">###################################################################</span>
+        
+        <span class="c1"># Make a polygon shapefile</span>
+        <span class="n">w</span> <span class="o">=</span> <span class="n">shapefile</span><span class="o">.</span><span class="n">Writer</span><span class="p">(</span> <span class="n">shp_file</span> <span class="p">,</span><span class="n">shapeType</span><span class="o">=</span><span class="n">shapefile</span><span class="o">.</span><span class="n">POLYGON</span><span class="p">)</span>
+        <span class="n">w</span><span class="o">.</span><span class="n">field</span><span class="p">(</span><span class="s1">&#39;ID&#39;</span><span class="p">,</span><span class="s1">&#39;I&#39;</span><span class="p">,</span><span class="s1">&#39;40&#39;</span><span class="p">)</span>
+        <span class="n">w</span><span class="o">.</span><span class="n">field</span><span class="p">(</span><span class="s1">&#39;i_subfault&#39;</span><span class="p">,</span><span class="s1">&#39;F&#39;</span><span class="p">,</span><span class="s1">&#39;40&#39;</span><span class="p">)</span>
+        <span class="n">w</span><span class="o">.</span><span class="n">field</span><span class="p">(</span><span class="s1">&#39;depth_top_disloc&#39;</span><span class="p">,</span><span class="s1">&#39;F&#39;</span><span class="p">,</span><span class="s1">&#39;40&#39;</span><span class="p">)</span>
+        <span class="n">w</span><span class="o">.</span><span class="n">field</span><span class="p">(</span><span class="s1">&#39;slip&#39;</span><span class="p">,</span><span class="s1">&#39;F&#39;</span><span class="p">,</span><span class="s1">&#39;40&#39;</span><span class="p">)</span>
+        <span class="n">w</span><span class="o">.</span><span class="n">field</span><span class="p">(</span><span class="s1">&#39;rake&#39;</span><span class="p">,</span><span class="s1">&#39;F&#39;</span><span class="p">,</span><span class="s1">&#39;40&#39;</span><span class="p">)</span>
+
+        
+        <span class="c1">###################################################################</span>
+        <span class="c1"># LOOP ON FAULTS</span>
+        <span class="c1">###################################################################</span>
+        
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">lfaults</span><span class="p">)):</span>
+            <span class="n">fault</span><span class="o">=</span><span class="n">lfaults</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+            <span class="n">record</span><span class="o">=</span><span class="n">lrecord</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+            <span class="n">w</span><span class="o">.</span><span class="n">poly</span><span class="p">([</span><span class="n">fault</span><span class="p">])</span>
+            <span class="p">[</span><span class="n">index</span><span class="p">,</span><span class="n">depth</span><span class="p">,</span><span class="n">slip</span><span class="p">,</span><span class="n">rake</span><span class="p">]</span><span class="o">=</span><span class="n">lrecord</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+            <span class="n">w</span><span class="o">.</span><span class="n">record</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">i</span><span class="p">),</span><span class="n">index</span><span class="p">,</span><span class="n">depth</span><span class="p">,</span><span class="n">slip</span><span class="p">,</span><span class="n">rake</span><span class="p">)</span>
+            <span class="n">i</span><span class="o">=</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span>
+        
+        <span class="c1">###################################################################</span>
+        <span class="c1"># SAVE SHAPEFILE</span>
+        <span class="c1">###################################################################</span>
+        
+        <span class="nb">print</span><span class="p">((</span><span class="s2">&quot;-- saving shapefile </span><span class="si">%s</span><span class="s2"> &quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">shp_file</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;/&#39;</span><span class="p">)[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">+</span><span class="s1">&#39;.shp&#39;</span><span class="p">)))</span>
+        <span class="n">w</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+        
+        <span class="c1">###################################################################</span>
+        <span class="c1"># SAVE .PRJ FILE</span>
+        <span class="c1">###################################################################</span>
+        
+        <span class="n">prj</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%s</span><span class="s2">.prj&quot;</span> <span class="o">%</span> <span class="n">shp_file</span><span class="p">,</span> <span class="s2">&quot;w&quot;</span><span class="p">)</span> 
+        <span class="n">epsg</span> <span class="o">=</span> <span class="s1">&#39;GEOGCS[&quot;WGS 84&quot;,DATUM[&quot;WGS_1984&quot;,SPHEROID[&quot;WGS 84&quot;,6378137,298.257223563]],PRIMEM[&quot;Greenwich&quot;,0],UNIT[&quot;degree&quot;,0.0174532925199433]]&#39;</span> 
+        <span class="n">prj</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">epsg</span><span class="p">)</span> 
+        <span class="n">prj</span><span class="o">.</span><span class="n">close</span><span class="p">()</span></div>
+
+
+<span class="c1">###############################################################################</span>
+<span class="c1">### END  print_kinematic_inversion_results4 ###################################</span>
+<span class="c1">###############################################################################</span>
+</pre></div>
+
+           </div>
+           
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        
+        &copy; Copyright 2016, Jean-Mathieu Nocquet IRD/Geoazur
+
+    </p>
+  </div>
+    
+    
+    
+    Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

@@ -236,6 +236,30 @@ def parse_command_line():
                         help='specify the routine used to build the normal system. Default is 2')
 
     ###########################################################################
+    # CROSS VALIDATION - ADDED 04/09/2022
+    ###########################################################################
+    parser.add_argument('--cross_validation',\
+                        action='store',\
+                        dest='cross_validation',\
+                        type=str,default=None,\
+                        help='Cross validation option: '\
+                        'None, build, run')
+
+    ###########################################################################
+    # REGULARIZATION PARAMETERS - ADDED 05/09/2022
+    # Only works with Laplacian
+    ###########################################################################
+
+    parser.add_argument('--laplacian_regularization',\
+                        action='store',\
+                        dest='laplacian_regularization',\
+                        type=str,default=None,\
+                        help='Laplacian regularization parameters D/SRS/SRT/CSS/CST\n'
+                             +'(damping in mm/day, slip rate spatial, slip rate temporel, '
+                             + 'cumulative slip spatial, cumulative spli temporal)')
+
+
+    ###########################################################################
     # GENERAL
     ###########################################################################
 

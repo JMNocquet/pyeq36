@@ -19,8 +19,13 @@ def geometry2shp_gmt(geometry, type_dis, out_shp=None, out_gmt=None , verbose=Tr
 
     import shapefile
     from pyeq.lib import eq_disloc_3d as DL
-    import numpy as np 
-    
+    import numpy as np
+    import pyeq.message.message as MESSAGE
+    import pyeq.message.verbose_message as VERBOSE
+    import pyeq.message.error as ERROR
+    import pyeq.message.warning as WARNING
+    import pyeq.message.debug_message as DEBUG
+
     ###########################################################################
     # type_dis
     ###########################################################################
@@ -39,8 +44,7 @@ def geometry2shp_gmt(geometry, type_dis, out_shp=None, out_gmt=None , verbose=Tr
         if geometry[-3:] == 'dat':
             # reads the dat text file
             import sys
-            print('!!!TODO: geometry as dat file not implemented yet.')
-            sys.exit()
+            ERROR('TODO: geometry as dat file not implemented yet.',exit=True)
         if geometry[-3:] == 'npy':
             # reads the npy
             import pyeq.lib.geometry.to_np_array
@@ -50,10 +54,8 @@ def geometry2shp_gmt(geometry, type_dis, out_shp=None, out_gmt=None , verbose=Tr
         GEOMETRY = geometry
     
     if GEOMETRY is None:
-        print('!!!ERROR: Could not understand argument: geometry')
-        import sys
-        sys.exit()
-    
+        ERROR('Could not understand argument: geometry',exit=True)
+
     ###########################################################################
     # reads geometry
     ###########################################################################
@@ -70,7 +72,7 @@ def geometry2shp_gmt(geometry, type_dis, out_shp=None, out_gmt=None , verbose=Tr
 
         if TRIANGLE:
             lfaults.append([ [tdis_long1,tdis_lat1], [tdis_long2,tdis_lat2], [tdis_long3,tdis_lat3] ])
-            lrecord.append([i,centroid_depth])
+            lrecord.append([i,centroid_depth, strike,dip,tdis_area])
     
         else:
         
@@ -81,7 +83,7 @@ def geometry2shp_gmt(geometry, type_dis, out_shp=None, out_gmt=None , verbose=Tr
             lfaults.append([ [X1[0],X1[1]], [X2[0],X2[1]], [X3[0],X3[1]], [X4[0],X4[1]], [X1[0],X1[1]] ])
             lrecord.append([i,depth])
     
-        print("-- ",len(lfaults)," polygons read")
+    MESSAGE( ("%d polygons read" % len(lfaults) ))
 
     ###################################################################
     # WRITES GMT PSXY FILES
@@ -94,12 +96,11 @@ def geometry2shp_gmt(geometry, type_dis, out_shp=None, out_gmt=None , verbose=Tr
         gmtfile = "geometry.gmt"
     else:
         gmtfile = out_gmt
-        if verbose:
-            print(("-- saving gmt file %s " % gmtfile ))
+        VERBOSE("saving gmt file %s " % gmtfile )
 
     f=open(gmtfile,'w')
     for i in np.arange(len(lfaults)):
-        [index,depth]=lrecord[i]
+        [index,depth]=lrecord[i][:2]
         f.write('> -Z%.3lf\n'%depth)
         fault=lfaults[i]
         for xy in fault:
@@ -123,25 +124,26 @@ def geometry2shp_gmt(geometry, type_dis, out_shp=None, out_gmt=None , verbose=Tr
     # Make a polygon shapefile
     w = shapefile.Writer( shp_file ,shapeType=shapefile.POLYGON)
     w.field('ID','I','40')
-    w.field('i_subfault','F','40')
-    w.field('depth_top_disloc','F','40')
-    
+    w.field('depth_centroid','F','40')
+    w.field('strike','F','40')
+    w.field('dip', 'F', '40')
+    w.field('area', 'F', '40')
+
     ###################################################################
     # LOOP ON FAULTS
     ###################################################################
     
     for i in np.arange(len(lfaults)):
         fault=lfaults[i]
-        record=lrecord[i]
         w.poly([fault])
-        [index,depth]=lrecord[i]
-        w.record(str(i),index,depth)
+        [index,depth,strike,dip,area]=lrecord[i]
+        w.record(str(i),depth,strike,dip,area)
     
     ###################################################################
     # SAVE SHAPEFILE
     ###################################################################
     
-    print("-- saving shapefile %s " % (shp_file) )
+    VERBOSE("saving shapefile %s " % (shp_file) )
     w.close()
     
     ###################################################################

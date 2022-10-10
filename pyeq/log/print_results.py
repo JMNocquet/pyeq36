@@ -105,7 +105,7 @@ def print_results( model ):
     # COPY INPUT NPZ
     # 13/01/2021
     # this takes a lot of space and is barely used
-    # furthermore input_npz might no be avaialble if print results is run on a computer different
+    # furthermore input_npz might no be available if print results is run on a computer different
     # from the one used for the run
     #copyfile(model.input_npz, model.odir+'/npy/input.npz')
 
@@ -124,6 +124,64 @@ def print_results( model ):
     # Geometry
     ###########################################################################
     np.save(  model.odir+'/npy/geometry.npy' , model.geometry )
+
+
+    # Fault resolution
+    ###########################################################################
+    # added 29/04/2021
+    # resolution map
+    resolution = np.sqrt( np.sum( model.G**2 , axis=0 ) )
+    if model.geometry_type in ['RDE','TDE']:
+        np.savetxt( model.odir+'/info/spatial_resolution.dat',np.c_[ model.geometry[:,9:11],resolution], fmt="%10.5lf %10.5lf %10.3E")
+    else:
+        # TDV case, resolution values are at vertices
+        np.savetxt(model.odir + '/info/spatial_resolution.dat',np.c_[ model.topology.vertex_coor, resolution],
+           fmt="%10.5lf %10.5lf %10.3E")
+
+# rake and slip_dir
+    ###########################################################################
+
+    VERBOSE("Printing rake and slip azimuth information")
+    if model.log_variable_rake is not None:
+        outF = open(model.odir + '/info/log_variable_rake.dat', "w")
+        outF.writelines( model.log_variable_rake )
+        outF.close()
+
+
+    VERBOSE("Computing slip rake, azimuth and unit slip vector")
+
+    import pyacs.lib.faultslip
+
+
+    VERBOSE("Saving slip rake, azimuth and unit slip vector")
+    # rake file
+    np_rake_subfault = np.transpose([np.arange(model.rake_subfault.shape[0]),
+                                     model.sgeometry.centroid_long, model.sgeometry.centroid_lat,model.sgeometry.centroid_depth,
+                                     model.rake_subfault])
+    header = "ID        long.       lat.       depth      rake"
+    np.savetxt( model.odir+'/info/rake.dat',np_rake_subfault,fmt="%04d %10.5lf %10.5lf  %10.5lf  %8.2lf",header=header)
+
+
+    # slip azimuth file
+    np_slip_az_subfault = np.transpose([np.arange(model.rake_subfault.shape[0]),
+                                     model.sgeometry.centroid_long, model.sgeometry.centroid_lat,
+                                     model.sgeometry.centroid_depth,
+                                     model.slip_az])
+    header = "ID        long.       lat.       depth      slip_az"
+    np.savetxt(model.odir + '/info/slip_azimuth.dat', np_slip_az_subfault, fmt="%04d   %10.5lf %10.5lf  %10.5lf  %8.2lf", header=header)
+
+# dir file
+    np_slip_dir_subfault = np.transpose([
+                                     model.sgeometry.centroid_long, model.sgeometry.centroid_lat,
+                                     model.slip_dir_en[:,0],model.slip_dir_en[:,1],
+                                     np.zeros(model.rake_subfault.shape[0]),np.zeros(model.rake_subfault.shape[0]),
+                                     np.zeros(model.rake_subfault.shape[0]),
+                                     np.arange(model.rake_subfault.shape[0])])
+    header = "ID        long.       lat.       depth     east    north"
+    np.savetxt(model.odir + '/info/slip_dir_en.dat', np_slip_dir_subfault, fmt="%10.5lf %10.5lf  %8.4lf %8.4lf %3.1lf %3.1lf %3.1lf %04d", header=header)
+
+
+
 
     ###########################################################################
     # SAVE SLIP TIME SERIES AS TEXT FILE

@@ -18,6 +18,7 @@ import pyacs.lib.shapefile
 import glob
 import pyeq.plot
 from str2bool import str2bool
+from os import mkdir, path
 
 import logging
 import pyeq.message.message as MESSAGE
@@ -105,10 +106,15 @@ if args.conf is not None:
 model.plot_settings = SETTINGS
 
 ###################################################################
-# UPDATE VERBOSE & ODIR
+# MAKE PLOT DIRECTORIES
 ###################################################################
 
+model.odir = args.odir
 
+###################################################################
+if not path.exists(model.odir + '/plots'): mkdir(model.odir + '/plots')
+if not path.exists(model.odir + '/plots/map'): mkdir(model.odir + '/plots/map')
+if not path.exists(model.odir + '/shapefile'): mkdir(model.odir + '/shapefile')
 
 ###########################################################################
 # MAKE PLOT FOR TIME SERIES
@@ -121,32 +127,48 @@ if str2bool(SETTINGS.time_series):
 ###########################################################################
 # GENERATE SHAPEFILES OF CUMULATIVE & RATE SLIP FOR MODEL DISPLAY IN QGIS
 ###########################################################################
-if str2bool(model.plot_settings.cum_slip) or str2bool(model.plot_settings.ccum_slip) \
-        or str2bool(model.plot_settings.rate) or str2bool(model.plot_settings.crate):
 
-    MESSAGE("writing cumulative slip and slip rate GMT and shapefiles for visualization in QGIS")
-    one_degree = 111.1
-    TRIANGLE = True
+# change 05/04/2021 - always generate shapefiles
+#if str2bool(model.plot_settings.cum_slip) or str2bool(model.plot_settings.ccum_slip) \
+#        or str2bool(model.plot_settings.rate) or str2bool(model.plot_settings.crate):
 
-    lslip_dat = glob.glob(model.odir + "/slip/cumulative/*_cumulative_slip.dat")
-    pyeq.plot.model2shp_gmt(model.geometry, 'tde', lslip_dat, out_dir_shp=args.odir + '/shapefile/slip_cumulative',
-                            out_dir_gmt=model.odir + '/gmt/slip_cumulative', verbose=model.debug)
+MESSAGE("writing cumulative slip and slip rate GMT and shapefiles for visualization in QGIS")
+one_degree = 111.1
+TRIANGLE = True
 
-    lslip_dat = glob.glob(model.odir + "/slip/rate/*_slip_rate.dat")
-    pyeq.plot.model2shp_gmt(model.geometry, 'tde', lslip_dat, out_dir_shp=args.odir + '/shapefile/slip_rate',
-                            out_dir_gmt=model.odir + '/gmt/slip_rate', verbose=model.debug)
+lslip_dat = glob.glob(model.odir + "/slip/cumulative/*_cumulative_slip.dat")
+pyeq.plot.model2shp_gmt(model.geometry, 'tde', lslip_dat, out_dir_shp=args.odir + '/shapefile/slip_cumulative',
+                        out_dir_gmt=model.odir + '/gmt/slip_cumulative', verbose=model.debug)
 
+lslip_dat = glob.glob( model.odir + "/slip/rate/*_slip_rate.dat")
+pyeq.plot.model2shp_gmt(model.geometry, 'tde', lslip_dat, out_dir_shp=args.odir + '/shapefile/slip_rate',
+                        out_dir_gmt=model.odir + '/gmt/slip_rate', verbose=model.debug)
 
-    ###########################################################################
-    # GENERATE SHAPEFILES OF CUMULATIVE & RATE GPS DISPLACEMENTS FOR DISPLAY IN QGIS
-    ###########################################################################
+MESSAGE("writing spatial resolution map as shapefile")
+if model.geometry_type in ['TDE','RDE']:
+    pyeq.plot.model2shp_gmt(model.geometry, 'tde', [model.odir + "/info/spatial_resolution.dat"], out_dir_shp=args.odir + '/shapefile',
+                            out_dir_gmt=model.odir + '/gmt', verbose=model.debug)
 
-    MESSAGE("writing GPS displacements GMT and shapefiles for visualization in QGIS")
+###########################################################################
+# GENERATE SHAPEFILES OF CUMULATIVE & RATE GPS DISPLACEMENTS FOR DISPLAY IN QGIS
+###########################################################################
 
-    ldisp_dat = glob.glob(model.odir + "/displacement/cumulative/model/*disp.dat")
-    for disp in ldisp_dat:
-        shp = model.odir + "/shapefile/disp_cumulative/"+disp.split('/')[-1].split('.')[0]
-        pyacs.lib.shapefile.psvelo_to_shapefile(disp, shp, verbose=False)
+MESSAGE("writing GPS displacements GMT and shapefiles for visualization in QGIS")
+
+ldisp_dat = glob.glob(model.odir + "/displacement/cumulative/model/*disp.dat")
+for disp in ldisp_dat:
+    shp = model.odir + "/shapefile/disp_cumulative/"+disp.split('/')[-1].split('.')[0]
+    pyacs.lib.shapefile.psvelo_to_shapefile(disp, shp, verbose=False)
+
+###########################################################################
+# GENERATE SHAPEFILE FOR SLIP DIRECTION
+###########################################################################
+
+# unit slip vector to shapefile
+shp = model.odir + "/shapefile/geometry/slip_dir_en"
+disp = model.odir + '/info/slip_dir_en.dat'
+
+pyacs.lib.shapefile.psvelo_to_shapefile(disp, shp, verbose=False)
 
 ###################################################################
 # UPDATE MODEL WITH EXTERNAL SHAPEFILE FOR PLOT

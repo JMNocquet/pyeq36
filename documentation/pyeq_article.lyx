@@ -1,0 +1,2490 @@
+#LyX 2.2 created this file. For more info see http://www.lyx.org/
+\lyxformat 508
+\begin_document
+\begin_header
+\save_transient_properties true
+\origin unavailable
+\textclass article
+\begin_preamble
+
+
+\title{Notes sur PYACS kinamtics}
+\author{Jean-Mathieu Nocquet}
+\date{June 2019 - Update August 2019}
+
+\usepackage{program}
+\end_preamble
+\use_default_options false
+\maintain_unincluded_children false
+\language english
+\language_package none
+\inputencoding utf8
+\fontencoding default
+\font_roman "default" "default"
+\font_sans "default" "default"
+\font_typewriter "default" "default"
+\font_math "auto" "auto"
+\font_default_family default
+\use_non_tex_fonts false
+\font_sc false
+\font_osf false
+\font_sf_scale 100 100
+\font_tt_scale 100 100
+\graphics default
+\default_output_format default
+\output_sync 0
+\bibtex_command default
+\index_command default
+\paperfontsize default
+\spacing single
+\use_hyperref false
+\papersize default
+\use_geometry false
+\use_package amsmath 2
+\use_package amssymb 2
+\use_package cancel 0
+\use_package esint 1
+\use_package mathdots 2
+\use_package mathtools 0
+\use_package mhchem 0
+\use_package stackrel 0
+\use_package stmaryrd 0
+\use_package undertilde 0
+\cite_engine natbib
+\cite_engine_type authoryear
+\biblio_style plainnat
+\use_bibtopic false
+\use_indices false
+\paperorientation portrait
+\suppress_date false
+\justification true
+\use_refstyle 0
+\index Index
+\shortcut idx
+\color #008000
+\end_index
+\secnumdepth 3
+\tocdepth 3
+\paragraph_separation indent
+\paragraph_indentation default
+\quotes_language english
+\papercolumns 1
+\papersides 1
+\paperpagestyle default
+\tracking_changes false
+\output_changes false
+\html_math_output 0
+\html_css_as_file 0
+\html_be_strict false
+\end_header
+
+\begin_body
+
+\begin_layout Standard
+\begin_inset ERT
+status collapsed
+
+\begin_layout Plain Layout
+
+
+\backslash
+maketitle
+\end_layout
+
+\end_inset
+
+ 
+\begin_inset ERT
+status collapsed
+
+\begin_layout Plain Layout
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section
+Introduction
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status collapsed
+
+\begin_layout Plain Layout
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status collapsed
+
+\begin_layout Plain Layout
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section
+Model setting
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status collapsed
+
+\begin_layout Plain Layout
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+In the following we will note for any matrix 
+\begin_inset Formula $A^{2}=A^{T}A$
+\end_inset
+
+ 
+\begin_inset ERT
+status collapsed
+
+\begin_layout Plain Layout
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+Notation
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status collapsed
+
+\begin_layout Plain Layout
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
+\begin_inset Formula 
+\begin{equation}
+\begin{array}{ccl}
+m & : & \text{vector of model parameters}\\
+m_{0} & : & \text{vector of prior model parameters}\\
+N_{m} & : & \text{length of the vector }m\\
+d & : & \text{vector of observations}\\
+N_{d} & : & \text{length of observation vector}\\
+n_{m} & : & \text{number of subfaults}\\
+g & : & \text{model matrix },g\hspace{3pt}m=d\\
+n_{t} & : & \text{number of observation dates}\\
+t_{k} & : & k^{th}\text{date of observation}\\
+d_{k} & : & \text{observation vector at date }t_{k}\\
+T_{k} & : & k^{th}\text{ date of model slip}\\
+A^{2} & : & \text{for any matrix }A,A^{2}=A^{T}A\\
+C_{d} & : & \text{data covariance matrix}\\
+C_{m} & : & \text{model covariance matrix}\\
+C_{d}^{-1/2} & : & :(C_{d}^{-1/2})^{T}C_{d}^{-1/2}=C_{d}^{-1}\\
+C_{m}^{-1/2} & : & :(C_{m}^{-1/2})^{T}C_{m}^{-1/2}=C_{m}^{-1}\\
+G & : & :C_{d}^{-1/2}g\\
+D & : & :C_{d}^{-1/2}D\\
+%
+%
+%
+%
+%ns
+%q
+%r
+\end{array}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status collapsed
+
+\begin_layout Plain Layout
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+Static problem
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status collapsed
+
+\begin_layout Plain Layout
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+The forward problem linearly relates slip along the fault to the surface
+ displacement through matrix 
+\begin_inset Formula $g$
+\end_inset
+
+.
+ Noting 
+\begin_inset Formula $m$
+\end_inset
+
+ the vector of slip along 
+\begin_inset Formula $N_{m}$
+\end_inset
+
+ sub-faults, and 
+\begin_inset Formula $N_{d}$
+\end_inset
+
+ displacement observations in vector 
+\begin_inset Formula $d$
+\end_inset
+
+, we have:
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+g\hspace{3pt}m=d
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Most often, 
+\begin_inset Formula $N_{m}\gt N_{d}$
+\end_inset
+
+ and we need to add regularization constraint.
+ In the following, I choose a regularization constraint in the form:
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+(m-m_{0})^{T}C_{m}^{-1}(m-m_{0})
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+where 
+\begin_inset Formula $C_{m}$
+\end_inset
+
+ is an inverse covariance matrix including correlation between slip at the
+ subfaults and 
+\begin_inset Formula $m_{0}$
+\end_inset
+
+ an a priori model.
+ With this choice, we solve the problem by minimizing:
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+2S(m)=(g\hspace{3pt}m-d)^{T}C_{d}^{-1}(g\hspace{3pt}m-d)+(m-m_{0})^{T}C_{m}^{-1}(m-m_{0})\label{eq:Sm}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+where 
+\begin_inset Formula $C_{d}^{-1}$
+\end_inset
+
+ is the inverse of data covariance.
+ I define the square roots 
+\begin_inset Formula $C_{d}^{-1/2}$
+\end_inset
+
+ and 
+\begin_inset Formula $C_{m}^{-1/2}$
+\end_inset
+
+ so that:
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\left(C_{d}^{-1/2}\right)^{T}C_{d}^{-1/2}=C_{d}^{-1}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\left(C_{m}^{-1/2}\right)^{T}C_{m}^{-1/2}=C_{m}^{-1}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Inserting 
+\begin_inset Formula $C_{d}^{-1/2}$
+\end_inset
+
+ and 
+\begin_inset Formula $C_{m}^{-1/2}$
+\end_inset
+
+ into equation (
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:Sm"
+
+\end_inset
+
+), we have:
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{align}
+2S(m) & =(g\hspace{3pt}m-d)^{t}C_{d}^{-1}(g\hspace{3pt}m-d)+(m-m_{0})^{t}C_{m}^{-1}(m-m_{0})\\
+ & =(C_{d}^{-1/2}g\hspace{3pt}m-C_{d}^{-1/2}d)^{t}(C_{d}^{-1/2}g\hspace{3pt}m-C_{d}^{-1/2}d)\\
+ & +(C_{m}^{-1/2}m-C_{m}^{-1/2}m_{0})^{t}(C_{m}^{-1/2}m-C_{m}^{-1/2}m_{0})\\
+\end{align}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Defining 
+\begin_inset Formula $G=C_{d}^{-1/2}g$
+\end_inset
+
+ and 
+\begin_inset Formula $D=C_{d}^{-1/2}d$
+\end_inset
+
+, this equation writes:
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+2S(m)=(G\hspace{3pt}m-D)^{T}(G\hspace{3pt}m-D)+(C_{m}^{-1/2}m-C_{m}^{-1/2}m_{0})^{t}(C_{m}^{-1/2}m-C_{m}^{-1/2}m_{0})
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+The associated linear system to be solved is:
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\left[\begin{array}{cc}
+G\\
+C_{m}^{-1/2}
+\end{array}\right]m=\left[\begin{array}{c}
+D\\
+C_{m}^{-1/2}m_{0}
+\end{array}\right]\label{reduced_linear_system}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+The normal system associated with this linear system is:
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\left[\begin{array}{c}
+G^{T}G+C_{m}^{-1}\end{array}\right]m=\left[\begin{array}{c}
+D+m_{0}^{T}C_{m}\end{array}\right]\label{eq:normal_system_static}
+\end{equation}
+
+\end_inset
+
+The solution This can be solved with NNLS.
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status collapsed
+
+\begin_layout Plain Layout
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+From static to dynamic case
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status collapsed
+
+\begin_layout Plain Layout
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+I now note 
+\begin_inset Formula $d=[d_{1},d_{2},\cdots,d_{k},\cdots,d_{n_{t}}]$
+\end_inset
+
+, the vector of displacement time series with respect to the first observation,
+ that is at 
+\begin_inset Formula $t_{0}=0$
+\end_inset
+
+, 
+\begin_inset Formula $d_{0}=0$
+\end_inset
+
+.
+ For now, I assume that there is no missing data, so that all vector 
+\begin_inset Formula $d_{k}$
+\end_inset
+
+ have the same length.
+ Equations for the case of missing data will be derived in sections XX and
+ YY.
+ I note 
+\begin_inset Formula $\Delta m=[\Delta m_{1},\Delta m_{2},\cdots,\Delta m_{k},\cdots,\Delta m_{n_{t}}]$
+\end_inset
+
+ where 
+\begin_inset Formula $\Delta m_{k}$
+\end_inset
+
+ is the incremental slip vector corresponding to observation between time
+ 
+\begin_inset Formula $t_{k-1}$
+\end_inset
+
+ and 
+\begin_inset Formula $t_{k}$
+\end_inset
+
+.
+ The displacement at date 
+\begin_inset Formula $t_{k}$
+\end_inset
+
+ is the sum of all incremental slips before 
+\begin_inset Formula $t_{k}$
+\end_inset
+
+ multiplied by 
+\begin_inset Formula $g$
+\end_inset
+
+:
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\left[\begin{array}{ccccccc}
+g & g & \cdots & g & 0 & \cdots & 0\end{array}\right]\Delta m=d_{k}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Further assuming that the data covariance 
+\begin_inset Formula $C_{d}$
+\end_inset
+
+ remain is the same at all dates 
+\begin_inset Formula $t_{k}$
+\end_inset
+
+,
+\end_layout
+
+\begin_layout Standard
+From equation (
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "reduced_linear_system"
+
+\end_inset
+
+), the associated linear system for observation becomes:
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\left[\begin{array}{ccccccc}
+G & 0 & \cdots & 0 & \cdots & 0\\
+G & G & \cdots & 0 & \cdots & 0\\
+\vdots & \vdots & \ddots & \vdots & \cdots & \vdots\\
+G & G & \cdots & G & \cdots & 0\\
+\vdots & \vdots & \vdots & \vdots & \ddots & \vdots\\
+G & G & \cdots & G & \cdots & G
+\end{array}\right]\left[\begin{array}{c}
+\Delta m_{1}\\
+\Delta m_{2}\\
+\vdots\\
+\Delta m_{k}\\
+\vdots\\
+\Delta m_{n_{t}}
+\end{array}\right]=\left[\begin{array}{c}
+D_{1}\\
+D_{2}\\
+\vdots\\
+D_{k}\\
+\vdots\\
+D_{n_{t}}
+\end{array}\right]
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+The associated normal system is:
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\left[\begin{array}{cccccc}
+nG^{2} & (n-1)G^{2} & \cdots & (n-k)G^{2} & \cdots & G^{2}\\
+(n-1)G^{2} & (n-2)G^{2} & \cdots & (n-k)G^{2} & \cdots & G^{2}\\
+\vdots & \vdots & \ddots & \vdots & \vdots & \vdots\\
+(n-k)G^{2} & (n-k)G^{2} & \cdots & (n-k)G^{2} & \cdots & G^{2}\\
+\vdots & \vdots & \ddots & \vdots & \vdots & \vdots\\
+G^{2} & G^{2} & \cdots & G^{2} & \cdots & G^{2}
+\end{array}\right]\left[\begin{array}{c}
+\Delta m_{1}\\
+\Delta m_{2}\\
+\vdots\\
+\Delta m_{k}\\
+\vdots\\
+\Delta m_{n_{t}}
+\end{array}\right]=\left[\begin{array}{c}
+G^{T}\cdot\sum\limits _{i=1}^{n}D_{i}\\
+G^{T}\cdot\sum\limits _{i=2}^{n}D_{i}\\
+\vdots\\
+G^{T}\cdot\sum\limits _{i=k}^{n}D_{i}\\
+\vdots\\
+G^{T}\cdot D_{n}
+\end{array}\right]
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+The lower part of the normal system is:
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\left[\begin{array}{ccccc}
+C_{m}^{-1} & 0 & 0 & \cdots & 0\\
+0 & C_{m}^{-1} & 0 & \cdots & 0\\
+0 & 0 & C_{m}^{-1} & \ddots & 0\\
+\vdots & \vdots & 0 & \ddots & 0\\
+0 & 0 & 0 & ... & C_{m}^{-1}
+\end{array}\right]\left[\begin{array}{c}
+\Delta m_{1}\\
+\Delta m_{2}\\
+\Delta m_{3}\\
+\vdots\\
+\Delta m_{p}
+\end{array}\right]=\left[\begin{array}{c}
+C_{m}^{-1}m_{0_{1}}\\
+C_{m}^{-1}m_{0_{2}}\\
+C_{m}^{-1}m_{0_{3}}\\
+\vdots\\
+C_{m}^{-1}m_{0_{n}}
+\end{array}\right]
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+The resulting normal system is the sum of the two subsystems.
+\end_layout
+
+\begin_layout Subsection
+Modified normal system because of missing observation
+\end_layout
+
+\begin_layout Standard
+In the previous section, we made the assumption that all data are present.
+ There are two changes: 
+\end_layout
+
+\begin_layout Itemize
+missing observation 
+\end_layout
+
+\begin_layout Itemize
+late start of data for a given site 
+\end_layout
+
+\begin_layout Subsection
+Different time step for model and data
+\end_layout
+
+\begin_layout Subsection
+Adding constant estimation
+\end_layout
+
+\begin_layout Subsection
+Building the normal system through a loop
+\end_layout
+
+\begin_layout Standard
+Another way to write the linear system:
+\end_layout
+
+\begin_layout Standard
+For a given date, we saw that the observation equation is:
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\left[\begin{array}{cccccccc}
+G_{i} & G_{i} & G_{i} & \cdots & G_{i} & 0 & \cdots & 0\end{array}\right]\Delta m=d_{i}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+where 
+\begin_inset Formula $G_{i}$
+\end_inset
+
+ is obtained by removing the rows corresponding to missing observation at
+ time step 
+\begin_inset Formula $i$
+\end_inset
+
+.
+ The normal equation is:
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\left[\begin{array}{cccccccc}
+G_{i}^{2} & G_{i}^{2} & G_{i}^{2} & \cdots & G_{i}^{2} & 0 & \cdots & 0\\
+G_{i}^{2} & G_{i}^{2} & G_{i}^{2} & \cdots & G_{i}^{2} & 0 & \cdots & 0\\
+G_{i}^{2} & G_{i}^{2} & G_{i}^{2} & \cdots & G_{i}^{2} & 0 & \cdots & 0\\
+\vdots & \vdots & \vdots & \ddots & \vdots & \vdots & \cdots & \vdots\\
+G_{i}^{2} & G_{i}^{2} & G_{i}^{2} & \cdots & G_{i}^{2} & 0 & \cdots & 0\\
+0 & 0 & 0 & \cdots & 0 & 0 & \cdots & 0\\
+\vdots & \vdots & \vdots & \vdots & \vdots & \vdots & \vdots & \vdots\\
+0 & 0 & 0 & \cdots & 0 & 0 & \cdots & 0
+\end{array}\right]\Delta m=\left[\begin{array}{c}
+G_{i}^{T}d_{i}\\
+G_{i}^{T}d_{i}\\
+G_{i}^{T}d_{i}\\
+\vdots\\
+G_{i}^{T}d_{i}\\
+0\\
+\vdots\\
+0
+\end{array}\right]
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+So making the system step by step: at step 1:
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\left[\begin{array}{cccccccc}
+G_{1}^{T}G_{1} & 0 & 0 & \cdots & 0 & 0 & \cdots & 0\\
+0 & 0 & 0 & \cdots & 0 & 0 & \cdots & 0\\
+0 & 0 & 0 & \cdots & 0 & 0 & \cdots & 0\\
+\vdots & \vdots & \vdots & \ddots & \vdots & \vdots & \cdots & \vdots\\
+0 & 0 & 0 & \cdots & 0 & 0 & \cdots & 0\\
+0 & 0 & 0 & \cdots & 0 & 0 & \cdots & 0\\
+\vdots & \vdots & \vdots & \vdots & \vdots & \vdots & \vdots & \vdots\\
+0 & 0 & 0 & \cdots & 0 & 0 & \cdots & 0
+\end{array}\right]\Delta m=\left[\begin{array}{c}
+G_{1}^{T}d_{1}\\
+0\\
+0\\
+\vdots\\
+0\\
+0\\
+\vdots\\
+0
+\end{array}\right]
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+At step #2: the contribution associated with observation at t2 is:
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\left[\begin{array}{cccccccc}
+G_{2}^{T}G_{2} & G_{2}^{T}G_{2} & 0 & \cdots & 0 & 0 & \cdots & 0\\
+G_{2}^{T}G_{2} & G_{2}^{T}G_{2} & 0 & \cdots & 0 & 0 & \cdots & 0\\
+0 & 0 & 0 & \cdots & 0 & 0 & \cdots & 0\\
+\vdots & \vdots & \vdots & \ddots & \vdots & \vdots & \cdots & \vdots\\
+0 & 0 & 0 & \cdots & 0 & 0 & \cdots & 0\\
+0 & 0 & 0 & \cdots & 0 & 0 & \cdots & 0\\
+\vdots & \vdots & \vdots & \vdots & \vdots & \vdots & \vdots & \vdots\\
+0 & 0 & 0 & \cdots & 0 & 0 & \cdots & 0
+\end{array}\right]\Delta m=\left[\begin{array}{c}
+G_{2}^{T}d_{2}\\
+G_{2}^{T}d_{2}\\
+0\\
+\vdots\\
+0\\
+0\\
+\vdots\\
+0
+\end{array}\right]
+\end{equation}
+
+\end_inset
+
+So the system with two observation steps is: 
+\begin_inset Formula 
+\begin{equation}
+\left[\begin{array}{cccccccc}
+G_{1}^{T}G_{1}+G_{2}^{T}G_{2} & G_{2}^{T}G_{2} & 0 & \cdots & 0 & 0 & \cdots & 0\\
+G_{2}^{T}G_{2} & G_{2}^{T}G_{2} & 0 & \cdots & 0 & 0 & \cdots & 0\\
+0 & 0 & 0 & \cdots & 0 & 0 & \cdots & 0\\
+\vdots & \vdots & \vdots & \ddots & \vdots & \vdots & \cdots & \vdots\\
+0 & 0 & 0 & \cdots & 0 & 0 & \cdots & 0\\
+0 & 0 & 0 & \cdots & 0 & 0 & \cdots & 0\\
+\vdots & \vdots & \vdots & \vdots & \vdots & \vdots & \vdots & \vdots\\
+0 & 0 & 0 & \cdots & 0 & 0 & \cdots & 0
+\end{array}\right]\Delta m=\left[\begin{array}{c}
+G_{1}^{T}d_{1}+G_{2}^{T}d_{2}\\
+G_{2}^{T}d_{2}\\
+0\\
+\vdots\\
+0\\
+0\\
+\vdots\\
+0
+\end{array}\right]
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+For the step 3, the individual contribution is:
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\left[\begin{array}{cccccccc}
+G_{3}^{T}G_{3} & G_{3}^{T}G_{3} & G_{3}^{T}G_{3} & 0 & 0 & 0 & \cdots & 0\\
+G_{3}^{T}G_{3} & G_{3}^{T}G_{3} & G_{3}^{T}G_{3} & \cdots & 0 & 0 & \cdots & 0\\
+G_{3}^{T}G_{3} & G_{3}^{T}G_{3} & G_{3}^{T}G_{3} & \cdots & 0 & 0 & \cdots & 0\\
+\vdots & \vdots & \vdots & \ddots & \vdots & \vdots & \cdots & \vdots\\
+0 & 0 & 0 & \cdots & 0 & 0 & \cdots & 0\\
+0 & 0 & 0 & \cdots & 0 & 0 & \cdots & 0\\
+\vdots & \vdots & \vdots & \vdots & \vdots & \vdots & \vdots & \vdots\\
+0 & 0 & 0 & \cdots & 0 & 0 & \cdots & 0
+\end{array}\right]\Delta m=\left[\begin{array}{c}
+G_{3}^{T}d_{3}\\
+G_{3}^{T}d_{3}\\
+G_{3}^{T}d_{3}\\
+\vdots\\
+0\\
+0\\
+\vdots\\
+0
+\end{array}\right]
+\end{equation}
+
+\end_inset
+
+The normal system at step 3 is:
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\left[\begin{array}{cccccccc}
+\sum\limits _{k=1}^{3}G_{k}^{T}G_{k} & \sum\limits _{k=2}^{3}G_{k}^{T}G_{k} & \sum\limits _{k=3}^{3}G_{k}^{T}G_{k} & 0 & 0 & 0 & \cdots & 0\\
+\sum\limits _{k=2}^{3}G_{k}^{T}G_{k} & \sum\limits _{k=2}^{3}G_{k}^{T}G_{k} & \sum\limits _{k=3}^{3}G_{k}^{T}G_{k} & \cdots & 0 & 0 & \cdots & 0\\
+\sum\limits _{k=3}^{3}G_{k}^{T}G_{k} & \sum\limits _{k=3}^{3}G_{k}^{T}G_{k} & \sum\limits _{k=3}^{3}G_{k}^{T}G_{k} & \cdots & 0 & 0 & \cdots & 0\\
+\vdots & \vdots & \vdots & \ddots & \vdots & \vdots & \cdots & \vdots\\
+0 & 0 & 0 & \cdots & 0 & 0 & \cdots & 0\\
+0 & 0 & 0 & \cdots & 0 & 0 & \cdots & 0\\
+\vdots & \vdots & \vdots & \vdots & \vdots & \vdots & \vdots & \vdots\\
+0 & 0 & 0 & \cdots & 0 & 0 & \cdots & 0
+\end{array}\right]\Delta m=\left[\begin{array}{c}
+\sum\limits _{k=1}^{3}G_{k}^{T}d_{k}\\
+\sum\limits _{k=2}^{3}G_{k}^{T}d_{k}\\
+\sum\limits _{k=3}^{3}G_{k}^{T}d_{k}\\
+\vdots\\
+0\\
+0\\
+\vdots\\
+0
+\end{array}\right]
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+By extension at step 
+\begin_inset Formula $i$
+\end_inset
+
+, the normal system is: 
+\begin_inset Formula 
+\begin{equation}
+\left[\begin{array}{cccccccc}
+\sum\limits _{k=1}^{i}G_{k}^{T}G_{k} & \sum\limits _{k=2}^{i}G_{k}^{T}G_{k} & \sum\limits _{k=3}^{i}G_{k}^{T}G_{k} & \cdots & G_{i}^{T}G_{i} & 0 & \cdots & 0\\
+\sum\limits _{k=2}^{i}G_{k}^{T}G_{k} & \sum\limits _{k=2}^{i}G_{k}^{T}G_{k} & \sum\limits _{k=3}^{i}G_{k}^{T}G_{k} & \cdots & G_{i}^{T}G_{i} & 0 & \cdots & 0\\
+\sum\limits _{k=3}^{i}G_{k}^{T}G_{k} & \sum\limits _{k=3}^{i}G_{k}^{T}G_{k} & \sum\limits _{k=3}^{i}G_{k}^{T}G_{k} & \cdots & G_{i}^{T}G_{i} & 0 & \cdots & 0\\
+\vdots & \vdots & \vdots & \ddots & \vdots & \vdots & \cdots & \vdots\\
+G_{i}^{T}G_{i} & G_{i}^{T}G_{i} & G_{i}^{T}G_{i} & \cdots & G_{i}^{T}G_{i} & 0 & \cdots & 0\\
+0 & 0 & 0 & \cdots & 0 & 0 & \cdots & 0\\
+\vdots & \vdots & \vdots & \vdots & \vdots & \vdots & \vdots & \vdots\\
+0 & 0 & 0 & \cdots & 0 & 0 & \cdots & 0
+\end{array}\right]\Delta m=\left[\begin{array}{c}
+\sum\limits _{k=1}^{i}G_{k}^{T}d_{k}\\
+\sum\limits _{k=2}^{i}G_{k}^{T}d_{k}\\
+\sum\limits _{k=3}^{i}G_{k}^{T}d_{k}\\
+\vdots\\
+\sum\limits _{k=i}^{i}G_{k}^{T}d_{k}\\
+0\\
+\vdots\\
+0
+\end{array}\right]
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+and at the final normal system at step 
+\begin_inset Formula $n$
+\end_inset
+
+:
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\left[\begin{array}{cccccccc}
+\sum\limits _{k=1}^{n}G_{k}^{2} & \sum\limits _{k=2}^{n}G_{k}^{2} & \sum\limits _{k=3}^{n}G_{k}^{2} & \cdots & \sum\limits _{k=i}^{n}G_{k}^{2} & \cdots & \sum\limits _{k=n-1}^{n}G_{k}^{2} & G_{n}^{2}\\
+\sum\limits _{k=2}^{n}G_{k}^{2} & \sum\limits _{k=2}^{n}G_{k}^{2} & \sum\limits _{k=3}^{n}G_{k}^{2} & \cdots & \sum\limits _{k=i}^{n}G_{k}^{2} & \cdots & \sum\limits _{k=n-1}^{n}G_{k}^{2} & G_{n}^{2}\\
+\sum\limits _{k=3}^{n}G_{k}^{2} & \sum\limits _{k=3}^{n}G_{k}^{2} & \sum\limits _{k=3}^{n}G_{k}^{2} & \cdots & \sum\limits _{k=i}^{n}G_{k}^{2} & \cdots & \sum\limits _{k=n-1}^{n}G_{k}^{2} & G_{n}^{2}\\
+\vdots & \vdots & \vdots & \ddots & \vdots & \vdots & \cdots & \vdots\\
+\sum\limits _{k=i}^{n}G_{k}^{2} & \sum\limits _{k=i}^{n}G_{k}^{2} & \sum\limits _{k=i}^{n}G_{k}^{2} & \cdots & \sum\limits _{k=i}^{n}G_{k}^{2} & \cdots & \sum\limits _{k=n-1}^{n}G_{k}^{2} & G_{n}^{2}\\
+\vdots & \vdots & \vdots & \vdots & \vdots & \vdots & \vdots & \vdots\\
+\sum\limits _{k=n-1}^{n}G_{k}^{2} & \sum\limits _{k=n-1}^{n}G_{k}^{2} & \sum\limits _{k=n-1}^{n}G_{k}^{2} & \cdots & \sum\limits _{k=n-1}^{n}G_{k}^{2} & \cdots & \sum\limits _{k=n-1}^{n}G_{k}^{2} & G_{n}^{2}\\
+G_{n}^{2} & G_{n}^{2} & G_{n}^{2} & \cdots & G_{n}^{2} & \cdots & G_{n}^{2} & G_{n}^{2}
+\end{array}\right]\Delta m=\left[\begin{array}{c}
+\sum\limits _{k=1}^{n}G_{k}^{T}d_{k}\\
+\sum\limits _{k=2}^{n}G_{k}^{T}d_{k}\\
+\sum\limits _{k=3}^{n}G_{k}^{T}d_{k}\\
+\vdots\\
+\sum\limits _{k=i}^{n}G_{k}^{T}d_{k}\\
+\vdots\\
+\sum\limits _{k=n-1}^{n}G_{k}^{T}d_{k}\\
+G_{n}^{T}d_{n}
+\end{array}\right]
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section
+Adding a constant
+\end_layout
+
+\begin_layout Standard
+The individual observation equation becomes:
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\left[\begin{array}{ccccccccc}
+G_{i} & G_{i} & G_{i} & \cdots & G_{i} & 0 & \cdots & 0 & \Theta_{i}\end{array}\right]\left[\begin{array}{c}
+\Delta m\\
+c
+\end{array}\right]=\left[\begin{array}{c}
+d_{i}\end{array}\right]
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+where 
+\begin_inset Formula $\Theta_{i}$
+\end_inset
+
+ is the identity matrix where row corresponding missing data at date 
+\begin_inset Formula $t_{i}$
+\end_inset
+
+ are removed.
+ We have 
+\begin_inset Formula $\Theta_{i}d_{i}=d_{i}$
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Standard
+The individual normal system is: 
+\begin_inset Formula 
+\begin{equation}
+\left[\begin{array}{cccccccc|c}
+G_{i}^{2} & G_{i}^{2} & G_{i}^{2} & \cdots & G_{i}^{2} & 0 & \cdots & 0 & \Theta_{i}^{T}\\
+G_{i}^{2} & G_{i}^{2} & G_{i}^{2} & \cdots & G_{i}^{2} & 0 & \cdots & 0 & \Theta_{i}^{T}\\
+G_{i}^{2} & G_{i}^{2} & G_{i}^{2} & \cdots & G_{i}^{2} & 0 & \cdots & 0 & \Theta_{i}^{T}\\
+\vdots & \vdots & \vdots & \ddots & \vdots & \vdots & \cdots & \vdots & \vdots\\
+G_{i}^{2} & G_{i}^{2} & G_{i}^{2} & \cdots & G_{i}^{2} & 0 & \cdots & 0 & \Theta_{i}^{T}\\
+0 & 0 & 0 & \cdots & 0 & 0 & \cdots & 0 & 0\\
+\vdots & \vdots & \vdots & \vdots & \vdots & \vdots & \vdots & \vdots & \vdots\\
+0 & 0 & 0 & \cdots & 0 & 0 & \cdots & 0 & 0\\
+\hline \Theta_{i} & \Theta_{i} & \Theta_{i} & \cdots & \Theta_{i} & \Theta_{i} & \cdots & \Theta_{i} & \Theta_{i}^{2}
+\end{array}\right]\left[\begin{array}{c}
+\Delta m\\
+c
+\end{array}\right]=\left[\begin{array}{c}
+G_{i}^{T}d_{i}\\
+G_{i}^{T}d_{i}\\
+G_{i}^{T}d_{i}\\
+\vdots\\
+G_{i}^{T}d_{i}\\
+0\\
+\vdots\\
+0\\
+\hline \Theta_{i}^{T}d_{i}
+\end{array}\right]
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+The full normal system becomes: 
+\begin_inset Formula 
+\begin{equation}
+\left[\begin{array}{ccccc|c}
+\sum\limits _{k=1}^{n}G_{k}^{2} & \sum\limits _{k=2}^{n}\Theta_{k}^{2} & \cdots & \sum\limits _{k=n-1}^{n}G_{k}^{2} & G_{n}^{2} & \sum\limits _{k=1}^{n}\Theta_{k}^{T}\\
+\sum\limits _{k=2}^{n}G_{k}^{2} & \sum\limits _{k=2}^{n}G_{k}^{2} & \cdots & \sum\limits _{k=n-1}^{n}G_{k}^{2} & G_{n}^{2} & \sum\limits _{k=2}^{n}\Theta_{k}^{T}\\
+\vdots & \vdots & \ddots & \vdots & \vdots & \vdots\\
+\sum\limits _{k=n-1}^{n}G_{k}^{2} & \sum\limits _{k=n-1}^{n}G_{k}^{2} & \cdots & \sum\limits _{k=n-1}^{n}G_{k}^{2} & G_{n}^{2} & \sum\limits _{k=n-1}^{n}\Theta_{k}^{T}\\
+G_{n}^{2} & G_{n}^{2} & \cdots & G_{n}^{2} & G_{n}^{2} & \Theta_{n}^{T}\\
+\hline \sum\limits _{k=1}^{n}\Theta_{k} & \sum\limits _{k=2}^{n}\Theta_{k} & \cdots & \sum\limits _{k=n-1}^{n}\Theta_{k} & \Theta_{n} & \sum\limits _{k=1}^{n}\Theta_{k}^{2}
+\end{array}\right]\left[\begin{array}{c}
+\Delta m\\
+c
+\end{array}\right]=\left[\begin{array}{c}
+\sum\limits _{k=1}^{n}G_{k}^{T}d_{k}\\
+\sum\limits _{k=2}^{n}G_{k}^{T}d_{k}\\
+\vdots\\
+\sum\limits _{k=n-1}^{n}G_{k}^{T}d_{k}\\
+G_{n}^{T}d_{n}\\
+\hline \sum\limits _{k=1}^{n}\Theta_{k}^{T}d_{k}
+\end{array}\right]
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section
+Variable model time step
+\end_layout
+
+\begin_layout Standard
+From figure, the observation 
+\begin_inset Formula $d_{k}$
+\end_inset
+
+ at time 
+\begin_inset Formula $tk$
+\end_inset
+
+ occurring at the model time step 
+\begin_inset Formula $i$
+\end_inset
+
+, between model dates 
+\begin_inset Formula $T_{i-1}$
+\end_inset
+
+ and 
+\begin_inset Formula $T_{i}$
+\end_inset
+
+ has equation:
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\left[\begin{array}{ccccccc}
+G_{k}\Delta T_{1} & G_{k}\Delta T_{2} & \cdots & G_{k}(t_{k}-T_{i-1}) & 0 & \cdots & 0\end{array}\right]\Delta m=d_{k}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+In this case, I define two functions as follow:
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{align}
+\Gamma(t) & =[\Delta T_{1},\Delta T_{2},\cdots,t-T_{i},\Delta T_{i+1},\cdots,\Delta T_{q}]\\
+i(t) & =i
+\end{align}
+
+\end_inset
+
+where 
+\begin_inset Formula $T_{i}$
+\end_inset
+
+ is the last model time before 
+\begin_inset Formula $t_{k}$
+\end_inset
+
+ (
+\begin_inset Formula $T_{i}=sup(T_{j}\le t_{k})_{j\in[0,q]}$
+\end_inset
+
+).
+\end_layout
+
+\begin_layout Standard
+With these notations, the observation equation becomes:
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\left[\begin{array}{ccccccc}
+G_{k}\Gamma(t_{k})_{1} & G_{k}\Gamma(t_{k})_{2} & \cdots & G_{k}\Gamma(t_{k})_{i(t_{k})} & 0 & \cdots & 0\end{array}\right]\Delta m=d_{k}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+The individual normal equation is:
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\left[\begin{array}{ccccccc}
+G_{k}^{2}\Gamma(t_{k})_{1}^{2} & G_{k}^{2}\Gamma(t_{k})_{1}\Gamma(t_{k})_{2} & \cdots & G_{k}^{2}\Gamma(t_{k})_{1}\Gamma(t_{k})_{i(t_{k})} & 0 & \cdots & 0\\
+G_{k}^{2}\Gamma(t_{k})_{1}\Gamma(t_{k})_{2} & G_{k}^{2}\Gamma(t_{k})_{2}^{2} & \cdots & G_{k}^{2}\Gamma(t_{k})_{2}\Gamma(t_{k})_{i(t_{k})} & 0 & \cdots & 0\\
+\vdots & \vdots & \ddots & \vdots & \vdots & \cdots & \vdots\\
+G_{k}^{2}\Gamma(t_{k})_{1}\Gamma(t_{k})_{i(t_{k})} & G_{k}^{2}\Gamma(t_{k})_{2}\Gamma(t_{k})_{i(t_{k})} & \cdots & G_{k}^{2}\Gamma(t_{k})_{i(t_{k})}^{2} & 0 & \cdots & 0\\
+0 & 0 & \cdots & 0 & 0 & \cdots & 0\\
+\vdots & \vdots & \vdots & \vdots & \vdots & \vdots & \vdots\\
+0 & 0 & \cdots & 0 & 0 & \cdots & 0
+\end{array}\right]\Delta m=\left[\begin{array}{c}
+G_{k}^{T}\Gamma(t_{k})_{1}d_{k}\\
+G_{k}^{T}\Gamma(t_{k})_{2}d_{k}\\
+\vdots\\
+G_{k}^{T}\Gamma(t_{k})_{i(t_{k})}d_{k}\\
+0\\
+\vdots\\
+0
+\end{array}\right]
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+I note 
+\begin_inset Formula 
+\begin{equation}
+K(j)=min(k\in[1,n]\text{ , }t_{k}\ge T_{j})
+\end{equation}
+
+\end_inset
+
+The final normal system is:
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\left[\begin{array}{cccccc}
+\sum\limits _{k=1}^{n}G_{k}^{2}\Gamma(t_{k})_{1}^{2} & \sum\limits _{k=K(2)}^{n}G_{k}^{2}\Gamma(t_{k})_{1}\Gamma(t_{k})_{2} & \cdots & \sum\limits _{k=K(n)}^{n}G_{k}^{2}\Gamma(t_{k})_{1}\Gamma(t_{k})_{i(t_{k})}\\
+\sum\limits _{k=1}^{n}G_{k}^{2}\Gamma(t_{k})_{1}\Gamma(t_{k})_{2} & \sum\limits _{k=K(2)}^{n}G_{k}^{2}\Gamma(t_{k})_{2}^{2} & \cdots & \sum\limits _{k=K(n)}^{n}G_{k}^{2}\Gamma(t_{k})_{2}\Gamma(t_{k})_{i(t_{k})}\\
+\vdots & \vdots & \vdots & \vdots\\
+\sum\limits _{k=K(n)}^{n}G_{k}^{2}\Gamma(t_{k})_{1}\Gamma(t_{k})_{i(t_{k})} & \sum\limits _{k=K(n)}^{n}G_{k}^{2}\Gamma(t_{k})_{2}\Gamma(t_{k})_{i(t_{k})} & \cdots & \sum\limits _{k=K(n)}^{n}G_{k}^{2}\Gamma(t_{k})_{i(t_{k})}^{2}
+\end{array}\right]\Delta m=\left[\begin{array}{c}
+\sum\limits _{k=1}^{n}G_{k}^{T}\Gamma(t_{k})_{1}d_{k}\\
+\sum\limits _{k=K(2)}^{n}G_{k}^{T}\Gamma(t_{k})_{2}d_{k}\\
+\vdots\\
+\sum\limits _{k=K(n)}^{n}G_{k}^{T}\Gamma(t_{k})_{i}(t_{k})d_{k}
+\end{array}\right]
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+In practice, we start filling the last column: 
+\begin_inset Formula 
+\begin{align*}
+ns & \text{ : number of subfaults}\\
+q & \text{ : number of model time steps}\\
+r & =ns\times q\text{ : number of model parameters}\\
+\end{align*}
+
+\end_inset
+
+
+\begin_inset ERT
+status collapsed
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{program}
+\end_layout
+
+\end_inset
+
+ 
+\begin_inset Box Frameless
+position "c"
+hor_pos "c"
+has_inner_box 1
+inner_pos "c"
+use_parbox 0
+use_makebox 1
+width ""
+special "none"
+height "1in"
+height_special "totalheight"
+thickness "0.4pt"
+separation "3pt"
+shadowsize "4pt"
+framecolor "black"
+backgroundcolor "none"
+status open
+
+\begin_layout Plain Layout
+Algorithm to build the normal system:
+\end_layout
+
+\end_inset
+
+ 
+\begin_inset ERT
+status collapsed
+
+\begin_layout Plain Layout
+
+
+\backslash
+BEGIN
+\end_layout
+
+\end_inset
+
+ 
+\begin_inset Newline newline
+\end_inset
+
+ G2 
+\begin_inset ERT
+status collapsed
+
+\begin_layout Plain Layout
+
+
+\backslash
+xleftarrow
+\end_layout
+
+\end_inset
+
+
+\begin_inset ERT
+status collapsed
+
+\begin_layout Plain Layout
+
+{}
+\end_layout
+
+\end_inset
+
+ GT G C = 0
+\begin_inset ERT
+status collapsed
+
+\begin_layout Plain Layout
+
+{
+\end_layout
+
+\end_inset
+
+ r , ns
+\begin_inset ERT
+status collapsed
+
+\begin_layout Plain Layout
+
+}
+\end_layout
+
+\end_inset
+
+ |initialize | 
+\begin_inset ERT
+status collapsed
+
+\begin_layout Plain Layout
+
+
+\backslash
+Gamma
+\end_layout
+
+\end_inset
+
+ 
+\begin_inset ERT
+status collapsed
+
+\begin_layout Plain Layout
+
+
+\backslash
+FOR
+\end_layout
+
+\end_inset
+
+ i=q 
+\begin_inset ERT
+status collapsed
+
+\begin_layout Plain Layout
+
+
+\backslash
+TO
+\end_layout
+
+\end_inset
+
+ 1 
+\begin_inset ERT
+status collapsed
+
+\begin_layout Plain Layout
+
+
+\backslash
+STEP
+\end_layout
+
+\end_inset
+
+ -1 
+\begin_inset ERT
+status collapsed
+
+\begin_layout Plain Layout
+
+
+\backslash
+DO
+\end_layout
+
+\end_inset
+
+ Gi2 
+\begin_inset ERT
+status collapsed
+
+\begin_layout Plain Layout
+
+
+\backslash
+xleftarrow
+\end_layout
+
+\end_inset
+
+
+\begin_inset ERT
+status collapsed
+
+\begin_layout Plain Layout
+
+{}
+\end_layout
+
+\end_inset
+
+ G 
+\begin_inset ERT
+status collapsed
+
+\begin_layout Plain Layout
+
+
+\backslash
+rcomment
+\end_layout
+
+\end_inset
+
+
+\begin_inset ERT
+status collapsed
+
+\begin_layout Plain Layout
+
+{
+\end_layout
+
+\end_inset
+
+remove rows and columns from 
+\begin_inset Formula $G^{2}$
+\end_inset
+
+ for missing observations
+\begin_inset ERT
+status collapsed
+
+\begin_layout Plain Layout
+
+}
+\end_layout
+
+\end_inset
+
+ GiT 
+\begin_inset ERT
+status collapsed
+
+\begin_layout Plain Layout
+
+
+\backslash
+xleftarrow
+\end_layout
+
+\end_inset
+
+
+\begin_inset ERT
+status collapsed
+
+\begin_layout Plain Layout
+
+{}
+\end_layout
+
+\end_inset
+
+ GT 
+\begin_inset ERT
+status collapsed
+
+\begin_layout Plain Layout
+
+
+\backslash
+rcomment
+\end_layout
+
+\end_inset
+
+
+\begin_inset ERT
+status collapsed
+
+\begin_layout Plain Layout
+
+{
+\end_layout
+
+\end_inset
+
+remove rows from 
+\begin_inset Formula $G$
+\end_inset
+
+ for missing observations
+\begin_inset ERT
+status collapsed
+
+\begin_layout Plain Layout
+
+}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status collapsed
+
+\begin_layout Plain Layout
+
+
+\backslash
+Gamma
+\end_layout
+
+\end_inset
+
+ 
+\begin_inset ERT
+status collapsed
+
+\begin_layout Plain Layout
+
+
+\backslash
+xleftarrow
+\end_layout
+
+\end_inset
+
+
+\begin_inset ERT
+status collapsed
+
+\begin_layout Plain Layout
+
+{}
+\end_layout
+
+\end_inset
+
+ 
+\begin_inset ERT
+status collapsed
+
+\begin_layout Plain Layout
+
+
+\backslash
+Gamma
+\end_layout
+
+\end_inset
+
+() 
+\begin_inset ERT
+status collapsed
+
+\begin_layout Plain Layout
+
+
+\backslash
+PROC
+\end_layout
+
+\end_inset
+
+ |expt|(x,n) 
+\begin_inset ERT
+status collapsed
+
+\begin_layout Plain Layout
+
+
+\backslash
+BODY
+\end_layout
+
+\end_inset
+
+ z:=1; 
+\begin_inset ERT
+status collapsed
+
+\begin_layout Plain Layout
+
+
+\backslash
+DO
+\end_layout
+
+\end_inset
+
+ 
+\begin_inset ERT
+status collapsed
+
+\begin_layout Plain Layout
+
+
+\backslash
+IF
+\end_layout
+
+\end_inset
+
+ n=0 
+\begin_inset ERT
+status collapsed
+
+\begin_layout Plain Layout
+
+
+\backslash
+THEN
+\end_layout
+
+\end_inset
+
+ 
+\begin_inset ERT
+status collapsed
+
+\begin_layout Plain Layout
+
+
+\backslash
+EXIT
+\end_layout
+
+\end_inset
+
+ 
+\begin_inset ERT
+status collapsed
+
+\begin_layout Plain Layout
+
+
+\backslash
+FI
+\end_layout
+
+\end_inset
+
+; 
+\begin_inset ERT
+status collapsed
+
+\begin_layout Plain Layout
+
+
+\backslash
+DO
+\end_layout
+
+\end_inset
+
+ 
+\begin_inset ERT
+status collapsed
+
+\begin_layout Plain Layout
+
+
+\backslash
+IF
+\end_layout
+
+\end_inset
+
+ |odd|(n) 
+\begin_inset ERT
+status collapsed
+
+\begin_layout Plain Layout
+
+
+\backslash
+THEN
+\end_layout
+
+\end_inset
+
+ 
+\begin_inset ERT
+status collapsed
+
+\begin_layout Plain Layout
+
+
+\backslash
+EXIT
+\end_layout
+
+\end_inset
+
+ 
+\begin_inset ERT
+status collapsed
+
+\begin_layout Plain Layout
+
+
+\backslash
+FI
+\end_layout
+
+\end_inset
+
+; 
+\begin_inset ERT
+status collapsed
+
+\begin_layout Plain Layout
+
+
+\backslash
+COMMENT
+\end_layout
+
+\end_inset
+
+
+\begin_inset ERT
+status collapsed
+
+\begin_layout Plain Layout
+
+{
+\end_layout
+
+\end_inset
+
+This is a comment statement
+\begin_inset ERT
+status collapsed
+
+\begin_layout Plain Layout
+
+}
+\end_layout
+
+\end_inset
+
+; n:=n/2; x:=x*x 
+\begin_inset ERT
+status collapsed
+
+\begin_layout Plain Layout
+
+
+\backslash
+OD
+\end_layout
+
+\end_inset
+
+; { n>0 }; n:=n-1; z:=z*x 
+\begin_inset ERT
+status collapsed
+
+\begin_layout Plain Layout
+
+
+\backslash
+OD
+\end_layout
+
+\end_inset
+
+; |print|(z) 
+\begin_inset ERT
+status collapsed
+
+\begin_layout Plain Layout
+
+
+\backslash
+ENDPROC
+\end_layout
+
+\end_inset
+
+ 
+\begin_inset ERT
+status collapsed
+
+\begin_layout Plain Layout
+
+
+\backslash
+END
+\end_layout
+
+\end_inset
+
+ 
+\begin_inset ERT
+status collapsed
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{program}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section
+Regularization
+\end_layout
+
+\begin_layout Section
+Interseismic modeling
+\end_layout
+
+\begin_layout Section
+Introduction
+\end_layout
+
+\begin_layout Standard
+On suit les étapes classiques d'une inversion: 
+\end_layout
+
+\begin_layout Itemize
+\begin_inset Argument item:1
+status open
+
+\begin_layout Plain Layout
+A.
+\end_layout
+
+\end_inset
+
+préparation des données 
+\end_layout
+
+\begin_layout Itemize
+\begin_inset Argument item:1
+status open
+
+\begin_layout Plain Layout
+B.
+\end_layout
+
+\end_inset
+
+Formation du modèle direct 
+\end_layout
+
+\begin_layout Itemize
+\begin_inset Argument item:1
+status open
+
+\begin_layout Plain Layout
+C.
+\end_layout
+
+\end_inset
+
+Inversion 
+\end_layout
+
+\begin_layout Section
+Préparation des données
+\end_layout
+
+\begin_layout Standard
+Les séries temporelles de position GNSS, après quelques corrections reflètent
+ le glissement sur la faille et ses variations dans le temps.
+ Les corrections à apporter sont: 
+\end_layout
+
+\begin_layout Itemize
+les séries temporelles de géodésie spatiales sont exprimées dans un référentiel
+ global, appelé l’ITRF.
+ Il faut transformer les coordonnées pour qu’elles soient exprimées par
+ rapport à la partie "stable" de la plaque chevauchante.
+ Dans ce référentiel, des sites GNSS loin de la faille de subduction ont
+ des vitesses et des mouvements nuls.
+ 
+\end_layout
+
+\begin_layout Itemize
+les surcharges, essentiellement liées à l’hydrologie continentale (e.g.
+ les pluies en Amazonie), induisent un signal périodique annuel que l’on
+ doit filtrer ou modéliser puis retirer aux séries temporelles.
+ 
+\end_layout
+
+\begin_layout Section
+Problème direct
+\end_layout
+
+\begin_layout Standard
+Une fois ces corrections appliquées, l’étape suivante est de construire
+ le problème direct, où l’on va relier les déplacements observés au glissement
+ sur la faille par une fonction.
+ On commence par réfléchir à ce qui se passe sur un pas de temps, par exemple
+ une journée, sur la composante Est dans le cas de l'Equateur.
+\end_layout
+
+\begin_layout Standard
+Pendant cette journée qui va de la date 
+\begin_inset Formula $t_{0}$
+\end_inset
+
+ à 
+\begin_inset Formula $t_{1}$
+\end_inset
+
+, le déplacement pour la station 
+\begin_inset Formula $i$
+\end_inset
+
+ est 
+\begin_inset Formula $d_{t_{0}->t_{1}}^{i}$
+\end_inset
+
+ et chaque sous-faille 
+\begin_inset Formula $j$
+\end_inset
+
+ de la subduction glisse dela quanitité 
+\begin_inset Formula $\Delta m_{_{t_{0}-t_{1}}}^{j}$
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Standard
+Pour relier 
+\begin_inset Formula $d_{t_{0}->t_{1}}^{i}$
+\end_inset
+
+ et 
+\begin_inset Formula $\Delta m_{t_{0}->t_{1}}^{j}$
+\end_inset
+
+, on considère 3 cas: 
+\end_layout
+
+\begin_layout Itemize
+\begin_inset Argument item:1
+status open
+
+\begin_layout Plain Layout
+1.
+\end_layout
+
+\end_inset
+
+le glissement sur la petite faille 
+\begin_inset Formula $j$
+\end_inset
+
+ a lieu à la vitesse de glissement long-terme de la faille 
+\begin_inset Formula $V_{pl}$
+\end_inset
+
+ (couplage de 0).
+ A ce moment là, il n’y a pas de déplacement et donc 
+\begin_inset Formula $d_{t_{0}->t_{1}}^{i}=0$
+\end_inset
+
+.
+ C’est le régime « neutre ».
+\end_layout
+
+\begin_layout Itemize
+\begin_inset Argument item:1
+status open
+
+\begin_layout Plain Layout
+2.
+\end_layout
+
+\end_inset
+
+le glissement sur la petite faille 
+\begin_inset Formula $j$
+\end_inset
+
+ a lieu a une vitesse inférieure à 
+\begin_inset Formula $V_{pl}$
+\end_inset
+
+ (couplage entre 100% et 0%).
+ Ce cas inclut une glissement nul (couplage de 100%).
+ Dans ce cas, le déplacement 
+\begin_inset Formula $d_{t_{0}-t_{1}}^{i}$
+\end_inset
+
+ est positif (le point se déplacement vers l’Est, c’est à dire vers l’intérieur
+ de la plaque chevauchante).
+ Ce mouvement peut être modélisé avec le concept de back-slip (Savage 1983)
+ par un glissement de la dislocation 
+\begin_inset Formula $j$
+\end_inset
+
+ en faille normale.
+ Dans ce modèle, un couplage de 100% est modélisé par un glissement en faille
+ normale avec un glissement égal à 
+\begin_inset Formula $V_{pl}\times(t_{1}-t_{0})$
+\end_inset
+
+ que l’on peut aussi écrire comme un glissement en faille inverse de valeur
+ 
+\begin_inset Formula $-V_{pl}\times(t_{1}-t_{0})$
+\end_inset
+
+.
+ Un couplage de 
+\begin_inset Formula $\alpha\%$
+\end_inset
+
+ (
+\begin_inset Formula $\alpha$
+\end_inset
+
+ entre 0 et 1) correspond donc à un glissement sur la sous faille 
+\begin_inset Formula $j$
+\end_inset
+
+ sur la journée (
+\begin_inset Formula $t_{0}->t_{1}$
+\end_inset
+
+) 
+\begin_inset Formula $m_{t_{0}->t_{1}}^{j}=-\alpha\times V_{pl}\times(t_{1}-t_{0})$
+\end_inset
+
+.
+ Ce régime est celui de l’accumulation des contraintes et de déficit de
+ glissement.
+ On calcule le déplacement 
+\begin_inset Formula $d_{t_{0}->t_{1}}^{i}=0$
+\end_inset
+
+ en multipliant ce glissement par la fonction de Green du milieu élastique
+ considéré qui relie un glissement unitaire sur la sous-faille 
+\begin_inset Formula $j$
+\end_inset
+
+ au déplacement à la station GNSS 
+\begin_inset Formula $j$
+\end_inset
+
+: 
+\begin_inset Formula $d_{t_{0}->t_{1}}^{i}=G_{j}^{i}m_{t_{0}->t_{1}}^{j}$
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Itemize
+\begin_inset Argument item:1
+status open
+
+\begin_layout Plain Layout
+3.
+\end_layout
+
+\end_inset
+
+le glissement sur la petite faille 
+\begin_inset Formula $j$
+\end_inset
+
+ a lieu a une vitesse supérieure à 
+\begin_inset Formula $V_{pl}$
+\end_inset
+
+.
+ Ce régime est classiquement celui des transitoires (séismes lents et glissement
+ post-sismique) et des séismes.
+ Il correspond au relâchement des contraintes autour de l’interface.Dans
+ ce cas, c’est tout simple, le glissement est inverse et on a directement
+ 
+\begin_inset Formula $d_{t_{0}->t_{1}}^{i}=G_{j}^{i}m_{t_{0}->t_{1}}^{j}$
+\end_inset
+
+ 
+\end_layout
+
+\begin_layout Standard
+L’ensemble du système d’équation correspondant au problème direct est obtenu:
+ 
+\end_layout
+
+\begin_layout Itemize
+en sommant les contributions de toutes les sous-failles 
+\begin_inset Formula $j$
+\end_inset
+
+ 
+\end_layout
+
+\begin_layout Itemize
+en écrivant le système pour toutes les stations GNSS 
+\begin_inset Formula $i$
+\end_inset
+
+ 
+\end_layout
+
+\begin_layout Itemize
+en écrivant les équations sur tous les pas de temps 
+\end_layout
+
+\begin_layout Section
+Inversion
+\end_layout
+
+\begin_layout Standard
+Le nombre d’inconnus dans le problème est donc 
+\begin_inset Formula $m\times p$
+\end_inset
+
+ où 
+\begin_inset Formula $m$
+\end_inset
+
+ est le nombre de sus-failles et 
+\begin_inset Formula $p$
+\end_inset
+
+ le nombre de pas de temps.
+ Ce problème est sous-déterminé, c’est à dire que le nombre d’observations
+ (station GNSS x nombre de pas de temps) est très inférieur au nombre d’inconnus.
+ Il faut donc ajouter des contraintes de régularisation.
+ La régularisation minimum consiste à écrire que à chaque pas de temps 
+\begin_inset Formula $t_{l}->t_{m}$
+\end_inset
+
+, le glissement incrémental est spatialement corrélé.
+ On modélise cette corrélation par une matrice modèle (
+\begin_inset Formula $C_{m}$
+\end_inset
+
+) calculée par une fonction exponentielle décroissante 
+\begin_inset Formula $C_{m}(j,k)=\sigma^{2}\times exp(-d_{j,k}/D_{c})$
+\end_inset
+
+ où 
+\begin_inset Formula $\sigma$
+\end_inset
+
+ est une valeur en 
+\begin_inset Formula $mm/\sqrt{(}jour)$
+\end_inset
+
+ correspondant à une valeur de glissement par pas de temps, 
+\begin_inset Formula $d_{j,k}$
+\end_inset
+
+ est la distance entre les sous-faille 
+\begin_inset Formula $j$
+\end_inset
+
+ et 
+\begin_inset Formula $k$
+\end_inset
+
+ et 
+\begin_inset Formula $D_{c}$
+\end_inset
+
+ une distance critique à partir de laquelle on considère que le glissement
+ entre deux sous-failles est indépendant.
+ On peut aussi ajouter une contrainte de régularisation temporelle, mais
+ il semble que cette contrainte ne soit pas requise pour obtenir des bons
+ résultats d’après des tests préliminaires.
+\end_layout
+
+\begin_layout Standard
+Le problème final s’écrit sous la forme de deux systèmes linéaires 
+\begin_inset Formula $Gm=d$
+\end_inset
+
+ (
+\begin_inset Formula $C_{d}$
+\end_inset
+
+) et 
+\begin_inset Formula $m=m_{0}$
+\end_inset
+
+ (
+\begin_inset Formula $C_{m}$
+\end_inset
+
+) où 
+\begin_inset Formula $m_{0}$
+\end_inset
+
+ est un modèle de référence a priori, que l’on peut prendre nul si l’on
+ n’a pas d’information.
+ On résout ce système par moindres-carrés en minimisant la fonction coût:
+ 
+\begin_inset Formula $S(m)=(Gm-d)^{T}C^{-1}(Gm-d)+(m-m_{0})^{T}C_{m}^{-1}(m-m0)$
+\end_inset
+
+, avec la condition que chaque glissement incrémental 
+\begin_inset Formula $m_{i}$
+\end_inset
+
+ doit être supérieur à 
+\begin_inset Formula $-V_{pl}*\Delta_{t}$
+\end_inset
+
+.
+ Un dernier changement de variable permet de ramener cette dernière à une
+ simple contrainte de non négativité pour laquelle de nombreux algorithmes
+ sont disponibles.
+\end_layout
+
+\begin_layout Section
+Résultat
+\end_layout
+
+\begin_layout Standard
+Cette méthode permet donc d’obtenir pour chaque pas de temps, la carte de
+ glissement sur le plan de faille expliquant au mieux les déplacements observés
+ dans les séries temporelles des points GNSS.
+ Elle permet: 
+\end_layout
+
+\begin_layout Itemize
+de quantifier spatialement les zones qui accumulent du déficit de glissement
+ et celle qui glissent de manière constante à la vitesse des plaques (zone
+ en creep permanent).
+ 
+\end_layout
+
+\begin_layout Itemize
+de connaitre les zones qui ont des comportements transitoires et de connaître
+ la dynamique de ces glissements.
+ En particulier, on peut savoir si ces glissements transitoires se propagent,
+ s’ils ont des accélérations douces ou rapides.
+ On peut aussi évaluer leur chute de contrainte à partir de leur étendue
+ spatiale et de leur glissement pour mieux évaluer la physique des séismes
+ lents.
+ 
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status collapsed
+
+\begin_layout Plain Layout
+
+%
+\backslash
+begin{figure}[h!]
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
+\begin_inset ERT
+status collapsed
+
+\begin_layout Plain Layout
+
+%
+\backslash
+centering
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
+\begin_inset ERT
+status collapsed
+
+\begin_layout Plain Layout
+
+%
+\backslash
+includegraphics[scale=1.7]{universe}
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
+\begin_inset ERT
+status collapsed
+
+\begin_layout Plain Layout
+
+%
+\backslash
+caption{The Universe}
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
+\begin_inset ERT
+status collapsed
+
+\begin_layout Plain Layout
+
+%
+\backslash
+label{fig:universe}
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
+\begin_inset ERT
+status collapsed
+
+\begin_layout Plain Layout
+
+%
+\backslash
+end{figure}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status collapsed
+
+\begin_layout Plain Layout
+
+%
+\backslash
+bibliographystyle{plain}
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
+\begin_inset ERT
+status collapsed
+
+\begin_layout Plain Layout
+
+%
+\backslash
+bibliography{references}
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_body
+\end_document

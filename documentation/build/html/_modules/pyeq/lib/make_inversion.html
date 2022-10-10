@@ -1,0 +1,491 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>pyeq.lib.make_inversion &mdash; pyeq 0.51.8 documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+
+  
+  
+  
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="../../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
+        <script src="../../../_static/jquery.js"></script>
+        <script src="../../../_static/underscore.js"></script>
+        <script src="../../../_static/doctools.js"></script>
+        <script src="../../../_static/language_data.js"></script>
+    
+    <script type="text/javascript" src="../../../_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../../../index.html" class="icon icon-home" alt="Documentation Home"> pyeq
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                0.51.8
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../foreword.html">PYEQ: full time-dependent slip inversion</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../behaviour.html">Options controlling the overall behaviour</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../tutorial_static_inversion.html">Tutorial static inversion</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../dates.html">dates</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../roxane.html">Roxane’s notes on PYEQ</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../modules.html">for developpers</a></li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">pyeq</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../../index.html" class="icon icon-home"></a> &raquo;</li>
+        
+          <li><a href="../../index.html">Module code</a> &raquo;</li>
+        
+      <li>pyeq.lib.make_inversion</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>Source code for pyeq.lib.make_inversion</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Wrapper for NNLS &amp; BVLS inversion routines</span>
+<span class="sd">Added CVXOPT inversion 15/11/2020</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="c1">###############################################################################</span>
+<span class="c1"># CVXOPT</span>
+<span class="c1">###############################################################################</span>
+
+<div class="viewcode-block" id="pyeq_cvxopt"><a class="viewcode-back" href="../../../pyeq.lib.make_inversion.html#pyeq.lib.make_inversion.pyeq_cvxopt">[docs]</a><span class="k">def</span> <span class="nf">pyeq_cvxopt</span><span class="p">(</span> <span class="n">model</span> <span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    performs an inversion using cvxopt</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+    <span class="kn">import</span> <span class="nn">datetime</span>
+    <span class="kn">from</span> <span class="nn">time</span> <span class="kn">import</span> <span class="n">time</span>
+    <span class="kn">import</span> <span class="nn">pyeq.lib.inversion</span>
+    <span class="kn">import</span> <span class="nn">pyeq.lib.regularization</span>
+
+    <span class="n">t0</span> <span class="o">=</span> <span class="n">time</span><span class="p">()</span>
+
+    <span class="n">SLIP</span> <span class="o">=</span> <span class="n">pyeq</span><span class="o">.</span><span class="n">lib</span><span class="o">.</span><span class="n">inversion</span><span class="o">.</span><span class="n">inversion_cvxopt</span><span class="p">(</span> <span class="n">model</span><span class="o">.</span><span class="n">N</span><span class="p">,</span>
+                     <span class="n">model</span><span class="o">.</span><span class="n">Nd</span><span class="p">,</span>
+                     <span class="n">model</span><span class="o">.</span><span class="n">DLS</span><span class="p">,</span>
+                     <span class="n">model</span><span class="o">.</span><span class="n">DLT</span><span class="p">,</span>
+                     <span class="n">model</span><span class="o">.</span><span class="n">D</span><span class="p">,</span>
+                     <span class="n">pyeq</span><span class="o">.</span><span class="n">lib</span><span class="o">.</span><span class="n">regularization</span><span class="o">.</span><span class="n">normalize_lambda</span><span class="p">(</span><span class="n">model</span><span class="p">)[</span><span class="mi">0</span><span class="p">],</span>
+                     <span class="n">pyeq</span><span class="o">.</span><span class="n">lib</span><span class="o">.</span><span class="n">regularization</span><span class="o">.</span><span class="n">normalize_lambda</span><span class="p">(</span><span class="n">model</span><span class="p">)[</span><span class="mi">1</span><span class="p">],</span>
+                     <span class="n">pyeq</span><span class="o">.</span><span class="n">lib</span><span class="o">.</span><span class="n">regularization</span><span class="o">.</span><span class="n">normalize_lambda</span><span class="p">(</span><span class="n">model</span><span class="p">)[</span><span class="mi">2</span><span class="p">],</span>
+                     <span class="n">model</span><span class="o">.</span><span class="n">norm_N</span><span class="p">,</span>
+                     <span class="n">model</span><span class="o">.</span><span class="n">norm_DLS</span><span class="p">,</span>
+                     <span class="n">model</span><span class="o">.</span><span class="n">norm_DLT</span><span class="p">,</span>
+                     <span class="n">model</span><span class="o">.</span><span class="n">norm_D</span><span class="p">,</span>
+                     <span class="n">model</span><span class="o">.</span><span class="n">m0</span><span class="p">)</span>
+
+    <span class="n">dtime</span> <span class="o">=</span> <span class="n">time</span><span class="p">()</span> <span class="o">-</span> <span class="n">t0</span>
+    <span class="nb">print</span><span class="p">((</span><span class="s2">&quot;-- cvxopt duration (s): </span><span class="si">%.1lf</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">dtime</span><span class="p">))</span>
+
+    <span class="k">return</span> <span class="n">SLIP</span> <span class="p">,</span> <span class="n">dtime</span></div>
+
+<span class="c1">###############################################################################</span>
+<span class="c1"># NNLS</span>
+<span class="c1">###############################################################################</span>
+
+<div class="viewcode-block" id="pyeq_nnls"><a class="viewcode-back" href="../../../pyeq.lib.make_inversion.html#pyeq.lib.make_inversion.pyeq_nnls">[docs]</a><span class="k">def</span> <span class="nf">pyeq_nnls</span><span class="p">(</span><span class="n">ATPA</span><span class="p">,</span> <span class="n">ATPB</span><span class="p">,</span> <span class="n">nnls</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    solves the normalized linear system ATPA m = ATPB using non-negative least-squares</span>
+<span class="sd">    This is a wrapper to various solvers. See notes.</span>
+<span class="sd">    </span>
+<span class="sd">    :param ATPA: m x m normal matrix as a numpy 2D array</span>
+<span class="sd">    :param ATPB: 1D numpy array of normalized right-hand-side vector</span>
+<span class="sd">    :param nnls: string, routine used for nnls. See note</span>
+<span class="sd">    :param verbose: verbose mode</span>
+<span class="sd">    :return X, time: solution vector as a 1D numpy array of lenght m, time of inversion</span>
+<span class="sd">    </span>
+<span class="sd">    :note: available methods:    </span>
+<span class="sd">    scipy_nnls : the classical Lawson and Hansen (1974) nnls. Slow for large system</span>
+<span class="sd">    nnls_predotted: from https://github.com/nnls - Alexfields</span>
+<span class="sd">    lsqnonneg: python transcription of Matlab lsqnonneg, usually very slow </span>
+<span class="sd">    nnlsm_block_pivot: the preferred method on 02/03/2018</span>
+<span class="sd">    ref: J. Kim and H. Park, Fast nonnegative matrix factorization: An active-set-like method and comparisons,</span>
+<span class="sd">    SIAM Journal on Scientific Computing, vol. 33, no. 6, pp. 3261-3281, 2011.</span>
+<span class="sd">    nnlsm_activeset: J. Kim and H. Park, Fast nonnegative matrix factorization: An active-set-like method and comparisons,</span>
+<span class="sd">    SIAM Journal on Scientific Computing, vol. 33, no. 6, pp. 3261-3281, 2011.</span>
+<span class="sd">    scipy_lsq_linear: scipy linear least-squares routine</span>
+<span class="sd">    scipy_lbfgsb: scipy lbfgs routine)</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># import</span>
+    <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+    <span class="kn">import</span> <span class="nn">datetime</span>
+    <span class="kn">from</span> <span class="nn">time</span> <span class="kn">import</span> <span class="n">time</span>
+
+
+    <span class="n">SLIP</span> <span class="o">=</span> <span class="kc">None</span>
+
+    <span class="c1"># NNLS ALGORITHM</span>
+    <span class="n">SCIPY_NNLS</span> <span class="o">=</span> <span class="kc">False</span>
+    <span class="n">SCIPY_BVLS</span> <span class="o">=</span> <span class="kc">False</span>
+    <span class="n">SCIPY_TRF</span> <span class="o">=</span> <span class="kc">False</span>
+    <span class="n">NNLS_PREDOTTED</span> <span class="o">=</span> <span class="kc">False</span>
+    <span class="n">LSQNONNEG</span> <span class="o">=</span> <span class="kc">False</span>
+    <span class="n">NNLSM_BLOCK_PIVOT</span> <span class="o">=</span> <span class="kc">False</span>    
+    <span class="n">NNLSM_ACTIVESET</span> <span class="o">=</span> <span class="kc">False</span>
+    <span class="n">SCIPY_LSQ_LINEAR</span> <span class="o">=</span> <span class="kc">False</span>
+    <span class="n">SCIPY_LBFGSB</span> <span class="o">=</span> <span class="kc">False</span>
+    <span class="n">SCIPY_CHOL</span> <span class="o">=</span> <span class="kc">False</span>
+
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;-- nnls algorithm: </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">nnls</span> <span class="p">)</span>
+
+    <span class="c1"># NNLS ALGORITHM</span>
+    <span class="k">if</span> <span class="n">nnls</span> <span class="o">==</span> <span class="s1">&#39;scipy_nnls&#39;</span><span class="p">:</span>
+        <span class="n">SCIPY_NNLS</span> <span class="o">=</span> <span class="kc">True</span>
+    <span class="k">if</span> <span class="n">nnls</span> <span class="o">==</span> <span class="s1">&#39;scipy_bvls&#39;</span><span class="p">:</span>
+        <span class="n">SCIPY_BVLS</span> <span class="o">=</span> <span class="kc">True</span>
+    <span class="k">if</span> <span class="n">nnls</span> <span class="o">==</span> <span class="s1">&#39;scipy_trf&#39;</span><span class="p">:</span>
+        <span class="n">SCIPY_TRF</span> <span class="o">=</span> <span class="kc">True</span>
+    <span class="k">if</span> <span class="n">nnls</span> <span class="o">==</span> <span class="s1">&#39;nnls_predotted&#39;</span><span class="p">:</span>
+        <span class="n">NNLS_PREDOTTED</span> <span class="o">=</span> <span class="kc">True</span>
+    <span class="k">if</span> <span class="n">nnls</span> <span class="o">==</span> <span class="s1">&#39;lsqnonneg&#39;</span><span class="p">:</span>
+        <span class="n">LSQNONNEG</span> <span class="o">=</span> <span class="kc">True</span>
+    <span class="k">if</span> <span class="n">nnls</span> <span class="o">==</span> <span class="s1">&#39;nnlsm_block_pivot&#39;</span><span class="p">:</span>
+        <span class="n">NNLSM_BLOCK_PIVOT</span> <span class="o">=</span> <span class="kc">True</span>    
+    <span class="k">if</span> <span class="n">nnls</span> <span class="o">==</span> <span class="s1">&#39;nnlsm_activeset&#39;</span><span class="p">:</span>
+        <span class="n">NNLSM_ACTIVESET</span> <span class="o">=</span> <span class="kc">True</span>
+    <span class="k">if</span> <span class="n">nnls</span> <span class="o">==</span> <span class="s1">&#39;scipy_lsq_linear&#39;</span><span class="p">:</span>
+        <span class="n">SCIPY_LSQ_LINEAR</span> <span class="o">=</span> <span class="kc">True</span>
+    <span class="k">if</span> <span class="n">nnls</span> <span class="o">==</span> <span class="s1">&#39;scipy_lbfgsb&#39;</span><span class="p">:</span>
+        <span class="n">SCIPY_LBFGSB</span> <span class="o">=</span> <span class="kc">True</span>
+    <span class="k">if</span> <span class="n">nnls</span> <span class="o">==</span> <span class="s1">&#39;scipy_chol&#39;</span><span class="p">:</span>
+        <span class="n">SCIPY_CHOL</span> <span class="o">=</span> <span class="kc">True</span>
+
+
+
+
+    <span class="k">if</span> <span class="n">SCIPY_NNLS</span><span class="p">:</span>
+        <span class="kn">import</span> <span class="nn">scipy.optimize</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;-- Now doing the inversion using scipy nnls &quot;</span><span class="o">+</span><span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">()</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="s2">&quot;%Y-%m-</span><span class="si">%d</span><span class="s2"> %H:%M&quot;</span><span class="p">))</span>
+        <span class="n">t0</span> <span class="o">=</span> <span class="n">time</span><span class="p">()</span>
+        <span class="n">SLIP</span><span class="p">,</span><span class="n">w</span> <span class="o">=</span> <span class="n">scipy</span><span class="o">.</span><span class="n">optimize</span><span class="o">.</span><span class="n">nnls</span><span class="p">(</span><span class="n">ATPA</span><span class="p">,</span> <span class="n">ATPB</span><span class="p">)</span>
+        <span class="n">dtime</span><span class="o">=</span><span class="n">time</span><span class="p">()</span><span class="o">-</span><span class="n">t0</span>
+        <span class="nb">print</span><span class="p">((</span><span class="s2">&quot;-- scipy_nnls duration (s): </span><span class="si">%.1lf</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">dtime</span><span class="p">))</span>
+
+    <span class="k">if</span> <span class="n">SCIPY_BVLS</span><span class="p">:</span>
+        <span class="kn">import</span> <span class="nn">scipy.optimize</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;-- Now doing the inversion using scipy bvls &quot;</span><span class="o">+</span><span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">()</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="s2">&quot;%Y-%m-</span><span class="si">%d</span><span class="s2"> %H:%M&quot;</span><span class="p">))</span>
+        <span class="n">t0</span> <span class="o">=</span> <span class="n">time</span><span class="p">()</span>
+        <span class="n">bounds</span> <span class="o">=</span> <span class="p">(</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span> <span class="n">ATPA</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="p">)</span> <span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span> <span class="n">ATPA</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="p">)</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">inf</span> <span class="p">)</span>
+<span class="c1">#        if model.verbose:</span>
+<span class="c1">#            verbose = 2</span>
+<span class="c1">#        else:</span>
+<span class="c1">#            verbose = 0</span>
+        <span class="n">verbose</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="n">RES</span><span class="o">=</span> <span class="n">scipy</span><span class="o">.</span><span class="n">optimize</span><span class="o">.</span><span class="n">lsq_linear</span><span class="p">(</span><span class="n">ATPA</span><span class="p">,</span> <span class="n">ATPB</span><span class="p">,</span> <span class="n">bounds</span><span class="o">=</span><span class="n">bounds</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="s1">&#39;bvls&#39;</span><span class="p">,</span> <span class="n">tol</span><span class="o">=</span><span class="mf">1e-10</span><span class="p">,</span> <span class="n">lsq_solver</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">lsmr_tol</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">max_iter</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span> <span class="n">verbose</span> <span class="p">)</span>
+        <span class="n">dtime</span><span class="o">=</span><span class="n">time</span><span class="p">()</span><span class="o">-</span><span class="n">t0</span>
+        <span class="nb">print</span><span class="p">((</span><span class="s2">&quot;-- scipy_bvls duration (s): </span><span class="si">%.1lf</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">dtime</span><span class="p">))</span>
+        <span class="c1">#print( RES )</span>
+        <span class="n">SLIP</span> <span class="o">=</span> <span class="n">RES</span><span class="o">.</span><span class="n">x</span> 
+    
+    <span class="k">if</span> <span class="n">NNLS_PREDOTTED</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;-- Now doing the inversion using nnls_predotted &quot;</span><span class="o">+</span><span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">()</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="s2">&quot;%Y-%m-</span><span class="si">%d</span><span class="s2"> %H:%M&quot;</span><span class="p">))</span>
+        <span class="kn">import</span> <span class="nn">pyeq.lib.nnls.nnls_predotted</span>
+        <span class="n">t0</span> <span class="o">=</span> <span class="n">time</span><span class="p">()</span>
+        <span class="n">SLIP</span><span class="o">=</span><span class="n">pyeq</span><span class="o">.</span><span class="n">lib</span><span class="o">.</span><span class="n">nnls</span><span class="o">.</span><span class="n">nnls_predotted</span><span class="o">.</span><span class="n">nnls_predotted</span><span class="p">(</span><span class="n">ATPA</span><span class="p">,</span><span class="n">ATPB</span><span class="p">)</span>
+        <span class="n">dtime</span><span class="o">=</span><span class="n">time</span><span class="p">()</span><span class="o">-</span><span class="n">t0</span>
+        <span class="nb">print</span><span class="p">((</span><span class="s2">&quot;-- nnls_predotted duration (s): </span><span class="si">%.1lf</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">dtime</span><span class="p">))</span>
+    
+    <span class="k">if</span> <span class="n">LSQNONNEG</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;-- Now doing the inversion using lsqnonneg &quot;</span><span class="o">+</span><span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">()</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="s2">&quot;%Y-%m-</span><span class="si">%d</span><span class="s2"> %H:%M&quot;</span><span class="p">))</span>
+        <span class="kn">import</span> <span class="nn">pyeq.lib.nnls.lsqnonneg</span>
+        <span class="n">t0</span> <span class="o">=</span> <span class="n">time</span><span class="p">()</span>
+        <span class="p">(</span><span class="n">SLIP</span><span class="p">,</span> <span class="n">resnorm</span><span class="p">,</span> <span class="n">residual</span><span class="p">)</span><span class="o">=</span><span class="n">pyeq</span><span class="o">.</span><span class="n">lib</span><span class="o">.</span><span class="n">nnls</span><span class="o">.</span><span class="n">lsqnonneg</span><span class="o">.</span><span class="n">lsqnonneg</span><span class="p">(</span><span class="n">ATPA</span><span class="p">,</span><span class="n">ATPB</span><span class="p">)</span>
+        <span class="n">dtime</span><span class="o">=</span><span class="n">time</span><span class="p">()</span><span class="o">-</span><span class="n">t0</span>
+        <span class="nb">print</span><span class="p">((</span><span class="s2">&quot;-- lsqnonneg duration (s): </span><span class="si">%.1lf</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">dtime</span><span class="p">))</span>
+    
+    <span class="k">if</span> <span class="n">NNLSM_BLOCK_PIVOT</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;-- Now doing the inversion using nnlsm_blockpivot &quot;</span><span class="o">+</span><span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">()</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="s2">&quot;%Y-%m-</span><span class="si">%d</span><span class="s2"> %H:%M&quot;</span><span class="p">))</span>
+        <span class="kn">import</span> <span class="nn">pyeq.lib.nnls.nnlsm</span>
+        <span class="n">t0</span> <span class="o">=</span> <span class="n">time</span><span class="p">()</span>
+        <span class="n">SLIP</span><span class="p">,</span><span class="n">_</span> <span class="o">=</span> <span class="n">pyeq</span><span class="o">.</span><span class="n">lib</span><span class="o">.</span><span class="n">nnls</span><span class="o">.</span><span class="n">nnlsm</span><span class="o">.</span><span class="n">nnlsm_blockpivot</span><span class="p">(</span><span class="n">ATPA</span><span class="p">,</span> <span class="n">ATPB</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">),</span> <span class="n">is_input_prod</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">init</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
+        <span class="n">SLIP</span> <span class="o">=</span> <span class="n">SLIP</span><span class="o">.</span><span class="n">flatten</span><span class="p">()</span>
+        <span class="n">dtime</span><span class="o">=</span><span class="n">time</span><span class="p">()</span><span class="o">-</span><span class="n">t0</span>
+        <span class="nb">print</span><span class="p">((</span><span class="s2">&quot;-- nnlsm_blockpivot duration (s): </span><span class="si">%.1lf</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">dtime</span><span class="p">))</span>
+        
+        
+    <span class="k">if</span> <span class="n">NNLSM_ACTIVESET</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;-- Now doing the inversion using nnlsm_blockpivot &quot;</span><span class="o">+</span><span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">()</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="s2">&quot;%Y-%m-</span><span class="si">%d</span><span class="s2"> %H:%M&quot;</span><span class="p">))</span>
+        <span class="kn">import</span> <span class="nn">pyeq.lib.nnls.nnlsm</span>
+        <span class="n">t0</span> <span class="o">=</span> <span class="n">time</span><span class="p">()</span>
+        <span class="n">SLIP</span><span class="p">,</span><span class="n">_</span> <span class="o">=</span> <span class="n">pyeq</span><span class="o">.</span><span class="n">lib</span><span class="o">.</span><span class="n">nnls</span><span class="o">.</span><span class="n">nnlsm</span><span class="o">.</span><span class="n">nnlsm_activeset</span><span class="p">(</span><span class="n">ATPA</span><span class="p">,</span> <span class="n">ATPB</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">),</span> <span class="n">is_input_prod</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">init</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
+        <span class="n">SLIP</span> <span class="o">=</span> <span class="n">SLIP</span><span class="o">.</span><span class="n">flatten</span><span class="p">()</span>
+        <span class="n">dtime</span><span class="o">=</span><span class="n">time</span><span class="p">()</span><span class="o">-</span><span class="n">t0</span>
+        <span class="nb">print</span><span class="p">((</span><span class="s2">&quot;-- nnlsm_activeset duration (s): </span><span class="si">%.1lf</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">dtime</span><span class="p">))</span>
+    
+    <span class="k">if</span> <span class="n">SCIPY_LSQ_LINEAR</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;-- Now doing the inversion using scipy_lsq_linear &quot;</span><span class="o">+</span><span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">()</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="s2">&quot;%Y-%m-</span><span class="si">%d</span><span class="s2"> %H:%M&quot;</span><span class="p">))</span>
+        <span class="kn">from</span> <span class="nn">scipy.optimize</span> <span class="kn">import</span> <span class="n">lsq_linear</span>
+        <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+        <span class="n">t0</span> <span class="o">=</span> <span class="n">time</span><span class="p">()</span>
+        <span class="n">RES</span> <span class="o">=</span> <span class="n">lsq_linear</span><span class="p">(</span><span class="n">ATPA</span><span class="p">,</span> <span class="n">ATPB</span><span class="p">,</span> <span class="n">bounds</span><span class="o">=</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="o">+</span><span class="n">np</span><span class="o">.</span><span class="n">inf</span><span class="p">),</span> <span class="n">method</span><span class="o">=</span><span class="s1">&#39;trf&#39;</span><span class="p">,</span> <span class="n">tol</span><span class="o">=</span><span class="mf">1e-15</span><span class="p">,</span> <span class="n">lsq_solver</span><span class="o">=</span><span class="s1">&#39;lsmr&#39;</span><span class="p">,</span> <span class="n">lsmr_tol</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">max_iter</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+        <span class="n">SLIP</span> <span class="o">=</span> <span class="n">RES</span><span class="o">.</span><span class="n">x</span>
+        <span class="n">SLIP</span> <span class="o">=</span> <span class="n">SLIP</span><span class="o">.</span><span class="n">flatten</span><span class="p">()</span>
+        <span class="n">dtime</span><span class="o">=</span><span class="n">time</span><span class="p">()</span><span class="o">-</span><span class="n">t0</span>
+        <span class="nb">print</span><span class="p">((</span><span class="s2">&quot;-- scipy_lsq_linear duration (s): </span><span class="si">%.1lf</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">dtime</span><span class="p">))</span>
+    
+    <span class="k">if</span> <span class="n">SCIPY_LBFGSB</span><span class="p">:</span>
+        
+        <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+                
+        <span class="k">def</span> <span class="nf">fun</span><span class="p">(</span><span class="n">x</span><span class="p">,</span><span class="n">ATA</span><span class="p">,</span><span class="n">ATB</span><span class="p">):</span>
+            <span class="n">R</span> <span class="o">=</span> <span class="n">ATB</span> <span class="o">-</span> <span class="n">np</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">ATA</span><span class="p">,</span><span class="n">x</span><span class="p">)</span>
+            <span class="nb">print</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">R</span><span class="o">.</span><span class="n">T</span><span class="p">,</span><span class="n">R</span><span class="p">))</span>
+            <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">R</span><span class="o">.</span><span class="n">T</span><span class="p">,</span><span class="n">R</span><span class="p">)</span>
+    
+        <span class="kn">from</span> <span class="nn">scipy.optimize</span> <span class="kn">import</span> <span class="n">minimize</span>
+        
+        <span class="n">BNDS</span><span class="o">=</span><span class="p">[]</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">ATPA</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]):</span>
+            <span class="n">BNDS</span><span class="o">.</span><span class="n">append</span><span class="p">(</span> <span class="p">(</span><span class="mf">0.</span><span class="p">,</span><span class="kc">None</span><span class="p">)</span> <span class="p">)</span>
+        
+        <span class="n">BNDS</span><span class="o">=</span><span class="nb">tuple</span><span class="p">(</span><span class="n">BNDS</span><span class="p">)</span>
+        <span class="kn">from</span> <span class="nn">scipy</span> <span class="kn">import</span> <span class="n">linalg</span>
+    
+        <span class="n">t0</span> <span class="o">=</span> <span class="n">time</span><span class="p">()</span>
+        
+        <span class="n">x0</span> <span class="o">=</span> <span class="n">linalg</span><span class="o">.</span><span class="n">solve</span><span class="p">(</span><span class="n">ATPA</span><span class="p">,</span> <span class="n">ATPB</span><span class="p">,</span> <span class="n">sym_pos</span> <span class="o">=</span> <span class="kc">True</span><span class="p">)</span>
+        
+        <span class="n">RES</span> <span class="o">=</span> <span class="n">minimize</span><span class="p">(</span><span class="n">fun</span><span class="p">,</span> <span class="n">x0</span><span class="p">,</span> <span class="n">args</span><span class="o">=</span><span class="p">(</span><span class="n">ATPA</span><span class="p">,</span><span class="n">ATPB</span><span class="p">),</span> <span class="n">method</span><span class="o">=</span><span class="s1">&#39;L-BFGS-B&#39;</span><span class="p">,</span> \
+                                      <span class="n">jac</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">bounds</span><span class="o">=</span><span class="n">BNDS</span><span class="p">,</span> <span class="n">tol</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">callback</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> \
+                                      <span class="n">options</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;disp&#39;</span><span class="p">:</span> <span class="kc">None</span><span class="p">,</span> <span class="s1">&#39;maxls&#39;</span><span class="p">:</span> <span class="mi">20</span><span class="p">,</span> <span class="s1">&#39;iprint&#39;</span><span class="p">:</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="s1">&#39;gtol&#39;</span><span class="p">:</span> <span class="mf">1e-04</span><span class="p">,</span> <span class="s1">&#39;eps&#39;</span><span class="p">:</span> <span class="mf">1e-08</span><span class="p">,</span> \
+                                               <span class="s1">&#39;maxiter&#39;</span><span class="p">:</span> <span class="mi">15000</span><span class="p">,</span> <span class="s1">&#39;ftol&#39;</span><span class="p">:</span> <span class="mf">2.220446049250313e-04</span><span class="p">,</span> <span class="s1">&#39;maxcor&#39;</span><span class="p">:</span> <span class="mi">10</span><span class="p">,</span> <span class="s1">&#39;maxfun&#39;</span><span class="p">:</span> <span class="mi">1500000</span><span class="p">})</span>
+        
+        <span class="n">dtime</span><span class="o">=</span><span class="n">time</span><span class="p">()</span><span class="o">-</span><span class="n">t0</span>
+        <span class="n">SLIP</span> <span class="o">=</span> <span class="n">RES</span><span class="o">.</span><span class="n">x</span>
+        <span class="n">SLIP</span> <span class="o">=</span> <span class="n">SLIP</span><span class="o">.</span><span class="n">flatten</span><span class="p">()</span>
+        
+        <span class="nb">print</span><span class="p">((</span><span class="s2">&quot;-- scipy_lbfgsb duration (s): </span><span class="si">%.1lf</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">dtime</span><span class="p">))</span>
+
+    <span class="k">if</span> <span class="n">SCIPY_CHOL</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;-- Now doing the inversion using scipy.linalg.solve &quot;</span><span class="o">+</span><span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">()</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="s2">&quot;%Y-%m-</span><span class="si">%d</span><span class="s2"> %H:%M&quot;</span><span class="p">))</span>
+        <span class="kn">from</span> <span class="nn">scipy.linalg</span> <span class="kn">import</span> <span class="n">solve</span>
+        <span class="c1">#t0 = time()</span>
+        <span class="c1">#L = cho_factor(ATPA, lower=False, overwrite_a=True, check_finite=False)</span>
+        <span class="c1">#SLIP = cho_solve(L, ATPB, overwrite_b=False, check_finite=False)</span>
+        <span class="c1">#SLIP = solve(ATPA, ATPB, sym_pos=False, lower=False, overwrite_a=False, overwrite_b=False, debug=False, check_finite=False)</span>
+        <span class="c1">#dtime=time()-t0</span>
+        <span class="c1">#print((&quot;-- scipy_lsq_linear duration (s): %.1lf&quot; % dtime))</span>
+        <span class="n">t0</span> <span class="o">=</span> <span class="n">time</span><span class="p">()</span>
+        <span class="n">SLIP</span> <span class="o">=</span> <span class="n">solve</span><span class="p">(</span><span class="n">ATPA</span><span class="p">,</span> <span class="n">ATPB</span><span class="p">,</span> <span class="n">sym_pos</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">lower</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">overwrite_a</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">overwrite_b</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">debug</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">check_finite</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+        <span class="n">dtime</span><span class="o">=</span><span class="n">time</span><span class="p">()</span><span class="o">-</span><span class="n">t0</span>
+        <span class="nb">print</span><span class="p">((</span><span class="s2">&quot;-- scipy_lsq_linear duration (s): </span><span class="si">%.1lf</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">dtime</span><span class="p">))</span>
+
+
+
+    <span class="k">return</span><span class="p">(</span><span class="n">SLIP</span><span class="p">,</span> <span class="n">dtime</span><span class="p">)</span></div>
+
+
+<span class="c1">###############################################################################</span>
+<span class="c1"># BVLS</span>
+<span class="c1">###############################################################################</span>
+
+<span class="c1">###############################################################################</span>
+<div class="viewcode-block" id="pyeq_bvls"><a class="viewcode-back" href="../../../pyeq.lib.make_inversion.html#pyeq.lib.make_inversion.pyeq_bvls">[docs]</a><span class="k">def</span> <span class="nf">pyeq_bvls</span><span class="p">(</span><span class="n">A</span><span class="p">,</span><span class="n">B</span><span class="p">,</span> <span class="n">bounds_slip</span><span class="p">,</span><span class="n">verbose</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+<span class="c1">###############################################################################</span>
+
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">       Stark &amp; Parker algorithm</span>
+<span class="sd">       Bounds are assumed to be between 0 and max_slip*m0, where max_slip is a vector of dim(m)</span>
+<span class="sd">       This used to be a wrapper to use bvls.so f2py compiled from the original bvls.f routine. </span>
+<span class="sd">       Looks like scipy.optimize.lsq_linear does the bvls problem.</span>
+<span class="sd">       </span>
+
+<span class="sd">       G          :     Green&#39;s functions</span>
+<span class="sd">       d          :     Observation vector</span>
+<span class="sd">       max_slip   :     vector of max_slip</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    
+    <span class="c1"># import</span>
+    <span class="kn">from</span> <span class="nn">scipy.optimize</span> <span class="kn">import</span> <span class="n">lsq_linear</span>    
+    <span class="kn">from</span> <span class="nn">time</span> <span class="kn">import</span> <span class="n">time</span>
+    
+    <span class="n">t0</span> <span class="o">=</span> <span class="n">time</span><span class="p">()</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;-- Inversion using BVLS and bounded values for slip&quot;</span><span class="p">)</span>
+
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;  -- Creating bounds vector for slip&quot;</span><span class="p">)</span>
+    <span class="n">lower_bounds</span><span class="o">=</span><span class="p">[]</span>
+    <span class="n">upper_bounds</span><span class="o">=</span><span class="p">[]</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">bounds_slip</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]):</span>
+        <span class="n">lower_bounds</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">bounds_slip</span><span class="p">[</span><span class="n">i</span><span class="p">,</span><span class="mi">0</span><span class="p">])</span>
+        <span class="n">upper_bounds</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">bounds_slip</span><span class="p">[</span><span class="n">i</span><span class="p">,</span><span class="mi">1</span><span class="p">])</span>
+    
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;  -- Running bvls optimization&quot;</span><span class="p">)</span>
+
+    <span class="n">res</span> <span class="o">=</span> <span class="n">lsq_linear</span><span class="p">(</span><span class="n">A</span><span class="p">,</span> <span class="n">B</span><span class="o">.</span><span class="n">flatten</span><span class="p">(),</span> <span class="n">bounds</span><span class="o">=</span><span class="p">(</span><span class="n">lower_bounds</span><span class="p">,</span> <span class="n">upper_bounds</span><span class="p">),</span> <span class="n">method</span><span class="o">=</span><span class="s1">&#39;trf&#39;</span><span class="p">,</span> <span class="n">tol</span><span class="o">=</span><span class="mf">1e-5</span><span class="p">,</span> <span class="n">lsq_solver</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">lsmr_tol</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">max_iter</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+    
+<span class="c1">#    print &quot;-- Results: &quot;, msg, &quot;\n&quot;</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;-- Elapsed time for inversion : </span><span class="si">%10.2f</span><span class="s2"> s&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">time</span><span class="p">()</span><span class="o">-</span><span class="n">t0</span><span class="p">))</span>
+<span class="c1">#    print &quot;-- Number of iterations       : %12d &quot; % (loopa)</span>
+    
+    
+    
+    <span class="n">SLIP</span> <span class="o">=</span> <span class="n">res</span><span class="o">.</span><span class="n">x</span>
+    <span class="n">norm</span> <span class="o">=</span> <span class="n">res</span><span class="o">.</span><span class="n">cost</span>
+    <span class="k">return</span><span class="p">(</span><span class="n">SLIP</span><span class="p">,</span><span class="n">norm</span><span class="p">)</span></div>
+</pre></div>
+
+           </div>
+           
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        
+        &copy; Copyright 2016, Jean-Mathieu Nocquet IRD/Geoazur
+
+    </p>
+  </div>
+    
+    
+    
+    Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

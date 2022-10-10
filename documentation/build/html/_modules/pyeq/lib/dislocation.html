@@ -1,0 +1,678 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>pyeq.lib.dislocation &mdash; pyeq 0.51.8 documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+
+  
+  
+  
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="../../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
+        <script src="../../../_static/jquery.js"></script>
+        <script src="../../../_static/underscore.js"></script>
+        <script src="../../../_static/doctools.js"></script>
+        <script src="../../../_static/language_data.js"></script>
+    
+    <script type="text/javascript" src="../../../_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../../../index.html" class="icon icon-home" alt="Documentation Home"> pyeq
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                0.51.8
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../foreword.html">PYEQ: full time-dependent slip inversion</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../behaviour.html">Options controlling the overall behaviour</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../tutorial_static_inversion.html">Tutorial static inversion</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../dates.html">dates</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../roxane.html">Roxane’s notes on PYEQ</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../modules.html">for developpers</a></li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">pyeq</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../../index.html" class="icon icon-home"></a> &raquo;</li>
+        
+          <li><a href="../../index.html">Module code</a> &raquo;</li>
+        
+      <li>pyeq.lib.dislocation</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>Source code for pyeq.lib.dislocation</h1><div class="highlight"><pre>
+<div class="viewcode-block" id="Dislocation"><a class="viewcode-back" href="../../../pyeq.lib.dislocation.html#pyeq.lib.dislocation.Dislocation">[docs]</a><span></span><span class="k">class</span> <span class="nc">Dislocation</span><span class="p">:</span>
+
+    
+    <span class="sd">&quot;&quot;&quot;Dislocation class: creates an elastic dislocation </span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+<span class="c1">###############################################################################    </span>
+    <span class="k">def</span> <span class="fm">__init__</span> <span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">index</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">x</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">depth</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> \
+<span class="c1">###############################################################################    </span>
+                  <span class="n">strike</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">dip</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">length</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">width</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>\
+                   <span class="n">area</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">rake</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">max_slip</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>\
+                   <span class="n">centroid_x</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span><span class="n">centroid_y</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span><span class="n">centroid_z</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">index</span><span class="o">=</span><span class="n">index</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">x</span><span class="o">=</span><span class="n">x</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">y</span><span class="o">=</span><span class="n">y</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">depth</span><span class="o">=</span><span class="n">depth</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">strike</span><span class="o">=</span><span class="n">strike</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">dip</span><span class="o">=</span><span class="n">dip</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">length</span><span class="o">=</span><span class="n">length</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">width</span><span class="o">=</span><span class="n">width</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">area</span><span class="o">=</span><span class="n">area</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">rake</span><span class="o">=</span><span class="n">rake</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">max_slip</span><span class="o">=</span><span class="n">max_slip</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">centroid_x</span><span class="o">=</span><span class="n">centroid_x</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">centroid_y</span><span class="o">=</span><span class="n">centroid_y</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">centroid_z</span><span class="o">=</span><span class="n">centroid_z</span>
+        
+    
+<span class="c1">###############################################################################    </span>
+<div class="viewcode-block" id="Dislocation.centroid_to_upper_left_corner"><a class="viewcode-back" href="../../../pyeq.lib.dislocation.html#pyeq.lib.dislocation.Dislocation.centroid_to_upper_left_corner">[docs]</a>    <span class="k">def</span> <span class="nf">centroid_to_upper_left_corner</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="c1">###############################################################################    </span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        From the centroid coordinates length, width, strike and dip, returns the coordinates of the upper left corner</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        
+        <span class="kn">from</span> <span class="nn">numpy</span> <span class="kn">import</span> <span class="n">array</span>
+        <span class="kn">from</span> <span class="nn">math</span> <span class="kn">import</span> <span class="n">radians</span><span class="p">,</span><span class="n">cos</span><span class="p">,</span><span class="n">sin</span><span class="p">,</span> <span class="n">pi</span>
+        <span class="n">alpha</span><span class="o">=</span><span class="n">radians</span><span class="p">(</span><span class="o">-</span><span class="bp">self</span><span class="o">.</span><span class="n">strike</span><span class="p">)</span><span class="o">+</span><span class="n">pi</span><span class="o">/</span><span class="mf">2.</span>
+        
+        <span class="c1"># CENTROID</span>
+        
+        <span class="n">CENTROID</span><span class="o">=</span><span class="n">array</span><span class="p">([</span><span class="bp">self</span><span class="o">.</span><span class="n">centroid_x</span><span class="p">,</span><span class="bp">self</span><span class="o">.</span><span class="n">centroid_y</span><span class="p">,</span><span class="bp">self</span><span class="o">.</span><span class="n">centroid_z</span><span class="p">])</span>
+        
+        <span class="c1"># ALONG_STRIKE</span>
+        
+        <span class="n">delta_x</span><span class="o">=</span><span class="n">cos</span><span class="p">(</span><span class="n">alpha</span><span class="p">)</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">length</span>
+        <span class="n">delta_y</span><span class="o">=</span><span class="n">sin</span><span class="p">(</span><span class="n">alpha</span><span class="p">)</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">length</span>
+        <span class="n">delta_z</span><span class="o">=</span><span class="mf">0.0</span>
+        <span class="n">DELTA_ALONG_STRIKE</span><span class="o">=</span><span class="n">array</span><span class="p">([</span><span class="n">delta_x</span><span class="p">,</span><span class="n">delta_y</span><span class="p">,</span><span class="n">delta_z</span><span class="p">])</span>
+        
+        <span class="c1"># ALONG DIP</span>
+        <span class="n">delta_x</span><span class="o">=</span><span class="n">cos</span><span class="p">(</span><span class="n">radians</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">dip</span><span class="p">))</span><span class="o">*</span><span class="n">cos</span><span class="p">(</span><span class="n">alpha</span><span class="o">-</span><span class="n">pi</span><span class="o">/</span><span class="mf">2.</span><span class="p">)</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">width</span>
+        <span class="n">delta_y</span><span class="o">=</span><span class="n">cos</span><span class="p">(</span><span class="n">radians</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">dip</span><span class="p">))</span><span class="o">*</span><span class="n">sin</span><span class="p">(</span><span class="n">alpha</span><span class="o">-</span><span class="n">pi</span><span class="o">/</span><span class="mf">2.</span><span class="p">)</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">width</span>
+        <span class="n">delta_z</span><span class="o">=</span><span class="n">sin</span><span class="p">(</span><span class="n">radians</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">dip</span><span class="p">))</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">width</span>
+        <span class="n">DELTA_ALONG_DIP</span><span class="o">=</span><span class="n">array</span><span class="p">([</span><span class="n">delta_x</span><span class="p">,</span><span class="n">delta_y</span><span class="p">,</span><span class="n">delta_z</span><span class="p">])</span>
+        
+        <span class="n">TOP_LEFT_CORNER</span><span class="o">=</span><span class="n">CENTROID</span><span class="o">-</span><span class="n">DELTA_ALONG_STRIKE</span><span class="o">/</span><span class="mf">2.</span><span class="o">-</span><span class="n">DELTA_ALONG_DIP</span><span class="o">/</span><span class="mf">2.</span>
+        
+        <span class="bp">self</span><span class="o">.</span><span class="n">x</span><span class="o">=</span><span class="n">TOP_LEFT_CORNER</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">y</span><span class="o">=</span><span class="n">TOP_LEFT_CORNER</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">depth</span><span class="o">=</span><span class="n">TOP_LEFT_CORNER</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span>
+        
+        <span class="k">return</span><span class="p">(</span><span class="n">TOP_LEFT_CORNER</span><span class="p">)</span></div>
+
+        
+        
+
+<span class="c1">###############################################################################    </span>
+<div class="viewcode-block" id="Dislocation.subfaults"><a class="viewcode-back" href="../../../pyeq.lib.dislocation.html#pyeq.lib.dislocation.Dislocation.subfaults">[docs]</a>    <span class="k">def</span> <span class="nf">subfaults</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">n_length</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">n_width</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="c1">###############################################################################    </span>
+        <span class="sd">&quot;&quot;&quot;Divides a rectangular fault into subfaults and returns a list of Dislocation objects as defined in Dislocation </span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="kn">from</span> <span class="nn">numpy</span> <span class="kn">import</span> <span class="n">array</span><span class="p">,</span><span class="n">dot</span><span class="p">,</span><span class="n">set_printoptions</span>
+        <span class="n">set_printoptions</span><span class="p">(</span><span class="n">precision</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span><span class="n">linewidth</span><span class="o">=</span><span class="mi">50</span>   <span class="p">)</span>
+        <span class="kn">from</span> <span class="nn">math</span> <span class="kn">import</span> <span class="n">cos</span><span class="p">,</span><span class="n">sin</span><span class="p">,</span><span class="n">radians</span><span class="p">,</span><span class="n">pi</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;-- Faults will be divided into &quot;</span><span class="p">,</span><span class="n">n_length</span><span class="p">,</span> <span class="s2">&quot;segments along strike and &quot;</span><span class="p">,</span><span class="n">n_width</span><span class="p">,</span> <span class="s2">&quot;segments along dip (&quot;</span><span class="p">,</span><span class="n">n_length</span><span class="o">*</span><span class="n">n_width</span><span class="p">,</span><span class="s2">&quot; subfaults)&quot;</span><span class="p">)</span>
+        
+        <span class="n">delta_length</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">length</span><span class="o">/</span><span class="nb">float</span><span class="p">(</span><span class="n">n_length</span><span class="p">)</span>
+        <span class="n">delta_width</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">width</span><span class="o">/</span><span class="nb">float</span><span class="p">(</span><span class="n">n_width</span><span class="p">)</span>
+        <span class="n">index</span><span class="o">=</span><span class="mi">0</span>
+        <span class="n">lsubfaults</span><span class="o">=</span><span class="p">[]</span>
+        <span class="n">alpha</span><span class="o">=</span><span class="n">radians</span><span class="p">(</span><span class="o">-</span><span class="bp">self</span><span class="o">.</span><span class="n">strike</span><span class="p">)</span>
+        <span class="n">Rdip</span><span class="o">=</span><span class="n">array</span><span class="p">([[</span><span class="n">cos</span><span class="p">(</span><span class="n">radians</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">dip</span><span class="p">)),</span><span class="mf">0.</span><span class="p">,</span><span class="o">-</span><span class="n">sin</span><span class="p">(</span><span class="n">radians</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">dip</span><span class="p">))],[</span><span class="mf">0.</span><span class="p">,</span><span class="mf">1.</span><span class="p">,</span><span class="mf">0.</span><span class="p">],[</span><span class="n">sin</span><span class="p">(</span><span class="n">radians</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">dip</span><span class="p">)),</span><span class="mf">0.</span><span class="p">,</span><span class="n">cos</span><span class="p">(</span><span class="n">radians</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">dip</span><span class="p">))]])</span>
+        <span class="c1">#print &#39;Rdip &#39;,Rdip</span>
+        <span class="n">R2strike_hor</span><span class="o">=</span><span class="n">array</span><span class="p">([[</span><span class="n">cos</span><span class="p">(</span><span class="n">alpha</span><span class="p">),</span><span class="o">-</span><span class="n">sin</span><span class="p">(</span><span class="n">alpha</span><span class="p">),</span><span class="mf">0.</span><span class="p">],[</span><span class="n">sin</span><span class="p">(</span><span class="n">alpha</span><span class="p">),</span><span class="n">cos</span><span class="p">(</span><span class="n">alpha</span><span class="p">),</span><span class="mf">0.</span><span class="p">],[</span><span class="mf">0.</span><span class="p">,</span><span class="mf">0.</span><span class="p">,</span><span class="mf">1.</span><span class="p">],])</span>
+        <span class="c1">#print &#39;R2strike_hor &#39;,R2strike_hor</span>
+        <span class="n">R</span><span class="o">=</span><span class="n">dot</span><span class="p">(</span><span class="n">Rdip</span><span class="p">,</span><span class="n">R2strike_hor</span><span class="p">)</span>
+        <span class="c1">#print &#39;R &#39;,R</span>
+
+        <span class="n">X0</span><span class="o">=</span><span class="n">array</span><span class="p">([</span><span class="bp">self</span><span class="o">.</span><span class="n">x</span><span class="p">,</span><span class="bp">self</span><span class="o">.</span><span class="n">y</span><span class="p">,</span><span class="bp">self</span><span class="o">.</span><span class="n">depth</span><span class="p">])</span>
+        <span class="c1">#print &#39;X0 &#39;,X0</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n_width</span><span class="p">):</span>
+            <span class="c1">#print &#39;i &#39;,i</span>
+            <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n_length</span><span class="p">):</span>
+                <span class="c1">#print &#39;j &#39;,j</span>
+                <span class="c1"># faults coordinates</span>
+                <span class="n">local_x</span><span class="o">=</span><span class="n">i</span><span class="o">*</span><span class="n">delta_width</span>
+                <span class="n">local_y</span><span class="o">=</span><span class="n">j</span><span class="o">*</span><span class="n">delta_length</span>
+                <span class="n">LX</span><span class="o">=</span><span class="n">array</span><span class="p">([</span><span class="n">local_x</span><span class="p">,</span><span class="n">local_y</span><span class="p">,</span><span class="mf">0.</span><span class="p">])</span>
+                <span class="c1">#print &#39;LX &#39;,LX</span>
+                <span class="c1">#print &#39;RDip X &#39;,dot(Rdip,LX)</span>
+                <span class="n">X</span><span class="o">=</span><span class="n">dot</span><span class="p">(</span><span class="n">R2strike_hor</span><span class="p">,</span><span class="n">dot</span><span class="p">(</span><span class="n">Rdip</span><span class="p">,</span><span class="n">LX</span><span class="p">))</span>
+                <span class="c1">#print &#39;dX &#39;,X</span>
+                <span class="n">X</span><span class="o">=</span><span class="n">X</span><span class="o">+</span><span class="n">X0</span>
+                <span class="c1">#print &#39;X &#39;,X</span>
+                
+                <span class="c1">#print &quot;local x,y, X&quot;,local_x,local_y,X+X0</span>
+                
+                <span class="n">subfault</span><span class="o">=</span><span class="n">Dislocation</span><span class="p">(</span><span class="n">index</span><span class="o">=</span><span class="n">index</span><span class="p">,</span> <span class="n">x</span><span class="o">=</span><span class="n">X</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">y</span><span class="o">=</span><span class="n">X</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">depth</span><span class="o">=</span><span class="n">X</span><span class="p">[</span><span class="mi">2</span><span class="p">],</span> <span class="n">strike</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">strike</span><span class="p">,</span> <span class="n">dip</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">dip</span><span class="p">,</span> <span class="n">length</span><span class="o">=</span><span class="n">delta_length</span><span class="p">,</span> <span class="n">width</span><span class="o">=</span><span class="n">delta_width</span><span class="p">)</span>
+                
+                <span class="n">lsubfaults</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">subfault</span><span class="p">)</span>
+                
+                
+                
+                <span class="n">index</span><span class="o">=</span><span class="n">index</span><span class="o">+</span><span class="mi">1</span>
+                
+                
+                
+        <span class="k">return</span><span class="p">(</span><span class="n">lsubfaults</span><span class="p">)</span></div>
+    
+<span class="c1">###############################################################################    </span>
+<div class="viewcode-block" id="Dislocation.corners"><a class="viewcode-back" href="../../../pyeq.lib.dislocation.html#pyeq.lib.dislocation.Dislocation.corners">[docs]</a>    <span class="k">def</span> <span class="nf">corners</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="c1">###############################################################################    </span>
+        <span class="sd">&quot;&quot;&quot;returns the 4 corners position vectors&quot;&quot;&quot;</span>
+        <span class="kn">from</span> <span class="nn">numpy</span> <span class="kn">import</span> <span class="n">array</span>
+        <span class="kn">from</span> <span class="nn">math</span> <span class="kn">import</span> <span class="n">radians</span><span class="p">,</span><span class="n">cos</span><span class="p">,</span><span class="n">sin</span><span class="p">,</span> <span class="n">pi</span>
+        <span class="n">alpha</span><span class="o">=</span><span class="n">radians</span><span class="p">(</span><span class="o">-</span><span class="bp">self</span><span class="o">.</span><span class="n">strike</span><span class="p">)</span><span class="o">+</span><span class="n">pi</span><span class="o">/</span><span class="mf">2.</span>
+        
+        <span class="c1"># TOP</span>
+        
+        <span class="n">X1</span><span class="o">=</span><span class="n">array</span><span class="p">([</span><span class="bp">self</span><span class="o">.</span><span class="n">x</span><span class="p">,</span><span class="bp">self</span><span class="o">.</span><span class="n">y</span><span class="p">,</span><span class="bp">self</span><span class="o">.</span><span class="n">depth</span><span class="p">])</span>
+        <span class="n">x2</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">x</span><span class="o">+</span><span class="n">cos</span><span class="p">(</span><span class="n">alpha</span><span class="p">)</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">length</span>
+        <span class="n">y2</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">y</span><span class="o">+</span><span class="n">sin</span><span class="p">(</span><span class="n">alpha</span><span class="p">)</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">length</span>
+        <span class="n">X2</span><span class="o">=</span><span class="n">array</span><span class="p">([</span><span class="n">x2</span><span class="p">,</span><span class="n">y2</span><span class="p">,</span><span class="bp">self</span><span class="o">.</span><span class="n">depth</span><span class="p">])</span>
+        <span class="c1"># BOTTOM</span>
+        <span class="n">delta_x</span><span class="o">=</span><span class="n">cos</span><span class="p">(</span><span class="n">radians</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">dip</span><span class="p">))</span><span class="o">*</span><span class="n">cos</span><span class="p">(</span><span class="n">alpha</span><span class="o">-</span><span class="n">pi</span><span class="o">/</span><span class="mf">2.</span><span class="p">)</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">width</span>
+        <span class="n">delta_y</span><span class="o">=</span><span class="n">cos</span><span class="p">(</span><span class="n">radians</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">dip</span><span class="p">))</span><span class="o">*</span><span class="n">sin</span><span class="p">(</span><span class="n">alpha</span><span class="o">-</span><span class="n">pi</span><span class="o">/</span><span class="mf">2.</span><span class="p">)</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">width</span>
+        <span class="n">delta_z</span><span class="o">=</span><span class="n">sin</span><span class="p">(</span><span class="n">radians</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">dip</span><span class="p">))</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">width</span>
+        <span class="n">DELTA</span><span class="o">=</span><span class="n">array</span><span class="p">([</span><span class="n">delta_x</span><span class="p">,</span><span class="n">delta_y</span><span class="p">,</span><span class="n">delta_z</span><span class="p">])</span>
+        
+        <span class="n">X3</span><span class="o">=</span><span class="n">X2</span><span class="o">+</span><span class="n">DELTA</span>
+        <span class="n">X4</span><span class="o">=</span><span class="n">X1</span><span class="o">+</span><span class="n">DELTA</span>
+        <span class="k">return</span><span class="p">(</span><span class="n">X1</span><span class="p">,</span><span class="n">X2</span><span class="p">,</span><span class="n">X3</span><span class="p">,</span><span class="n">X4</span><span class="p">)</span></div>
+    
+<span class="c1">###############################################################################    </span>
+<div class="viewcode-block" id="Dislocation.centroid"><a class="viewcode-back" href="../../../pyeq.lib.dislocation.html#pyeq.lib.dislocation.Dislocation.centroid">[docs]</a>    <span class="k">def</span> <span class="nf">centroid</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="c1">###############################################################################    </span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Returns the dislocation centroid</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">X1</span><span class="p">,</span><span class="n">X2</span><span class="p">,</span><span class="n">X3</span><span class="p">,</span><span class="n">X4</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">corners</span><span class="p">()</span>
+        <span class="n">X</span><span class="o">=</span><span class="p">(</span><span class="n">X1</span><span class="o">+</span><span class="n">X2</span><span class="o">+</span><span class="n">X3</span><span class="o">+</span><span class="n">X4</span><span class="p">)</span><span class="o">/</span><span class="mf">4.</span>
+        
+        <span class="bp">self</span><span class="o">.</span><span class="n">centroid_x</span><span class="o">=</span><span class="n">X</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">centroid_y</span><span class="o">=</span><span class="n">X</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">centroid_z</span><span class="o">=</span><span class="n">X</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span>
+        
+        <span class="k">return</span><span class="p">(</span><span class="n">X</span><span class="p">)</span></div>
+        
+    
+<span class="c1">###############################################################################    </span>
+<div class="viewcode-block" id="Dislocation.write_gmt"><a class="viewcode-back" href="../../../pyeq.lib.dislocation.html#pyeq.lib.dislocation.Dislocation.write_gmt">[docs]</a>    <span class="k">def</span> <span class="nf">write_gmt</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">name</span><span class="p">):</span>
+<span class="c1">###############################################################################    </span>
+        <span class="sd">&quot;&quot;&quot;write fault information to a gmt psxy compatible file&quot;&quot;&quot;</span>
+        <span class="p">(</span><span class="n">X1</span><span class="p">,</span><span class="n">X2</span><span class="p">,</span><span class="n">X3</span><span class="p">,</span><span class="n">X4</span><span class="p">)</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">corners</span><span class="p">()</span>
+        <span class="n">fs</span><span class="o">=</span><span class="nb">open</span><span class="p">(</span><span class="n">name</span><span class="p">,</span><span class="s1">&#39;a+&#39;</span><span class="p">)</span>
+        <span class="n">fs</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">&#39;&gt;</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)</span>
+        <span class="n">xe</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">x</span>
+        <span class="n">fs</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%10.5lf</span><span class="s2">  </span><span class="si">%10.5lf</span><span class="s2">  </span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">%</span> <span class="p">(</span><span class="n">X1</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span><span class="n">X1</span><span class="p">[</span><span class="mi">1</span><span class="p">]))</span>
+        <span class="n">fs</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%10.5lf</span><span class="s2">  </span><span class="si">%10.5lf</span><span class="s2">  </span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">%</span><span class="p">(</span><span class="n">X2</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span><span class="n">X2</span><span class="p">[</span><span class="mi">1</span><span class="p">]))</span>
+        <span class="n">fs</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%10.5lf</span><span class="s2">  </span><span class="si">%10.5lf</span><span class="s2">  </span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">%</span><span class="p">(</span><span class="n">X3</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span><span class="n">X3</span><span class="p">[</span><span class="mi">1</span><span class="p">]))</span>
+        <span class="n">fs</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%10.5lf</span><span class="s2">  </span><span class="si">%10.5lf</span><span class="s2">  </span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">%</span><span class="p">(</span><span class="n">X4</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span><span class="n">X4</span><span class="p">[</span><span class="mi">1</span><span class="p">]))</span>        
+        <span class="n">fs</span><span class="o">.</span><span class="n">close</span><span class="p">()</span></div>
+
+<span class="c1">###############################################################################    </span>
+<div class="viewcode-block" id="Dislocation.print_info"><a class="viewcode-back" href="../../../pyeq.lib.dislocation.html#pyeq.lib.dislocation.Dislocation.print_info">[docs]</a>    <span class="k">def</span> <span class="nf">print_info</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="c1">###############################################################################    </span>
+        <span class="sd">&quot;&quot;&quot;Print faults informations </span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="nb">print</span><span class="p">((</span><span class="s2">&quot;index=</span><span class="si">%6d</span><span class="s2">&quot;</span><span class="o">%</span><span class="bp">self</span><span class="o">.</span><span class="n">index</span><span class="p">))</span>
+        <span class="nb">print</span><span class="p">((</span><span class="s2">&quot;(x,y,depth)=(</span><span class="si">%10.4lf</span><span class="s2">,</span><span class="si">%10.4lf</span><span class="s2">,</span><span class="si">%5.3lf</span><span class="s2"> )&quot;</span><span class="o">%</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">x</span><span class="p">,</span><span class="bp">self</span><span class="o">.</span><span class="n">y</span><span class="p">,</span><span class="bp">self</span><span class="o">.</span><span class="n">depth</span><span class="p">)))</span>
+        <span class="nb">print</span><span class="p">((</span><span class="s2">&quot;(strike,dip)=(</span><span class="si">%10.2lf</span><span class="s2">,</span><span class="si">%10.2lf</span><span class="s2">)&quot;</span> <span class="o">%</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">strike</span><span class="p">,</span><span class="bp">self</span><span class="o">.</span><span class="n">dip</span><span class="p">)))</span>
+        <span class="nb">print</span><span class="p">((</span><span class="s2">&quot;(length,width=(</span><span class="si">%5.2lf</span><span class="s2">,</span><span class="si">%5.2lf</span><span class="s2">))&quot;</span><span class="o">%</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">length</span><span class="p">,</span><span class="bp">self</span><span class="o">.</span><span class="n">width</span><span class="p">)))</span></div>
+
+<span class="c1">###############################################################################    </span>
+<div class="viewcode-block" id="Dislocation.disp_slip_rake_no_edcmp"><a class="viewcode-back" href="../../../pyeq.lib.dislocation.html#pyeq.lib.dislocation.Dislocation.disp_slip_rake_no_edcmp">[docs]</a>    <span class="k">def</span> <span class="nf">disp_slip_rake_no_edcmp</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">slip</span><span class="p">,</span><span class="n">rake</span><span class="p">,</span><span class="n">array_gps</span><span class="p">):</span>
+<span class="c1">###############################################################################    </span>
+        
+        <span class="c1"># import</span>
+        <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+        
+        
+        <span class="kn">from</span> <span class="nn">pyeq.lib.okada.okada</span> <span class="kn">import</span> <span class="n">okada</span>
+        
+        <span class="n">llambda</span> <span class="o">=</span> <span class="mf">3.2074E+10</span>  
+        <span class="n">mu</span>      <span class="o">=</span> <span class="mf">3.9701E+10</span>
+
+        <span class="c1"># scaling for source point</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">area</span><span class="o">!=</span><span class="kc">None</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">area</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">true_area</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">area</span>
+            <span class="n">dislocation_area</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">width</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">length</span>
+            <span class="n">scaling</span><span class="o">=</span><span class="n">true_area</span> <span class="o">/</span> <span class="n">dislocation_area</span>
+            <span class="n">new_slip</span><span class="o">=</span><span class="n">slip</span><span class="o">*</span><span class="n">scaling</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">new_slip</span><span class="o">=</span><span class="n">slip</span>    
+
+        <span class="c1"># fault and slip parameters</span>
+        
+        <span class="n">dislocations</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span> <span class="mi">1</span> <span class="p">)</span> <span class="o">+</span> <span class="n">new_slip</span>
+        <span class="n">xs</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span> <span class="mi">1</span> <span class="p">)</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">y</span>
+        <span class="n">ys</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span> <span class="mi">1</span> <span class="p">)</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">x</span>
+        <span class="n">zs</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span> <span class="mi">1</span> <span class="p">)</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">depth</span>
+        
+        <span class="n">lengths</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span> <span class="mi">1</span> <span class="p">)</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">length</span>
+        <span class="n">widths</span>  <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span> <span class="mi">1</span> <span class="p">)</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">width</span>
+        
+        <span class="n">strikes</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span> <span class="mi">1</span> <span class="p">)</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">strike</span>
+        <span class="n">dips</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span> <span class="mi">1</span> <span class="p">)</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">dip</span>
+        
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">rake</span><span class="p">:</span><span class="n">rake</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">rake</span>
+
+        <span class="n">rakes</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span> <span class="mi">1</span> <span class="p">)</span> <span class="o">+</span> <span class="n">rake</span>
+        
+        <span class="c1"># obs array parameters</span>
+        
+        <span class="n">xrec</span> <span class="o">=</span> <span class="n">array_gps</span><span class="p">[:,</span><span class="mi">1</span><span class="p">]</span> 
+        <span class="n">yrec</span> <span class="o">=</span> <span class="n">array_gps</span><span class="p">[:,</span><span class="mi">0</span><span class="p">]</span> 
+        <span class="n">zrec0</span> <span class="o">=</span> <span class="mf">0.</span>
+
+        <span class="p">(</span> <span class="n">disp</span><span class="p">,</span> <span class="n">tilt</span> <span class="p">,</span> <span class="n">strain</span> <span class="p">)</span> <span class="o">=</span> <span class="n">okada</span><span class="p">(</span><span class="n">llambda</span><span class="p">,</span> <span class="n">mu</span><span class="p">,</span> <span class="n">dislocations</span><span class="p">,</span> <span class="n">xs</span><span class="p">,</span> <span class="n">ys</span><span class="p">,</span> <span class="n">zs</span><span class="p">,</span> <span class="n">lengths</span><span class="p">,</span> <span class="n">widths</span><span class="p">,</span> <span class="n">strikes</span><span class="p">,</span> <span class="n">dips</span><span class="p">,</span> <span class="n">rakes</span><span class="p">,</span> <span class="n">xrec</span><span class="p">,</span> <span class="n">yrec</span><span class="p">,</span> <span class="n">zrec0</span><span class="p">)</span>
+
+        <span class="c1"># reorder the output from edcmp</span>
+        <span class="c1"># RR has the order x_east, y_north (in km) East, North, Up (positive upward) in millimeters</span>
+        <span class="c1"># R  has the order x_north,y_east (in meters) D_North, D_East, D_Up (positive downward) in meters</span>
+        
+        <span class="n">R</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span> <span class="p">(</span><span class="n">xrec</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="mi">5</span><span class="p">)</span> <span class="p">)</span>
+        <span class="n">R</span><span class="p">[:,</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="n">xrec</span>
+        <span class="n">R</span><span class="p">[:,</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">yrec</span>
+        <span class="n">R</span><span class="p">[:,</span><span class="mi">2</span><span class="p">:]</span> <span class="o">=</span> <span class="n">disp</span>
+
+        <span class="n">RR</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">R</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
+        <span class="n">RR</span><span class="p">[:,</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span>  <span class="n">R</span><span class="p">[:,</span><span class="mi">1</span><span class="p">]</span><span class="o">*</span><span class="mf">1.E-3</span>
+        <span class="n">RR</span><span class="p">[:,</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span>  <span class="n">R</span><span class="p">[:,</span><span class="mi">0</span><span class="p">]</span><span class="o">*</span><span class="mf">1.E-3</span>
+        <span class="n">RR</span><span class="p">[:,</span><span class="mi">2</span><span class="p">]</span> <span class="o">=</span>  <span class="n">R</span><span class="p">[:,</span><span class="mi">3</span><span class="p">]</span>
+        <span class="n">RR</span><span class="p">[:,</span><span class="mi">3</span><span class="p">]</span> <span class="o">=</span>  <span class="n">R</span><span class="p">[:,</span><span class="mi">2</span><span class="p">]</span>
+        <span class="n">RR</span><span class="p">[:,</span><span class="mi">4</span><span class="p">]</span> <span class="o">=</span> <span class="o">-</span><span class="n">R</span><span class="p">[:,</span><span class="mi">4</span><span class="p">]</span>
+        <span class="k">return</span><span class="p">(</span><span class="n">RR</span><span class="p">)</span></div>
+
+
+<span class="c1">###############################################################################    </span>
+<div class="viewcode-block" id="Dislocation.disp_slip_rake"><a class="viewcode-back" href="../../../pyeq.lib.dislocation.html#pyeq.lib.dislocation.Dislocation.disp_slip_rake">[docs]</a>    <span class="k">def</span> <span class="nf">disp_slip_rake</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">slip</span><span class="p">,</span><span class="n">rake</span><span class="p">,</span><span class="n">array_gps</span><span class="p">):</span>
+<span class="c1">###############################################################################    </span>
+        <span class="sd">&quot;&quot;&quot;Calculates the Green function for the dislocation, i.e. the 3D displacement along an array of points according to the</span>
+<span class="sd">           displacement provided in slip and rake components.</span>
+<span class="sd">           Array of points is a numpy array having x y</span>
+<span class="sd">           Slip is rescaled by a factor equal to true_area/(length*width)</span>
+<span class="sd">           uses the edcmp</span>
+<span class="sd">           The return is</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">rake</span><span class="p">:</span><span class="n">rake</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">rake</span>
+        <span class="c1"># first prepare edcmp input file</span>
+           
+        <span class="n">fedcmp_input</span><span class="o">=</span><span class="s1">&#39;input_edcmp.dat&#39;</span>
+        <span class="n">fs</span><span class="o">=</span><span class="nb">open</span><span class="p">(</span><span class="n">fedcmp_input</span><span class="p">,</span><span class="s1">&#39;w&#39;</span><span class="p">)</span>
+           
+        <span class="n">intro_edcmp</span> <span class="o">=</span><span class="s1">&#39;&#39;</span>
+        <span class="n">intro_edcmp</span> <span class="o">+=</span> <span class="s1">&#39;#===============================================================================&#39;</span><span class="o">+</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span>
+        <span class="n">intro_edcmp</span> <span class="o">+=</span> <span class="s1">&#39;# This is the input file of FORTRAN77 program &quot;edcomp&quot; for calculating&#39;</span><span class="o">+</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span>
+        <span class="n">intro_edcmp</span> <span class="o">+=</span> <span class="s1">&#39;# earthquakes static deformations (3 displacement components, 6 strain/stress&#39;</span><span class="o">+</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span>
+        <span class="n">intro_edcmp</span> <span class="o">+=</span> <span class="s1">&#39;# components and 2 vertical tilt components) based on the dislocation theory.&#39;</span><span class="o">+</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span>
+        <span class="n">intro_edcmp</span> <span class="o">+=</span> <span class="s1">&#39;# The earth model used is either a homogeneous or multi-layered, isotropic and&#39;</span><span class="o">+</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span>
+        <span class="n">intro_edcmp</span> <span class="o">+=</span> <span class="s1">&#39;# elastic half-space. The earthquake source is represented by an arbitrary number&#39;</span><span class="o">+</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span>
+        <span class="n">intro_edcmp</span> <span class="o">+=</span> <span class="s1">&#39;# of rectangular dislocation planes.&#39;</span><span class="o">+</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span>
+        <span class="n">intro_edcmp</span> <span class="o">+=</span> <span class="s1">&#39;#&#39;</span><span class="o">+</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span>
+        <span class="n">intro_edcmp</span> <span class="o">+=</span> <span class="s1">&#39;# Note that the Cartesian coordinate system is used and the seismological&#39;</span><span class="o">+</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span>
+        <span class="n">intro_edcmp</span> <span class="o">+=</span> <span class="s1">&#39;# convention is adopted, that is, x is northward, y is eastward, and z is&#39;</span><span class="o">+</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span>
+        <span class="n">intro_edcmp</span> <span class="o">+=</span> <span class="s1">&#39;# downward.&#39;</span><span class="o">+</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span>
+        <span class="n">intro_edcmp</span> <span class="o">+=</span> <span class="s1">&#39;#&#39;</span><span class="o">+</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span>
+        <span class="n">intro_edcmp</span> <span class="o">+=</span> <span class="s1">&#39;# First implemented in Potsdam, Feb, 1999&#39;</span><span class="o">+</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span>
+        <span class="n">intro_edcmp</span> <span class="o">+=</span> <span class="s1">&#39;# Last modified: Potsdam, Nov, 2001&#39;</span><span class="o">+</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span>
+        <span class="n">intro_edcmp</span> <span class="o">+=</span> <span class="s1">&#39;#&#39;</span><span class="o">+</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span>
+        <span class="n">intro_edcmp</span> <span class="o">+=</span> <span class="s1">&#39;# by&#39;</span><span class="o">+</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span>
+        <span class="n">intro_edcmp</span> <span class="o">+=</span> <span class="s1">&#39;# Rongjiang Wang, Frank Roth, &amp; Francisco Lorenzo&#39;</span><span class="o">+</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span>
+        <span class="n">intro_edcmp</span> <span class="o">+=</span> <span class="s1">&#39;# GeoForschungsZetrum Potsdam, Telegrafenberg, 14473 Potsdam, Germany&#39;</span><span class="o">+</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span>
+        <span class="n">intro_edcmp</span> <span class="o">+=</span> <span class="s1">&#39;#&#39;</span><span class="o">+</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span>
+        <span class="n">intro_edcmp</span> <span class="o">+=</span> <span class="s1">&#39;# For questions and suggestions please send e-mails to wang@gfz-potsdam.de&#39;</span><span class="o">+</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span>
+        <span class="n">intro_edcmp</span> <span class="o">+=</span> <span class="s1">&#39;#===============================================================================&#39;</span><span class="o">+</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span>
+
+        <span class="n">obs_edcmp</span> <span class="o">=</span><span class="s1">&#39;&#39;</span>
+        <span class="n">obs_edcmp</span> <span class="o">+=</span> <span class="s1">&#39;# OBSERVATION ARRAY&#39;</span><span class="o">+</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span>
+        <span class="n">obs_edcmp</span> <span class="o">+=</span> <span class="s1">&#39;# =================&#39;</span><span class="o">+</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span>
+        <span class="n">obs_edcmp</span> <span class="o">+=</span> <span class="s1">&#39;# 1. switch for irregular positions (0) or a 1D profile (1)&#39;</span><span class="o">+</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span>
+        <span class="n">obs_edcmp</span> <span class="o">+=</span> <span class="s1">&#39;#    or a rectangular 2D observation array (2): ixyr&#39;</span><span class="o">+</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span>
+        <span class="n">obs_edcmp</span> <span class="o">+=</span> <span class="s1">&#39;#&#39;</span><span class="o">+</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span>
+        <span class="n">obs_edcmp</span> <span class="o">+=</span> <span class="s1">&#39;#    IF (1 for irregular observation positions) THEN&#39;</span><span class="o">+</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span>
+        <span class="n">obs_edcmp</span> <span class="o">+=</span> <span class="s1">&#39;#    &#39;</span><span class="o">+</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span>
+        <span class="n">obs_edcmp</span> <span class="o">+=</span> <span class="s1">&#39;# 2. number of positions: nr&#39;</span><span class="o">+</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span>
+        <span class="n">obs_edcmp</span> <span class="o">+=</span> <span class="s1">&#39;# 3. coordinates of the observations: (xr(i),yr(i)),i=1,nr&#39;</span><span class="o">+</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span>
+        <span class="n">obs_edcmp</span> <span class="o">+=</span> <span class="s1">&#39;#&#39;</span><span class="o">+</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span>
+        <span class="n">obs_edcmp</span> <span class="o">+=</span> <span class="s1">&#39;#    ELSE IF (the switch = 1 for a 1D profile) THEN&#39;</span><span class="o">+</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span>
+        <span class="n">obs_edcmp</span> <span class="o">+=</span> <span class="s1">&#39;#&#39;</span><span class="o">+</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span>
+        <span class="n">obs_edcmp</span> <span class="o">+=</span> <span class="s1">&#39;# 2. number of position samples of the profile: nr&#39;</span><span class="o">+</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span>
+        <span class="n">obs_edcmp</span> <span class="o">+=</span> <span class="s1">&#39;# 3. the start and end positions: (xr1,yr1), (xr2,yr2)&#39;</span><span class="o">+</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span>
+        <span class="n">obs_edcmp</span> <span class="o">+=</span> <span class="s1">&#39;#&#39;</span><span class="o">+</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span>
+        <span class="n">obs_edcmp</span> <span class="o">+=</span> <span class="s1">&#39;#    ELSE IF (2 for rectanglular 2D observation array) THEN&#39;</span><span class="o">+</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span>
+        <span class="n">obs_edcmp</span> <span class="o">+=</span> <span class="s1">&#39;#&#39;</span><span class="o">+</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span>
+        <span class="n">obs_edcmp</span> <span class="o">+=</span> <span class="s1">&#39;# 2. number of xr samples, start and end values [m]: nxr, xr1,xr2&#39;</span><span class="o">+</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span>
+        <span class="n">obs_edcmp</span> <span class="o">+=</span> <span class="s1">&#39;# 3. number of yr samples, start and end values [m]: nyr, yr1,yr2&#39;</span><span class="o">+</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span>
+        <span class="n">obs_edcmp</span> <span class="o">+=</span> <span class="s1">&#39;#&#39;</span><span class="o">+</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span>
+        <span class="n">obs_edcmp</span> <span class="o">+=</span> <span class="s1">&#39;#    Note that the total number of observation positions (nr or nxr*nyr)&#39;</span><span class="o">+</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span>
+        <span class="n">obs_edcmp</span> <span class="o">+=</span> <span class="s1">&#39;#    should be &lt;= NRECMAX (see edcglobal.h)!&#39;</span><span class="o">+</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span>
+        <span class="n">obs_edcmp</span> <span class="o">+=</span> <span class="s1">&#39;#===============================================================================&#39;</span><span class="o">+</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span>
+        <span class="n">obs_edcmp</span> <span class="o">+=</span> <span class="s1">&#39;#&#39;</span><span class="o">+</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span>
+
+        <span class="n">output_edcmp</span><span class="o">=</span><span class="s1">&#39;&#39;</span>
+        <span class="n">output_edcmp</span> <span class="o">+=</span> <span class="s1">&#39;#===============================================================================&#39;</span><span class="o">+</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span>
+        <span class="n">output_edcmp</span> <span class="o">+=</span> <span class="s1">&#39;# OUTPUTS&#39;</span><span class="o">+</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span>
+        <span class="n">output_edcmp</span> <span class="o">+=</span> <span class="s1">&#39;# =======&#39;</span><span class="o">+</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span>
+        <span class="n">output_edcmp</span> <span class="o">+=</span> <span class="s1">&#39;# 1. output directory in char format: outdir&#39;</span><span class="o">+</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span>
+        <span class="n">output_edcmp</span> <span class="o">+=</span> <span class="s1">&#39;# 2. select the desired outputs (1/0 = yes/no)&#39;</span><span class="o">+</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span>
+        <span class="n">output_edcmp</span> <span class="o">+=</span> <span class="s1">&#39;# 3. the file names in char format for displacement vector, strain tensor,&#39;</span><span class="o">+</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span>
+        <span class="n">output_edcmp</span> <span class="o">+=</span> <span class="s1">&#39;#    stress tensor, and vertical tilts:&#39;</span><span class="o">+</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span>
+        <span class="n">output_edcmp</span> <span class="o">+=</span> <span class="s1">&#39;#    dispfile, strainfile, stressfile, tiltfile&#39;</span><span class="o">+</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span>
+        <span class="n">output_edcmp</span> <span class="o">+=</span> <span class="s1">&#39;#&#39;</span><span class="o">+</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span>
+        <span class="n">output_edcmp</span> <span class="o">+=</span> <span class="s1">&#39;#    Note that all file or directory names should not be longer than 80&#39;</span><span class="o">+</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span>
+        <span class="n">output_edcmp</span> <span class="o">+=</span> <span class="s1">&#39;#    characters. Directories must be ended by / (unix) or \ (dos)!&#39;</span><span class="o">+</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span>
+        <span class="n">output_edcmp</span> <span class="o">+=</span> <span class="s1">&#39;#===============================================================================&#39;</span><span class="o">+</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span>
+        <span class="n">output_edcmp</span> <span class="o">+=</span> <span class="s1">&#39;  </span><span class="se">\&#39;</span><span class="s1">./</span><span class="se">\&#39;</span><span class="s1">&#39;</span><span class="o">+</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span>
+        <span class="n">output_edcmp</span> <span class="o">+=</span> <span class="s1">&#39;        1               0              0              0&#39;</span><span class="o">+</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span>
+
+        <span class="n">source_edcmp</span> <span class="o">=</span><span class="s1">&#39;&#39;</span>
+
+        <span class="n">source_edcmp</span> <span class="o">+=</span> <span class="s1">&#39;#===============================================================================&#39;</span><span class="o">+</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span>
+        <span class="n">source_edcmp</span> <span class="o">+=</span> <span class="s1">&#39;# RECTANGLAR DISLOCATION SOURCES&#39;</span><span class="o">+</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span>
+        <span class="n">source_edcmp</span> <span class="o">+=</span> <span class="s1">&#39;# ==============================&#39;</span><span class="o">+</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span>
+        <span class="n">source_edcmp</span> <span class="o">+=</span> <span class="s1">&#39;# 1. number of the source rectangles: ns (&lt;= NSMAX in edcglobal.h)&#39;</span><span class="o">+</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span>
+        <span class="n">source_edcmp</span> <span class="o">+=</span> <span class="s1">&#39;# 2. the 6 parameters for the 1. source rectangle:&#39;</span><span class="o">+</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span>
+        <span class="n">source_edcmp</span> <span class="o">+=</span> <span class="s1">&#39;#    Slip [m],&#39;</span><span class="o">+</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span>
+        <span class="n">source_edcmp</span> <span class="o">+=</span> <span class="s1">&#39;#    coordinates of the upper reference point for strike (xs, ys, zs) [m],&#39;</span><span class="o">+</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span>
+        <span class="n">source_edcmp</span> <span class="o">+=</span> <span class="s1">&#39;#    length (strike direction) [m], and width (dip direction) [m],&#39;</span><span class="o">+</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span>
+        <span class="n">source_edcmp</span> <span class="o">+=</span> <span class="s1">&#39;#    strike [deg], dip [deg], and rake [deg]&#39;</span><span class="o">+</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span>
+        <span class="n">source_edcmp</span> <span class="o">+=</span> <span class="s1">&#39;# 3. ... for the 2. source ...&#39;</span><span class="o">+</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span>
+        <span class="n">source_edcmp</span> <span class="o">+=</span> <span class="s1">&#39;# ...&#39;</span><span class="o">+</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span>
+        <span class="n">source_edcmp</span> <span class="o">+=</span> <span class="s1">&#39;#                   N&#39;</span><span class="o">+</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span>
+        <span class="n">source_edcmp</span> <span class="o">+=</span> <span class="s1">&#39;#                  /&#39;</span><span class="o">+</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span>
+        <span class="n">source_edcmp</span> <span class="o">+=</span> <span class="s1">&#39;#                 /| strike&#39;</span><span class="o">+</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span>
+        <span class="n">source_edcmp</span> <span class="o">+=</span> <span class="s1">&#39;#         Ref:-&gt; @------------------------&#39;</span><span class="o">+</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span>
+        <span class="n">source_edcmp</span> <span class="o">+=</span> <span class="s1">&#39;#                |\        p .            \ W&#39;</span><span class="o">+</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span>
+        <span class="n">source_edcmp</span> <span class="o">+=</span> <span class="s1">&#39;#                :-\      i .              \ i&#39;</span><span class="o">+</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span>
+        <span class="n">source_edcmp</span> <span class="o">+=</span> <span class="s1">&#39;#                |  \    l .                \ d&#39;</span><span class="o">+</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span>
+        <span class="n">source_edcmp</span> <span class="o">+=</span> <span class="s1">&#39;#                :90 \  S .                  \ t&#39;</span><span class="o">+</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span>
+        <span class="n">source_edcmp</span> <span class="o">+=</span> <span class="s1">&#39;#                |-dip\  .                    \ h&#39;</span><span class="o">+</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span>
+        <span class="n">source_edcmp</span> <span class="o">+=</span> <span class="s1">&#39;#                :     \. | rake               \ &#39;</span><span class="o">+</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span>
+        <span class="n">source_edcmp</span> <span class="o">+=</span> <span class="s1">&#39;#                Z      -------------------------&#39;</span><span class="o">+</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span>
+        <span class="n">source_edcmp</span> <span class="o">+=</span> <span class="s1">&#39;#                              L e n g t h&#39;</span><span class="o">+</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span>
+        <span class="n">source_edcmp</span> <span class="o">+=</span> <span class="s1">&#39;#&#39;</span><span class="o">+</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span>
+        <span class="n">source_edcmp</span> <span class="o">+=</span> <span class="s1">&#39;#    Note that if one of the parameters length and width = 0, then a line source&#39;</span><span class="o">+</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span>
+        <span class="n">source_edcmp</span> <span class="o">+=</span> <span class="s1">&#39;#    will be considered and the displocation parameter Slip has the unit m^2 if&#39;</span><span class="o">+</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span>
+        <span class="n">source_edcmp</span> <span class="o">+=</span> <span class="s1">&#39;#    both length and width = 0, then a point source will be considered and the&#39;</span><span class="o">+</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span>
+        <span class="n">source_edcmp</span> <span class="o">+=</span> <span class="s1">&#39;#    Slip has the unit m^3.&#39;</span><span class="o">+</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span>
+        <span class="n">source_edcmp</span> <span class="o">+=</span> <span class="s1">&#39;#===============================================================================&#39;</span><span class="o">+</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span>
+
+
+        <span class="n">fault_edcmp</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span>
+        <span class="n">fault_edcmp</span> <span class="o">+=</span> <span class="s1">&#39;#         coord. origin: (40.739N, 30.05E)&#39;</span><span class="o">+</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span>
+        <span class="n">fault_edcmp</span> <span class="o">+=</span> <span class="s1">&#39;#-------------------------------------------------------------------------------&#39;</span><span class="o">+</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span>
+        <span class="n">fault_edcmp</span> <span class="o">+=</span> <span class="s1">&#39;# no  Slip   xs        ys       zs        length    width   strike   dip  rake&#39;</span><span class="o">+</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span>
+        <span class="n">fault_edcmp</span> <span class="o">+=</span> <span class="s1">&#39;#-------------------------------------------------------------------------------&#39;</span><span class="o">+</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span>
+        <span class="n">fault_edcmp</span> <span class="o">+=</span> <span class="s1">&#39;#   1   1.00 0.0d+0  50.0d+03  0.0d+03   64.0d+03  15.0d+03  45.0   45.0  -90.0&#39;</span><span class="o">+</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span>
+
+        <span class="n">earth_model_edcmp</span><span class="o">=</span><span class="s1">&#39;&#39;</span>
+        <span class="n">earth_model_edcmp</span> <span class="o">+=</span>  <span class="s1">&#39;#===============================================================================&#39;</span><span class="o">+</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span>
+        <span class="n">earth_model_edcmp</span> <span class="o">+=</span> <span class="s1">&#39;# If the earth model used is a layered half-space, then the numerical Green</span><span class="se">\&#39;</span><span class="s1">s&#39;</span><span class="o">+</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span>
+        <span class="n">earth_model_edcmp</span> <span class="o">+=</span> <span class="s1">&#39;# function approach is applied. The Green</span><span class="se">\&#39;</span><span class="s1">s functions should have been prepared&#39;</span><span class="o">+</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span>
+        <span class="n">earth_model_edcmp</span> <span class="o">+=</span> <span class="s1">&#39;# with the program &quot;edgrn&quot; before the program &quot;edcmp&quot; is started. In this case,&#39;</span><span class="o">+</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span>
+        <span class="n">earth_model_edcmp</span> <span class="o">+=</span> <span class="s1">&#39;# the following input data give the addresses where the Green</span><span class="se">\&#39;</span><span class="s1">s functions have&#39;</span><span class="o">+</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span>
+        <span class="n">earth_model_edcmp</span> <span class="o">+=</span> <span class="s1">&#39;# been stored and the grid side to be used for the automatic discretization&#39;</span><span class="o">+</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span>
+        <span class="n">earth_model_edcmp</span> <span class="o">+=</span> <span class="s1">&#39;# of the finite rectangular sources.&#39;</span><span class="o">+</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span>
+        <span class="n">earth_model_edcmp</span> <span class="o">+=</span> <span class="s1">&#39;#&#39;</span><span class="o">+</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span>
+        <span class="n">earth_model_edcmp</span> <span class="o">+=</span> <span class="s1">&#39;# If the earth model used is a homogeneous half-space, then the analytical&#39;</span><span class="o">+</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span>
+        <span class="n">earth_model_edcmp</span> <span class="o">+=</span> <span class="s1">&#39;# method of Okada (1992) is applied. In this case, the Green</span><span class="se">\&#39;</span><span class="s1">s functions are&#39;</span><span class="o">+</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span>
+        <span class="n">earth_model_edcmp</span> <span class="o">+=</span> <span class="s1">&#39;# not needed, and the following input data give the shear modulus and the&#39;</span><span class="o">+</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span>
+        <span class="n">earth_model_edcmp</span> <span class="o">+=</span> <span class="s1">&#39;# Poisson ratio of the model.&#39;</span><span class="o">+</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span>
+        <span class="n">earth_model_edcmp</span> <span class="o">+=</span> <span class="s1">&#39;#===============================================================================&#39;</span><span class="o">+</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span>
+        <span class="n">earth_model_edcmp</span> <span class="o">+=</span> <span class="s1">&#39;# CHOICE OF EARTH MODEL&#39;</span><span class="o">+</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span>
+        <span class="n">earth_model_edcmp</span> <span class="o">+=</span> <span class="s1">&#39;# =====================&#39;</span><span class="o">+</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span>
+        <span class="n">earth_model_edcmp</span> <span class="o">+=</span> <span class="s1">&#39;# 1. switch for layered (1) or homogeneous (0) model&#39;</span><span class="o">+</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span>
+        <span class="n">earth_model_edcmp</span> <span class="o">+=</span> <span class="s1">&#39;#&#39;</span><span class="o">+</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span>
+        <span class="n">earth_model_edcmp</span> <span class="o">+=</span> <span class="s1">&#39;#    IF (layered model) THEN&#39;</span><span class="o">+</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span>
+        <span class="n">earth_model_edcmp</span> <span class="o">+=</span> <span class="s1">&#39;#&#39;</span><span class="o">+</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span>
+        <span class="n">earth_model_edcmp</span> <span class="o">+=</span> <span class="s1">&#39;# 2. directory of the Green</span><span class="se">\&#39;</span><span class="s1">s functions and the three files for the&#39;</span><span class="o">+</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span>
+        <span class="n">earth_model_edcmp</span> <span class="o">+=</span> <span class="s1">&#39;#    fundamental Green</span><span class="se">\&#39;</span><span class="s1">s functions: grndir, grnfiles(3)&#39;</span><span class="o">+</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span>
+        <span class="n">earth_model_edcmp</span> <span class="o">+=</span> <span class="s1">&#39;#&#39;</span><span class="o">+</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span>
+        <span class="n">earth_model_edcmp</span> <span class="o">+=</span> <span class="s1">&#39;#    Note that all file or directory names should not be longer than 80&#39;</span><span class="o">+</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span>
+        <span class="n">earth_model_edcmp</span> <span class="o">+=</span> <span class="s1">&#39;#    characters. Directories must be ended by / (unix) or \ (dos)!&#39;</span><span class="o">+</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span>
+        <span class="n">earth_model_edcmp</span> <span class="o">+=</span> <span class="s1">&#39;#&#39;</span><span class="o">+</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span>
+        <span class="n">earth_model_edcmp</span> <span class="o">+=</span> <span class="s1">&#39;#    ELSE (homogeneous model) THEN&#39;</span><span class="o">+</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span>
+        <span class="n">earth_model_edcmp</span> <span class="o">+=</span> <span class="s1">&#39;#&#39;</span><span class="o">+</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span>
+        <span class="n">earth_model_edcmp</span> <span class="o">+=</span> <span class="s1">&#39;# 2. the observation depth, the two Lame constants parameters of the homogeneous&#39;</span><span class="o">+</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span>
+        <span class="n">earth_model_edcmp</span> <span class="o">+=</span> <span class="s1">&#39;#    model: zrec [m], lambda [Pa], mu [Pa]&#39;</span><span class="o">+</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span>
+        <span class="n">earth_model_edcmp</span> <span class="o">+=</span> <span class="s1">&#39;#===============================================================================&#39;</span><span class="o">+</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span>
+        <span class="n">earth_model_edcmp</span> <span class="o">+=</span> <span class="s1">&#39;#  1&#39;</span><span class="o">+</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span>
+        <span class="n">earth_model_edcmp</span> <span class="o">+=</span> <span class="s1">&#39;#  </span><span class="se">\&#39;</span><span class="s1">./grnfcts/</span><span class="se">\&#39;</span><span class="s1">  </span><span class="se">\&#39;</span><span class="s1">izmhs.ss</span><span class="se">\&#39;</span><span class="s1">  </span><span class="se">\&#39;</span><span class="s1">izmhs.ds</span><span class="se">\&#39;</span><span class="s1">  </span><span class="se">\&#39;</span><span class="s1">izmhs.cl</span><span class="se">\&#39;</span><span class="s1">&#39;</span><span class="o">+</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span>
+        <span class="n">earth_model_edcmp</span> <span class="o">+=</span> <span class="s1">&#39;  0&#39;</span><span class="o">+</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span>
+        <span class="n">earth_model_edcmp</span> <span class="o">+=</span> <span class="s1">&#39;  0.00d+00  0.28758E+11  0.29353E+11&#39;</span><span class="o">+</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span>
+        <span class="n">earth_model_edcmp</span> <span class="o">+=</span> <span class="s1">&#39;#================================end of input===================================&#39;</span><span class="o">+</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span>
+        
+        <span class="n">fs</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">intro_edcmp</span><span class="p">)</span>
+        <span class="n">fs</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">obs_edcmp</span><span class="p">)</span>
+        <span class="n">fs</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;  0</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="c1"># edcmp convention X = north, Y = East</span>
+        <span class="n">fs</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;  </span><span class="si">%d</span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">array_gps</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+        <span class="n">line</span><span class="o">=</span><span class="mi">0</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">array_gps</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">-</span><span class="mi">1</span><span class="p">):</span>
+            <span class="c1">#print &#39;i &#39;,i</span>
+            <span class="c1">#print &#39;array_gps &#39;,array_gps</span>
+            <span class="n">fs</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;  (</span><span class="si">%5.4lf</span><span class="s2">d+03,</span><span class="si">%5.4lf</span><span class="s2">d+03),&quot;</span> <span class="o">%</span><span class="p">(</span><span class="n">array_gps</span><span class="p">[</span><span class="n">i</span><span class="p">,</span><span class="mi">1</span><span class="p">],</span><span class="n">array_gps</span><span class="p">[</span><span class="n">i</span><span class="p">,</span><span class="mi">0</span><span class="p">]))</span>
+            <span class="n">line</span><span class="o">+=</span><span class="mi">1</span>
+            <span class="k">if</span> <span class="p">(</span><span class="n">line</span> <span class="o">==</span> <span class="mi">3</span><span class="p">):</span>
+                <span class="n">line</span><span class="o">=</span><span class="mi">0</span><span class="p">;</span><span class="n">fs</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="n">i</span><span class="o">=</span><span class="n">array_gps</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">-</span><span class="mi">1</span>        
+        <span class="n">fs</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;  (</span><span class="si">%5.4lf</span><span class="s2">d+03,</span><span class="si">%5.4lf</span><span class="s2">d+03)&quot;</span> <span class="o">%</span><span class="p">(</span><span class="n">array_gps</span><span class="p">[</span><span class="n">i</span><span class="p">,</span><span class="mi">1</span><span class="p">],</span><span class="n">array_gps</span><span class="p">[</span><span class="n">i</span><span class="p">,</span><span class="mi">0</span><span class="p">]))</span>                
+        <span class="n">fs</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="n">fs</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">output_edcmp</span><span class="p">)</span>
+        <span class="n">fs</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;  </span><span class="se">\&#39;</span><span class="s2">edcmp.disp</span><span class="se">\&#39;</span><span class="s2">    </span><span class="se">\&#39;</span><span class="s2">edcmp.strn</span><span class="se">\&#39;</span><span class="s2">   </span><span class="se">\&#39;</span><span class="s2">edcmp.strss</span><span class="se">\&#39;</span><span class="s2">  </span><span class="se">\&#39;</span><span class="s2">edcmp.tilt</span><span class="se">\&#39;</span><span class="s2">&quot;</span><span class="o">+</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="n">fs</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">source_edcmp</span><span class="p">)</span>
+        <span class="n">fs</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot; 1</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="n">fs</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">fault_edcmp</span><span class="p">)</span>
+        <span class="c1"># scaling for source point</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">area</span><span class="o">!=</span><span class="kc">None</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">area</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">true_area</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">area</span>
+            <span class="n">dislocation_area</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">width</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">length</span>
+            <span class="n">scaling</span><span class="o">=</span><span class="n">true_area</span> <span class="o">/</span> <span class="n">dislocation_area</span>
+            <span class="n">new_slip</span><span class="o">=</span><span class="n">slip</span><span class="o">*</span><span class="n">scaling</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">new_slip</span><span class="o">=</span><span class="n">slip</span>    
+        
+        <span class="n">fs</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;  1   </span><span class="si">%5.2lf</span><span class="s2"> </span><span class="si">%5.1lf</span><span class="s2">d+03 </span><span class="si">%5.1lf</span><span class="s2">d+03 </span><span class="si">%5.1lf</span><span class="s2">d+03 </span><span class="si">%5.1lf</span><span class="s2">d+03 </span><span class="si">%5.1lf</span><span class="s2">d+03 </span><span class="si">%5.1lf</span><span class="s2"> </span><span class="si">%5.1lf</span><span class="s2"> </span><span class="si">%5.1lf</span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">%</span><span class="p">(</span><span class="n">new_slip</span><span class="p">,</span><span class="bp">self</span><span class="o">.</span><span class="n">y</span><span class="p">,</span><span class="bp">self</span><span class="o">.</span><span class="n">x</span><span class="p">,</span><span class="bp">self</span><span class="o">.</span><span class="n">depth</span><span class="p">,</span><span class="bp">self</span><span class="o">.</span><span class="n">length</span><span class="p">,</span><span class="bp">self</span><span class="o">.</span><span class="n">width</span><span class="p">,</span><span class="bp">self</span><span class="o">.</span><span class="n">strike</span><span class="p">,</span><span class="bp">self</span><span class="o">.</span><span class="n">dip</span><span class="p">,</span><span class="n">rake</span><span class="p">))</span>
+        <span class="n">fs</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">earth_model_edcmp</span><span class="p">)</span>
+        <span class="n">fs</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+        
+        <span class="c1"># now runs edcmp</span>
+        <span class="n">fs</span><span class="o">=</span><span class="nb">open</span><span class="p">(</span><span class="s1">&#39;linput_edcmp&#39;</span><span class="p">,</span><span class="s1">&#39;w&#39;</span><span class="p">)</span>
+        <span class="n">fs</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%s</span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">fedcmp_input</span><span class="p">)</span>
+        <span class="n">fs</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+        <span class="c1">#from subprocess import call</span>
+        <span class="c1">#call(&quot;edcmp &lt; linput_edcmp&quot;, shell=False) </span>
+        <span class="c1">#call([&#39;edcmp &lt; linput_edcmp&#39;])</span>
+        <span class="kn">import</span> <span class="nn">subprocess</span>
+        <span class="n">subprocess</span><span class="o">.</span><span class="n">getstatusoutput</span><span class="p">(</span><span class="s1">&#39;edcmp &lt; linput_edcmp&#39;</span><span class="p">)</span>
+        <span class="c1"># reads results</span>
+        <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+        <span class="n">R</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">genfromtxt</span><span class="p">(</span><span class="s1">&#39;edcmp.disp&#39;</span><span class="p">,</span><span class="n">dtype</span><span class="o">=</span><span class="s1">&#39;float&#39;</span><span class="p">,</span> <span class="n">comments</span><span class="o">=</span><span class="s1">&#39;#&#39;</span><span class="p">)</span>
+        
+        <span class="c1">#### if edcmp.disp only has one record a 1-D array (vector) is returned to R instead of a 2-D array</span>
+        <span class="k">if</span> <span class="p">(</span><span class="n">R</span><span class="o">.</span><span class="n">ndim</span> <span class="o">==</span><span class="mi">1</span><span class="p">):</span> <span class="n">R</span><span class="o">.</span><span class="n">resize</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">5</span><span class="p">)</span>
+        
+        <span class="c1"># reorder the output from edcmp</span>
+        <span class="c1"># RR has the order x_east, y_north (in km) East, North, Up (positive upward) in millimeters</span>
+        <span class="c1"># R  has the order x_north,y_east (in meters) D_North, D_East, D_Up (positive downward) in meters</span>
+        <span class="n">RR</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">R</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
+        <span class="n">RR</span><span class="p">[:,</span><span class="mi">0</span><span class="p">]</span><span class="o">=</span><span class="n">R</span><span class="p">[:,</span><span class="mi">1</span><span class="p">]</span><span class="o">*</span><span class="mf">1.E-3</span>
+        <span class="n">RR</span><span class="p">[:,</span><span class="mi">1</span><span class="p">]</span><span class="o">=</span><span class="n">R</span><span class="p">[:,</span><span class="mi">0</span><span class="p">]</span><span class="o">*</span><span class="mf">1.E-3</span>
+        <span class="n">RR</span><span class="p">[:,</span><span class="mi">2</span><span class="p">]</span><span class="o">=</span><span class="n">R</span><span class="p">[:,</span><span class="mi">3</span><span class="p">]</span>
+        <span class="n">RR</span><span class="p">[:,</span><span class="mi">3</span><span class="p">]</span><span class="o">=</span><span class="n">R</span><span class="p">[:,</span><span class="mi">2</span><span class="p">]</span>
+        <span class="n">RR</span><span class="p">[:,</span><span class="mi">4</span><span class="p">]</span><span class="o">=-</span><span class="n">R</span><span class="p">[:,</span><span class="mi">4</span><span class="p">]</span>
+        <span class="c1">#print RR</span>
+        <span class="k">return</span><span class="p">(</span><span class="n">RR</span><span class="p">)</span></div></div>
+
+        
+        
+</pre></div>
+
+           </div>
+           
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        
+        &copy; Copyright 2016, Jean-Mathieu Nocquet IRD/Geoazur
+
+    </p>
+  </div>
+    
+    
+    
+    Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

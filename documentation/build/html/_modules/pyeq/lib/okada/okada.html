@@ -1,0 +1,384 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>pyeq.lib.okada.okada &mdash; pyeq 0.51.8 documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="../../../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../../../_static/pygments.css" type="text/css" />
+
+  
+  
+  
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="../../../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../../../../" src="../../../../_static/documentation_options.js"></script>
+        <script src="../../../../_static/jquery.js"></script>
+        <script src="../../../../_static/underscore.js"></script>
+        <script src="../../../../_static/doctools.js"></script>
+        <script src="../../../../_static/language_data.js"></script>
+    
+    <script type="text/javascript" src="../../../../_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../../../../index.html" class="icon icon-home" alt="Documentation Home"> pyeq
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                0.51.8
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../foreword.html">PYEQ: full time-dependent slip inversion</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../behaviour.html">Options controlling the overall behaviour</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../tutorial_static_inversion.html">Tutorial static inversion</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../dates.html">dates</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../roxane.html">Roxane’s notes on PYEQ</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../modules.html">for developpers</a></li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../../index.html">pyeq</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../../../index.html" class="icon icon-home"></a> &raquo;</li>
+        
+          <li><a href="../../../index.html">Module code</a> &raquo;</li>
+        
+      <li>pyeq.lib.okada.okada</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>Source code for pyeq.lib.okada.okada</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Wrapper for dc3d0 and dc3d original Okada&#39;s routines</span>
+<span class="sd">This corresponds to the okada.f from edcmp</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+
+<div class="viewcode-block" id="okada"><a class="viewcode-back" href="../../../../pyeq.lib.okada.okada.html#pyeq.lib.okada.okada.okada">[docs]</a><span class="k">def</span> <span class="nf">okada</span><span class="p">(</span><span class="n">llambda</span><span class="p">,</span> <span class="n">mu</span><span class="p">,</span> <span class="n">dislocations</span><span class="p">,</span> <span class="n">xs</span><span class="p">,</span> <span class="n">ys</span><span class="p">,</span> <span class="n">zs</span><span class="p">,</span> <span class="n">lengths</span><span class="p">,</span> <span class="n">widths</span><span class="p">,</span> <span class="n">strikes</span><span class="p">,</span> <span class="n">dips</span><span class="p">,</span> <span class="n">rakes</span><span class="p">,</span> <span class="n">xrec</span><span class="p">,</span> <span class="n">yrec</span><span class="p">,</span> <span class="n">zrec0</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    c~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~</span>
+<span class="sd">    c       ns = the really used number of rectangular sources</span>
+<span class="sd">    c       NSMAX = the upper limit of ns</span>
+<span class="sd">    c       nrec = the really used number of observation positions</span>
+<span class="sd">    c       NRECMAX = the upper limit of nrec</span>
+<span class="sd">    c</span>
+<span class="sd">    c       lambda, mu = the two Lame constants in Pascal (SI unit)</span>
+<span class="sd">    c</span>
+<span class="sd">    c       (xs,ys,zs) = coordinates of the start point of strike</span>
+<span class="sd">    c       with x = north, y = east, z = downward.</span>
+<span class="sd">    c       all angles in degree.</span>
+<span class="sd">    c       (xrec,yrec,zrec0) = cartesian coordinates of observations</span>
+<span class="sd">    c             Note zrec0 is a fixed constant</span>
+<span class="sd">    c       disp = 3 displacement components: ux,uy,uz</span>
+<span class="sd">    c       strain = 6 strain components: exx,eyy,ezz,exy,eyz,ezx</span>
+<span class="sd">    c       tilt = 2 vertical tilt components: dux/dz, duy/dz</span>
+<span class="sd">    c~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    
+    <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+
+<span class="c1">#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~</span>
+<span class="c1">#</span>
+<span class="c1">#    CHECK FOR VARIABLE TYPES, REQUIRED BY PYTHON</span>
+<span class="c1">#    ============================================</span>
+<span class="c1">#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~</span>
+    
+    
+    
+<span class="c1">#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~</span>
+<span class="c1">#</span>
+<span class="c1">#    LOCAL CONSTANTS</span>
+<span class="c1">#    ===============</span>
+<span class="c1">#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~</span>
+    <span class="n">degtorad</span> <span class="o">=</span> <span class="mf">1.745329252E-02</span>
+    <span class="n">eps</span> <span class="o">=</span> <span class="mf">1.E-6</span>
+    
+    <span class="n">disp0</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="mi">3</span><span class="p">)</span>
+    <span class="n">tilt0</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
+    <span class="n">strain0</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="mi">6</span><span class="p">)</span>
+
+<span class="c1">#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~</span>
+<span class="c1">#</span>
+<span class="c1">#    LOCAL WORK SPACES</span>
+<span class="c1">#    =================</span>
+<span class="c1">#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~</span>
+<span class="c1">#    double precision disp0(3),tilt0(2),strain0(6)</span>
+<span class="c1">#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~</span>
+<span class="c1">#</span>
+<span class="c1">#    PROCESSING</span>
+<span class="c1">#    ==========</span>
+<span class="c1">#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~</span>
+<span class="c1">#</span>
+<span class="c1">#    receiver and source independent variables</span>
+<span class="c1">#</span>
+    <span class="n">ALPHA</span> <span class="o">=</span> <span class="p">(</span><span class="n">llambda</span> <span class="o">+</span> <span class="n">mu</span><span class="p">)</span> <span class="o">/</span> <span class="p">(</span><span class="n">llambda</span> <span class="o">+</span> <span class="mf">2.</span><span class="o">*</span><span class="n">mu</span><span class="p">)</span>
+    <span class="n">POT3</span> <span class="o">=</span> <span class="mf">0.0</span>
+    <span class="n">POT4</span> <span class="o">=</span> <span class="mf">0.0</span>
+    <span class="n">DISL3</span> <span class="o">=</span> <span class="mf">0.0</span>
+    <span class="n">AL1</span> <span class="o">=</span> <span class="mf">0.0</span>
+    <span class="n">AW2</span> <span class="o">=</span> <span class="mf">0.0</span>
+    <span class="n">Z</span> <span class="o">=</span> <span class="o">-</span><span class="n">zrec0</span>
+
+    <span class="c1"># number of observations</span>
+    <span class="n">nrec</span> <span class="o">=</span> <span class="n">xrec</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+    
+    <span class="c1"># number of sources</span>
+    <span class="n">ns</span> <span class="o">=</span> <span class="n">xs</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+
+    <span class="c1">#      initialization</span>
+
+    <span class="n">strain</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">nrec</span> <span class="p">,</span> <span class="mi">6</span><span class="p">))</span>
+    <span class="n">disp</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">nrec</span> <span class="p">,</span> <span class="mi">3</span><span class="p">))</span>
+    <span class="n">tilt</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">nrec</span> <span class="p">,</span> <span class="mi">2</span><span class="p">))</span>
+
+    <span class="c1"># loop on observations points</span>
+    
+    <span class="k">for</span> <span class="n">irec</span> <span class="ow">in</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">nrec</span><span class="p">):</span>
+
+        <span class="c1"># loop on sources</span>
+
+        <span class="k">for</span> <span class="n">iis</span> <span class="ow">in</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">ns</span><span class="p">):</span> 
+
+            <span class="n">st</span> <span class="o">=</span> <span class="n">strikes</span><span class="p">[</span><span class="n">iis</span><span class="p">]</span> <span class="o">*</span> <span class="n">degtorad</span>
+            <span class="n">csst</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">st</span><span class="p">)</span>
+            <span class="n">ssst</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">st</span><span class="p">)</span>
+            <span class="n">cs2st</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="mf">2.</span><span class="o">*</span><span class="n">st</span><span class="p">)</span>
+            <span class="n">ss2st</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="mf">2.</span><span class="o">*</span><span class="n">st</span><span class="p">)</span>
+
+            <span class="n">di</span> <span class="o">=</span> <span class="n">dips</span><span class="p">[</span><span class="n">iis</span><span class="p">]</span> <span class="o">*</span> <span class="n">degtorad</span>
+            <span class="n">csdi</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">di</span><span class="p">)</span>
+            <span class="n">ssdi</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">di</span><span class="p">)</span>
+
+            <span class="n">ra</span> <span class="o">=</span> <span class="n">rakes</span><span class="p">[</span><span class="n">iis</span><span class="p">]</span> <span class="o">*</span> <span class="n">degtorad</span>
+            <span class="n">csra</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">ra</span><span class="p">)</span>
+            <span class="n">ssra</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">ra</span><span class="p">)</span>
+
+<span class="c1">#        transform from Aki&#39;s to Okada&#39;s system</span>
+
+            <span class="n">X</span> <span class="o">=</span> <span class="p">(</span><span class="n">xrec</span><span class="p">[</span><span class="n">irec</span><span class="p">]</span> <span class="o">-</span> <span class="n">xs</span><span class="p">[</span><span class="n">iis</span><span class="p">])</span> <span class="o">*</span> <span class="n">csst</span> <span class="o">+</span> <span class="p">(</span><span class="n">yrec</span><span class="p">[</span><span class="n">irec</span><span class="p">]</span> <span class="o">-</span> <span class="n">ys</span><span class="p">[</span><span class="n">iis</span><span class="p">])</span> <span class="o">*</span> <span class="n">ssst</span>
+            <span class="n">Y</span> <span class="o">=</span> <span class="p">(</span><span class="n">xrec</span><span class="p">[</span><span class="n">irec</span><span class="p">]</span> <span class="o">-</span> <span class="n">xs</span><span class="p">[</span><span class="n">iis</span><span class="p">])</span> <span class="o">*</span> <span class="n">ssst</span> <span class="o">-</span> <span class="p">(</span><span class="n">yrec</span><span class="p">[</span><span class="n">irec</span><span class="p">]</span> <span class="o">-</span> <span class="n">ys</span><span class="p">[</span><span class="n">iis</span><span class="p">])</span> <span class="o">*</span> <span class="n">csst</span>
+            <span class="n">DEPTH</span> <span class="o">=</span> <span class="n">zs</span><span class="p">[</span><span class="n">iis</span><span class="p">]</span>
+            <span class="n">DIP</span> <span class="o">=</span> <span class="n">dips</span><span class="p">[</span><span class="n">iis</span><span class="p">]</span>
+
+<span class="c1">############ point source #####################################################</span>
+            <span class="k">if</span> <span class="p">(</span><span class="n">lengths</span><span class="p">[</span><span class="n">iis</span><span class="p">]</span> <span class="o">==</span> <span class="mi">0</span><span class="p">)</span> <span class="ow">and</span> <span class="p">(</span><span class="n">widths</span><span class="p">[</span><span class="n">iis</span><span class="p">]</span> <span class="o">==</span> <span class="mi">0</span><span class="p">):</span>
+
+                <span class="kn">from</span> <span class="nn">pyeq.lib.okada.dc3d0</span> <span class="kn">import</span> <span class="n">dc3d0</span>
+
+                <span class="n">POT1</span> <span class="o">=</span> <span class="n">dislocations</span><span class="p">[</span><span class="n">iis</span><span class="p">]</span> <span class="o">*</span> <span class="n">csra</span>
+                <span class="n">POT2</span> <span class="o">=</span> <span class="n">dislocations</span><span class="p">[</span><span class="n">iis</span><span class="p">]</span> <span class="o">*</span> <span class="n">ssra</span>
+
+                <span class="n">IRET</span> <span class="o">=</span> <span class="mi">1</span>
+
+                <span class="p">[</span><span class="n">UX</span><span class="p">,</span> <span class="n">UY</span><span class="p">,</span> <span class="n">UZ</span><span class="p">,</span> <span class="n">UXX</span><span class="p">,</span> <span class="n">UYX</span><span class="p">,</span> <span class="n">UZX</span><span class="p">,</span> <span class="n">UXY</span><span class="p">,</span> <span class="n">UYY</span><span class="p">,</span> <span class="n">UZY</span><span class="p">,</span> <span class="n">UXZ</span><span class="p">,</span> <span class="n">UYZ</span><span class="p">,</span> <span class="n">UZZ</span><span class="p">]</span> <span class="o">=</span> <span class="n">dc3d0</span><span class="p">(</span><span class="n">ALPHA</span><span class="p">,</span> <span class="n">X</span><span class="p">,</span> <span class="n">Y</span><span class="p">,</span> <span class="n">Z</span><span class="p">,</span> <span class="n">DEPTH</span><span class="p">,</span> <span class="n">DIP</span><span class="p">,</span> <span class="n">POT1</span><span class="p">,</span> <span class="n">POT2</span><span class="p">,</span> <span class="n">POT3</span><span class="p">,</span> <span class="n">POT4</span><span class="p">)</span>
+<span class="c1">#          if(IRET.eq.1)then</span>
+<span class="c1">#            stop &#39; There is a problem in Okada subroutine!&#39;</span>
+<span class="c1">#          endif</span>
+            
+            <span class="k">else</span><span class="p">:</span>
+
+<span class="c1">########## finite source #######################################################</span>
+
+                <span class="kn">from</span> <span class="nn">pyeq.lib.okada.dc3d</span> <span class="kn">import</span> <span class="n">dc3d</span>
+
+                <span class="n">AL2</span><span class="o">=</span> <span class="n">lengths</span><span class="p">[</span><span class="n">iis</span><span class="p">]</span>
+                <span class="n">AW1</span><span class="o">=-</span> <span class="n">widths</span><span class="p">[</span><span class="n">iis</span><span class="p">]</span>
+                <span class="n">DISL1</span><span class="o">=</span> <span class="n">dislocations</span><span class="p">[</span><span class="n">iis</span><span class="p">]</span><span class="o">*</span><span class="n">csra</span>
+                <span class="n">DISL2</span><span class="o">=</span> <span class="n">dislocations</span><span class="p">[</span><span class="n">iis</span><span class="p">]</span><span class="o">*</span><span class="n">ssra</span> 
+                <span class="k">if</span> <span class="p">(</span> <span class="n">lengths</span><span class="p">[</span><span class="n">iis</span><span class="p">]</span> <span class="o">==</span> <span class="mi">0</span><span class="p">):</span>
+                    <span class="n">AL2</span><span class="o">=</span> <span class="n">widths</span><span class="p">[</span><span class="n">iis</span><span class="p">]</span><span class="o">*</span><span class="n">eps</span>
+                    <span class="n">DISL1</span><span class="o">=</span><span class="n">DISL1</span><span class="o">/</span><span class="n">AL2</span>
+                    <span class="n">DISL2</span><span class="o">=</span><span class="n">DISL2</span><span class="o">/</span><span class="n">AL2</span>
+                <span class="k">elif</span> <span class="p">(</span> <span class="n">widths</span><span class="p">[</span><span class="n">iis</span><span class="p">]</span> <span class="o">==</span> <span class="mf">0.</span> <span class="p">):</span>
+                    <span class="n">AW1</span><span class="o">=</span> <span class="n">lengths</span><span class="p">[</span><span class="n">iis</span><span class="p">]</span><span class="o">*</span><span class="n">eps</span>
+                    <span class="n">DISL1</span><span class="o">=</span><span class="n">DISL1</span><span class="o">/</span><span class="p">(</span><span class="o">-</span><span class="n">AW1</span><span class="p">)</span>
+                    <span class="n">DISL2</span><span class="o">=</span><span class="n">DISL2</span><span class="o">/</span><span class="p">(</span><span class="o">-</span><span class="n">AW1</span><span class="p">)</span>
+
+                <span class="n">IRET</span><span class="o">=</span><span class="mi">1</span>
+                <span class="p">[</span><span class="n">UX</span><span class="p">,</span> <span class="n">UY</span><span class="p">,</span> <span class="n">UZ</span><span class="p">,</span> <span class="n">UXX</span><span class="p">,</span> <span class="n">UYX</span><span class="p">,</span> <span class="n">UZX</span><span class="p">,</span> <span class="n">UXY</span><span class="p">,</span> <span class="n">UYY</span><span class="p">,</span> <span class="n">UZY</span><span class="p">,</span> <span class="n">UXZ</span><span class="p">,</span> <span class="n">UYZ</span><span class="p">,</span> <span class="n">UZZ</span><span class="p">]</span> <span class="o">=</span> \
+                        <span class="n">dc3d</span><span class="p">(</span><span class="n">ALPHA</span><span class="p">,</span><span class="n">X</span><span class="p">,</span><span class="n">Y</span><span class="p">,</span><span class="n">Z</span><span class="p">,</span><span class="n">DEPTH</span><span class="p">,</span><span class="n">DIP</span><span class="p">,</span><span class="n">AL1</span><span class="p">,</span><span class="n">AL2</span><span class="p">,</span><span class="n">AW1</span><span class="p">,</span><span class="n">AW2</span><span class="p">,</span><span class="n">DISL1</span><span class="p">,</span><span class="n">DISL2</span><span class="p">,</span><span class="n">DISL3</span><span class="p">)</span>
+<span class="c1">#          </span>
+<span class="c1">#if(IRET.eq.1)then</span>
+<span class="c1">#            stop &#39; There is a problem in Okada subroutine!&#39;</span>
+<span class="c1">#          endif</span>
+<span class="c1">#       endif</span>
+
+<span class="c1">#</span>
+<span class="c1">#        transform from Okada&#39;s to Aki&#39;s system</span>
+<span class="c1">#</span>
+
+            <span class="n">disp0</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="n">UX</span> <span class="o">*</span> <span class="n">csst</span> <span class="o">+</span> <span class="n">UY</span> <span class="o">*</span> <span class="n">ssst</span>
+            <span class="n">disp0</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">UX</span> <span class="o">*</span> <span class="n">ssst</span> <span class="o">-</span> <span class="n">UY</span> <span class="o">*</span> <span class="n">csst</span>
+            <span class="n">disp0</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="o">=</span> <span class="o">-</span><span class="n">UZ</span>
+
+            <span class="n">tilt0</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="o">-</span><span class="p">(</span><span class="n">UXZ</span> <span class="o">*</span> <span class="n">csst</span> <span class="o">+</span> <span class="n">UYZ</span> <span class="o">*</span> <span class="n">ssst</span><span class="p">)</span>
+            <span class="n">tilt0</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="o">-</span><span class="p">(</span><span class="n">UXZ</span> <span class="o">*</span> <span class="n">ssst</span> <span class="o">-</span> <span class="n">UYZ</span> <span class="o">*</span> <span class="n">csst</span><span class="p">)</span>
+
+            <span class="n">strain0</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="n">UXX</span> <span class="o">*</span> <span class="n">csst</span> <span class="o">*</span> <span class="n">csst</span> <span class="o">+</span> <span class="n">UYY</span> <span class="o">*</span> <span class="n">ssst</span> <span class="o">*</span> <span class="n">ssst</span> <span class="o">+</span> <span class="mf">0.5</span> <span class="o">*</span> <span class="p">(</span><span class="n">UXY</span> <span class="o">+</span> <span class="n">UYX</span><span class="p">)</span> <span class="o">*</span> <span class="n">ss2st</span>
+            <span class="n">strain0</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">UXX</span> <span class="o">*</span> <span class="n">ssst</span> <span class="o">*</span> <span class="n">ssst</span> <span class="o">+</span> <span class="n">UYY</span> <span class="o">*</span> <span class="n">csst</span> <span class="o">*</span> <span class="n">csst</span> <span class="o">-</span> <span class="mf">0.5</span> <span class="o">*</span> <span class="p">(</span><span class="n">UXY</span> <span class="o">+</span> <span class="n">UYX</span><span class="p">)</span> <span class="o">*</span> <span class="n">ss2st</span>
+            <span class="n">strain0</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="o">=</span> <span class="n">UZZ</span>
+            <span class="n">strain0</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span> <span class="o">=</span>  <span class="mf">0.5</span> <span class="o">*</span> <span class="p">(</span><span class="n">UXX</span> <span class="o">-</span> <span class="n">UYY</span><span class="p">)</span> <span class="o">*</span> <span class="n">ss2st</span> <span class="o">-</span> <span class="mf">0.5</span> <span class="o">*</span> <span class="p">(</span><span class="n">UXY</span> <span class="o">+</span> <span class="n">UYX</span><span class="p">)</span> <span class="o">*</span> <span class="n">cs2st</span>
+            <span class="n">strain0</span><span class="p">[</span><span class="mi">4</span><span class="p">]</span> <span class="o">=</span> <span class="o">-</span><span class="mf">0.5</span> <span class="o">*</span> <span class="p">(</span><span class="n">UZX</span> <span class="o">+</span> <span class="n">UXZ</span><span class="p">)</span> <span class="o">*</span> <span class="n">ssst</span>  <span class="o">+</span> <span class="mf">0.5</span> <span class="o">*</span> <span class="p">(</span><span class="n">UYZ</span> <span class="o">+</span> <span class="n">UZY</span><span class="p">)</span> <span class="o">*</span> <span class="n">csst</span>
+            <span class="n">strain0</span><span class="p">[</span><span class="mi">5</span><span class="p">]</span> <span class="o">=</span> <span class="o">-</span><span class="mf">0.5</span> <span class="o">*</span> <span class="p">(</span><span class="n">UZX</span> <span class="o">+</span> <span class="n">UXZ</span><span class="p">)</span> <span class="o">*</span> <span class="n">csst</span>  <span class="o">-</span> <span class="mf">0.5</span> <span class="o">*</span> <span class="p">(</span><span class="n">UYZ</span> <span class="o">+</span> <span class="n">UZY</span><span class="p">)</span> <span class="o">*</span> <span class="n">ssst</span>
+
+            <span class="n">disp</span><span class="p">[</span> <span class="n">irec</span><span class="p">,</span> <span class="p">:</span> <span class="p">]</span> <span class="o">=</span> <span class="n">disp</span><span class="p">[</span> <span class="n">irec</span><span class="p">,</span> <span class="p">:</span> <span class="p">]</span> <span class="o">+</span> <span class="n">disp0</span>
+            <span class="n">tilt</span><span class="p">[</span> <span class="n">irec</span><span class="p">,</span> <span class="p">:</span> <span class="p">]</span> <span class="o">=</span> <span class="n">tilt</span><span class="p">[</span> <span class="n">irec</span><span class="p">,</span> <span class="p">:</span> <span class="p">]</span> <span class="o">+</span> <span class="n">tilt0</span>
+            <span class="n">strain</span><span class="p">[</span> <span class="n">irec</span><span class="p">,</span> <span class="p">:</span> <span class="p">]</span> <span class="o">=</span> <span class="n">strain</span><span class="p">[</span> <span class="n">irec</span><span class="p">,</span> <span class="p">:</span> <span class="p">]</span> <span class="o">+</span> <span class="n">strain0</span>
+
+    <span class="k">return</span><span class="p">(</span> <span class="n">disp</span> <span class="p">,</span> <span class="n">tilt</span><span class="p">,</span> <span class="n">strain</span> <span class="p">)</span></div>
+</pre></div>
+
+           </div>
+           
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        
+        &copy; Copyright 2016, Jean-Mathieu Nocquet IRD/Geoazur
+
+    </p>
+  </div>
+    
+    
+    
+    Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

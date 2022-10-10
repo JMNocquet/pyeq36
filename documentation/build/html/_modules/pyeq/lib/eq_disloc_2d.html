@@ -1,0 +1,557 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>pyeq.lib.eq_disloc_2d &mdash; pyeq 0.51.8 documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+
+  
+  
+  
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="../../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
+        <script src="../../../_static/jquery.js"></script>
+        <script src="../../../_static/underscore.js"></script>
+        <script src="../../../_static/doctools.js"></script>
+        <script src="../../../_static/language_data.js"></script>
+    
+    <script type="text/javascript" src="../../../_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../../../index.html" class="icon icon-home" alt="Documentation Home"> pyeq
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                0.51.8
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../foreword.html">PYEQ: full time-dependent slip inversion</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../behaviour.html">Options controlling the overall behaviour</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../tutorial_static_inversion.html">Tutorial static inversion</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../dates.html">dates</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../roxane.html">Roxane’s notes on PYEQ</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../modules.html">for developpers</a></li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">pyeq</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../../index.html" class="icon icon-home"></a> &raquo;</li>
+        
+          <li><a href="../../index.html">Module code</a> &raquo;</li>
+        
+      <li>pyeq.lib.eq_disloc_2d</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>Source code for pyeq.lib.eq_disloc_2d</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">2D Elastic Dislocation Library</span>
+<span class="sd">Uses analytical solution from Segall, P. (2010). Earthquake and volcano deformation. Princeton University Press.</span>
+<span class="sd">:Note 1: Only dip-slip fault solution implemented so far (08/06/2017)</span>
+<span class="sd">:Note 2: 0-90 dip means dip to positive axis (right) while -90-0 means dip to the left.</span>
+<span class="sd">:Note 3: Be careful with signs. For dip slip dislocations, positive slip indicates thrust motion.\</span>
+<span class="sd">         For a vertical strike-slip fault, positive slip indicates left-lateral motion.</span>
+
+
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="c1">###################################################################</span>
+<div class="viewcode-block" id="vss_eq_2d"><a class="viewcode-back" href="../../../pyeq.lib.eq_disloc_2d.html#pyeq.lib.eq_disloc_2d.vss_eq_2d">[docs]</a><span class="k">def</span> <span class="nf">vss_eq_2d</span><span class="p">(</span><span class="n">x</span><span class="p">,</span><span class="n">d</span><span class="p">,</span><span class="n">s</span><span class="p">):</span>
+<span class="c1">###################################################################</span>
+
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Calculates along strike horizontal surface displacements for a 2D infinitely long vertical strike-slip fault extending from depth d to the surface</span>
+<span class="sd">    </span>
+<span class="sd">    :param x     : 1D numpy array of location of points (distance from the fault surface trace)</span>
+<span class="sd">    :param d     : bottom depth of the fault</span>
+<span class="sd">    :param s     : slip on the fault (s positive is for left-lateral motion)</span>
+<span class="sd">    :return ux   : vector of along strike displacements at x, ux = s / np.pi * np.arctan(d/x)</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    
+    <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+
+    <span class="n">ux</span><span class="o">=</span> <span class="n">s</span> <span class="o">/</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">arctan</span><span class="p">(</span><span class="n">d</span><span class="o">/</span><span class="n">x</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">ux</span></div>
+
+<span class="c1">###################################################################</span>
+<div class="viewcode-block" id="vss_buried_eq_2d"><a class="viewcode-back" href="../../../pyeq.lib.eq_disloc_2d.html#pyeq.lib.eq_disloc_2d.vss_buried_eq_2d">[docs]</a><span class="k">def</span> <span class="nf">vss_buried_eq_2d</span><span class="p">(</span><span class="n">x</span><span class="p">,</span><span class="n">t</span><span class="p">,</span><span class="n">b</span><span class="p">,</span><span class="n">s</span><span class="p">):</span>
+<span class="c1">###################################################################</span>
+
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Calculates along strike horizontal surface displacements for a 2D infinitely long vertical strike-slip fault extending from depth t (top) to b (bottom)</span>
+<span class="sd">    </span>
+<span class="sd">    :param x     : 1D numpy array of location of points (distance from the fault surface trace)</span>
+<span class="sd">    :param d     : bottom depth of the fault</span>
+<span class="sd">    :param s     : slip on the fault (s positive is for left-lateral motion)</span>
+<span class="sd">    :return ux   : vector of along strike displacements at x, ux =  </span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">if</span> <span class="n">b</span> <span class="o">&lt;=</span><span class="n">t</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;!!! t must be strictly greater than b&#39;</span><span class="p">)</span>
+
+
+    <span class="c1"># computes solution from bottom to surface</span>
+    
+    <span class="n">ux1</span><span class="o">=</span> <span class="n">vss_eq_2d</span><span class="p">(</span><span class="n">x</span><span class="p">,</span><span class="n">b</span><span class="p">,</span><span class="n">s</span><span class="p">)</span>
+
+    <span class="c1"># computes solution from top to surface</span>
+
+    <span class="n">ux2</span><span class="o">=</span> <span class="n">vss_eq_2d</span><span class="p">(</span><span class="n">x</span><span class="p">,</span><span class="n">t</span><span class="p">,</span><span class="n">s</span><span class="p">)</span>
+
+    <span class="c1"># superposition</span>
+    
+    <span class="n">ux</span> <span class="o">=</span> <span class="n">ux1</span> <span class="o">-</span> <span class="n">ux2</span>
+
+    <span class="k">return</span> <span class="n">ux</span></div>
+
+<span class="c1">###################################################################</span>
+<div class="viewcode-block" id="vss_interseismic_eq_2d"><a class="viewcode-back" href="../../../pyeq.lib.eq_disloc_2d.html#pyeq.lib.eq_disloc_2d.vss_interseismic_eq_2d">[docs]</a><span class="k">def</span> <span class="nf">vss_interseismic_eq_2d</span><span class="p">(</span><span class="n">x</span><span class="p">,</span><span class="n">d</span><span class="p">,</span><span class="n">s</span><span class="p">):</span>
+<span class="c1">###################################################################</span>
+
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Calculates the interseismic displacement along strike horizontal surface displacements for a 2D infinitely long vertical strike-slip fault extending from depth d to the surface</span>
+<span class="sd">    </span>
+<span class="sd">    :param x     : 1D numpy array of location of points (distance from the fault surface trace)</span>
+<span class="sd">    :param d     : bottom depth of the fault</span>
+<span class="sd">    :param s     : slip on the fault (s positive is for left-lateral motion)</span>
+<span class="sd">    :return ux   : vector of along strike displacements at x, ux = s / np.pi * np.arctan(x/d)</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    
+    <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+
+    <span class="n">ux</span><span class="o">=</span> <span class="n">s</span> <span class="o">/</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">arctan</span><span class="p">(</span><span class="n">x</span><span class="o">/</span><span class="n">d</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">ux</span></div>
+
+
+<span class="c1">###################################################################</span>
+<div class="viewcode-block" id="ds_eq_2d"><a class="viewcode-back" href="../../../pyeq.lib.eq_disloc_2d.html#pyeq.lib.eq_disloc_2d.ds_eq_2d">[docs]</a><span class="k">def</span> <span class="nf">ds_eq_2d</span><span class="p">(</span><span class="n">x</span><span class="p">,</span><span class="n">d</span><span class="p">,</span><span class="n">dip</span><span class="p">,</span><span class="n">s</span><span class="p">):</span>
+<span class="c1">###################################################################</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Calculates strike-perpendicular horizontal and vertical displacements for a 2D dip slip fault reaching the surface at x=0.</span>
+<span class="sd">    </span>
+<span class="sd">    :param x     : 1D numpy array of location of points (distance from the fault surface trace)</span>
+<span class="sd">    :param d     : bottom depth of the fault</span>
+<span class="sd">    :param dip   : dip of the fault</span>
+<span class="sd">    :param s     : slip on the fault (s positive is a reverse fault)</span>
+<span class="sd">    :return ux,uy: two 1D numpy arrays of horizontal and vertical prediction displacements</span>
+<span class="sd">    :note: s&gt;0 is for thrust. This is the opposite of Segall&#39;s convention</span>
+<span class="sd">    :ref: Segall, P. (2010). Earthquake and volcano deformation. Princeton University Press. </span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+
+    
+    <span class="c1"># switch from Segall&#39;s convention</span>
+    <span class="c1"># in this code, we want s&gt;0 for reverse fault</span>
+    
+    <span class="k">if</span> <span class="n">dip</span><span class="o">&gt;</span><span class="mi">0</span> <span class="ow">and</span> <span class="n">dip</span><span class="o">&lt;</span><span class="mi">90</span><span class="p">:</span>
+        <span class="n">s</span><span class="o">=-</span><span class="n">s</span>
+
+    <span class="k">if</span> <span class="n">dip</span><span class="o">&lt;</span><span class="mi">0</span> <span class="ow">and</span> <span class="n">dip</span><span class="o">&gt;-</span><span class="mi">90</span><span class="p">:</span>
+        <span class="n">dip</span><span class="o">=</span><span class="mf">180.</span><span class="o">+</span><span class="n">dip</span>
+        <span class="n">s</span><span class="o">=</span><span class="n">s</span>
+
+    <span class="k">if</span> <span class="n">dip</span><span class="o">&gt;</span><span class="mi">90</span><span class="p">:</span>
+        <span class="n">s</span><span class="o">=</span><span class="n">s</span>
+
+
+    <span class="n">rdip</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">radians</span><span class="p">(</span><span class="n">dip</span><span class="p">)</span>
+    
+    <span class="n">cd</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">rdip</span><span class="p">)</span>
+    <span class="n">sd</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">rdip</span><span class="p">)</span>
+    
+    <span class="n">pi</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">pi</span>
+    
+    <span class="n">xd</span><span class="o">=</span><span class="n">d</span><span class="o">/</span><span class="n">np</span><span class="o">.</span><span class="n">tan</span><span class="p">(</span><span class="n">rdip</span><span class="p">)</span>
+    
+<span class="c1">#    xp=2*d/np.sin(2*rdip)</span>
+    
+    <span class="n">zeta</span><span class="o">=</span> <span class="p">(</span><span class="n">x</span><span class="o">-</span><span class="n">xd</span><span class="p">)</span> <span class="o">/</span> <span class="n">d</span>
+    
+    <span class="c1"># horizontal from Segall 2010</span>
+    <span class="n">uxs</span><span class="o">=</span> <span class="o">-</span><span class="n">s</span><span class="o">/</span><span class="n">pi</span> <span class="o">*</span>  <span class="p">(</span> <span class="n">cd</span> <span class="o">*</span> <span class="p">(</span> <span class="n">np</span><span class="o">.</span><span class="n">arctan</span><span class="p">(</span> <span class="n">zeta</span> <span class="p">)</span> <span class="o">-</span> <span class="n">pi</span><span class="o">/</span><span class="mf">2.</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">sign</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="p">)</span> <span class="o">+</span> <span class="p">(</span><span class="n">sd</span> <span class="o">-</span> <span class="n">zeta</span> <span class="o">*</span> <span class="n">cd</span> <span class="p">)</span> <span class="o">/</span> <span class="p">(</span><span class="mi">1</span><span class="o">+</span><span class="n">zeta</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span>  <span class="p">)</span>
+
+    <span class="c1"># vertical from Segall 2010</span>
+    <span class="n">uys</span><span class="o">=</span> <span class="n">s</span><span class="o">/</span><span class="n">pi</span> <span class="o">*</span>  <span class="p">(</span> <span class="n">sd</span> <span class="o">*</span> <span class="p">(</span> <span class="n">np</span><span class="o">.</span><span class="n">arctan</span><span class="p">(</span> <span class="n">zeta</span> <span class="p">)</span> <span class="o">-</span> <span class="n">pi</span><span class="o">/</span><span class="mf">2.</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">sign</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="p">)</span> <span class="o">+</span> <span class="p">(</span><span class="n">cd</span> <span class="o">+</span> <span class="n">zeta</span> <span class="o">*</span> <span class="n">sd</span> <span class="p">)</span> <span class="o">/</span> <span class="p">(</span><span class="mi">1</span><span class="o">+</span><span class="n">zeta</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span>  <span class="p">)</span>
+
+
+    <span class="c1"># Segall 2010 and Cohen 1999 are equivalent for horizontal displacement</span>
+    <span class="c1"># However, it looks like Cohen&#39;s formula is wrong for vertical displacement</span>
+    <span class="c1"># horizontal - Cohen, 1999, eq. 22    </span>
+    <span class="c1">#ux=(s*np.cos(rdip)/np.pi)* \</span>
+    <span class="c1">#   (\</span>
+    <span class="c1">#    np.arctan((x-xd)/d) - (x-xp)*d / ((x-xd)**2+d**2) - np.sign(x)*np.pi/2</span>
+    <span class="c1">#    )</span>
+    
+    <span class="c1"># vertical - Cohen, 1999, eq. 23</span>
+    <span class="c1">#</span>
+    <span class="c1">#uy=(s*np.sin(rdip)/np.pi)* \</span>
+    <span class="c1">#   (\</span>
+    <span class="c1">#    np.arctan(d/(x-xd)) - x*d / ((x-xd)**2+d**2) - (0.-np.sign(x))*np.pi/2</span>
+    <span class="c1">#    )</span>
+    
+    
+    <span class="k">return</span><span class="p">(</span><span class="n">uxs</span><span class="p">,</span><span class="n">uys</span><span class="p">)</span></div>
+
+
+<span class="c1">###################################################################</span>
+<div class="viewcode-block" id="ds_buried_eq_2d"><a class="viewcode-back" href="../../../pyeq.lib.eq_disloc_2d.html#pyeq.lib.eq_disloc_2d.ds_buried_eq_2d">[docs]</a><span class="k">def</span> <span class="nf">ds_buried_eq_2d</span><span class="p">(</span><span class="n">x</span><span class="p">,</span><span class="n">t</span><span class="p">,</span><span class="n">b</span><span class="p">,</span><span class="n">dip</span><span class="p">,</span><span class="n">s</span><span class="p">,</span><span class="n">ref_x</span><span class="o">=</span><span class="s1">&#39;surface&#39;</span><span class="p">):</span>
+<span class="c1">###################################################################</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Calculates horizontal and vertical displacements for a 2D buried dip slip fault </span>
+
+<span class="sd">    :param x     : numpy array of location of points</span>
+<span class="sd">    :param t     : top depth of the fault</span>
+<span class="sd">    :param b     : bottom depth of the fault</span>
+<span class="sd">    :param dip   : dip of the fault in decimal degrees</span>
+<span class="sd">    :param s     : slip on the fault (s positive is a reverse fault)</span>
+<span class="sd">    :param ref_x : reference for x. Can intersection with surface &#39;surface&#39; (default) or x fault top fault edge &#39;true_loc&#39;</span>
+<span class="sd">    :return ux,uy: two 1D numpy arrays of horizontal and vertical prediction displacements</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">if</span> <span class="n">b</span> <span class="o">&lt;=</span> <span class="n">t</span> <span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">((</span><span class="s1">&#39;!!! ERROR: t must be strictly greater than b: </span><span class="si">%lf</span><span class="s1"> &gt; </span><span class="si">%lf</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">t</span><span class="p">,</span><span class="n">b</span><span class="p">)))</span>
+    
+    <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+
+    <span class="k">if</span> <span class="n">ref_x</span> <span class="o">==</span> <span class="s1">&#39;true_loc&#39;</span> <span class="p">:</span>
+    
+        <span class="c1"># since the origin for x is the fault top edge</span>
+        <span class="c1"># we first correct for the fault top</span>
+    
+        <span class="n">x</span><span class="o">=</span><span class="n">x</span><span class="o">+</span><span class="n">t</span><span class="o">/</span><span class="n">np</span><span class="o">.</span><span class="n">tan</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">radians</span><span class="p">(</span><span class="n">dip</span><span class="p">))</span>
+
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">ref_x</span><span class="p">,</span><span class="nb">float</span><span class="p">):</span>
+        <span class="n">x</span><span class="o">=</span><span class="n">x</span><span class="o">-</span><span class="n">ref_x</span><span class="o">+</span><span class="n">t</span><span class="o">/</span><span class="n">np</span><span class="o">.</span><span class="n">tan</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">radians</span><span class="p">(</span><span class="n">dip</span><span class="p">))</span>
+        
+    <span class="c1"># displacement induced by a fault from depth b to the surface</span>
+    <span class="n">ux1</span><span class="p">,</span><span class="n">uy1</span><span class="o">=</span><span class="n">ds_eq_2d</span><span class="p">(</span><span class="n">x</span><span class="p">,</span><span class="n">b</span><span class="p">,</span><span class="n">dip</span><span class="p">,</span><span class="n">s</span><span class="p">)</span>
+    <span class="c1"># displacement induced by a fault from depth t to the surface</span>
+    <span class="k">if</span> <span class="n">t</span><span class="o">&gt;</span><span class="mi">0</span><span class="p">:</span>
+        <span class="n">ux2</span><span class="p">,</span><span class="n">uy2</span><span class="o">=</span><span class="n">ds_eq_2d</span><span class="p">(</span><span class="n">x</span><span class="p">,</span><span class="n">t</span><span class="p">,</span><span class="n">dip</span><span class="p">,</span><span class="n">s</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">ux2</span><span class="p">,</span><span class="n">uy2</span><span class="o">=</span><span class="n">ux1</span><span class="o">*</span><span class="mf">0.0</span><span class="p">,</span><span class="n">uy1</span><span class="o">*</span><span class="mf">0.0</span>
+        
+    <span class="n">ux</span><span class="o">=</span><span class="n">ux1</span><span class="o">-</span><span class="n">ux2</span>
+    <span class="n">uy</span><span class="o">=</span><span class="n">uy1</span><span class="o">-</span><span class="n">uy2</span>
+    
+    <span class="k">return</span><span class="p">(</span><span class="n">ux</span><span class="p">,</span><span class="n">uy</span><span class="p">)</span></div>
+
+
+<span class="c1">###################################################################</span>
+<div class="viewcode-block" id="ds_ramp_eq_2d"><a class="viewcode-back" href="../../../pyeq.lib.eq_disloc_2d.html#pyeq.lib.eq_disloc_2d.ds_ramp_eq_2d">[docs]</a><span class="k">def</span> <span class="nf">ds_ramp_eq_2d</span><span class="p">(</span><span class="n">x</span><span class="p">,</span><span class="n">x1</span><span class="p">,</span><span class="n">y1</span><span class="p">,</span><span class="n">dip1</span><span class="p">,</span><span class="n">l1</span><span class="p">,</span><span class="n">D</span><span class="p">,</span><span class="n">y2</span><span class="p">,</span><span class="n">s</span><span class="p">,</span><span class="n">s2</span><span class="p">):</span>
+<span class="c1">###################################################################</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Calculates horizontal and vertical displacements for a 2D ramp made of of two faults\</span>
+<span class="sd">    fault_1 has coordinates (x1,y1) with dip dip1 and length l1</span>
+<span class="sd">    fault_2 has coordinates starting at (x1,y1) and ending at (x1+D,y2) with y2 &lt; y1   </span>
+
+<span class="sd">    :param x     : numpy array of location of points (horizontal distance from the fault top fault edge)</span>
+<span class="sd">    :param x1,y1,dip1,l1,D,y2: fault coordinates</span>
+<span class="sd">    :param s     : slip on the fault (s positive is a reverse fault)</span>
+<span class="sd">    :return ux,uy: two 1D numpy arrays of horizontal and vertical prediction displacements</span>
+<span class="sd">    :note: dip1 controls the ramp dip orientation. dip1 &gt; 0 means dipping along positive x-axis (to the right). dip1 = 0 will raise an error.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+
+    <span class="k">if</span> <span class="n">y2</span> <span class="o">&gt;</span> <span class="n">y1</span> <span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">((</span><span class="s1">&#39;!!! ERROR: y2 must be lesser than y1: </span><span class="si">%lf</span><span class="s1"> &gt; </span><span class="si">%lf</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">y2</span><span class="p">,</span><span class="n">y1</span><span class="p">)))</span>
+
+    <span class="c1"># fault 1</span>
+
+    <span class="n">top1</span> <span class="o">=</span> <span class="n">y1</span>
+    <span class="n">bottom1</span> <span class="o">=</span> <span class="n">y1</span> <span class="o">+</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span> <span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span> <span class="n">np</span><span class="o">.</span><span class="n">radians</span><span class="p">(</span><span class="n">dip1</span><span class="p">)</span> <span class="p">)</span><span class="o">**</span><span class="mi">2</span> <span class="p">)</span> <span class="o">*</span> <span class="n">l1</span>
+    
+    <span class="n">ux1</span><span class="p">,</span><span class="n">uy1</span> <span class="o">=</span> <span class="n">ds_buried_eq_2d</span><span class="p">(</span><span class="n">x</span><span class="o">-</span><span class="n">x1</span><span class="p">,</span><span class="n">top1</span><span class="p">,</span><span class="n">bottom1</span><span class="p">,</span><span class="n">dip1</span><span class="p">,</span><span class="n">s</span><span class="p">,</span><span class="n">ref_x</span><span class="o">=</span><span class="s1">&#39;true_loc&#39;</span><span class="p">)</span>
+
+    <span class="c1"># fault 2</span>
+    
+    <span class="k">if</span> <span class="p">(</span><span class="n">D</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">)</span> <span class="ow">and</span> <span class="p">(</span><span class="n">y1</span> <span class="o">&gt;</span> <span class="n">y2</span><span class="p">)</span> <span class="p">:</span>
+        
+        <span class="n">x2</span>      <span class="o">=</span> <span class="n">x1</span> <span class="o">+</span> <span class="n">D</span>
+        
+        <span class="n">top2</span>    <span class="o">=</span> <span class="n">y2</span> 
+        <span class="n">bottom2</span> <span class="o">=</span> <span class="n">y1</span> 
+        
+        <span class="n">abs_dip2</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">degrees</span><span class="p">(</span> <span class="n">np</span><span class="o">.</span><span class="n">arctan</span><span class="p">(</span> <span class="p">(</span> <span class="n">bottom2</span> <span class="o">-</span> <span class="n">top2</span> <span class="p">)</span> <span class="o">/</span> <span class="n">D</span> <span class="p">)</span> <span class="p">)</span> 
+        
+        <span class="c1">#s2      = s / np.cos(np.radians(abs_dip2))</span>
+        
+        <span class="n">dip2</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sign</span><span class="p">(</span><span class="n">dip1</span><span class="p">)</span> <span class="o">*</span> <span class="n">abs_dip2</span>
+        
+        <span class="n">ux2</span><span class="p">,</span><span class="n">uy2</span> <span class="o">=</span> <span class="n">ds_buried_eq_2d</span><span class="p">(</span><span class="n">x</span><span class="o">-</span><span class="n">x2</span><span class="p">,</span><span class="n">top2</span><span class="p">,</span><span class="n">bottom2</span><span class="p">,</span><span class="n">dip2</span><span class="p">,</span><span class="n">s2</span><span class="p">,</span><span class="n">ref_x</span><span class="o">=</span><span class="s1">&#39;true_loc&#39;</span><span class="p">)</span>
+
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">ux2</span> <span class="o">=</span> <span class="n">ux1</span> <span class="o">*</span> <span class="mf">0.0</span>
+        <span class="n">uy2</span> <span class="o">=</span> <span class="n">uy1</span> <span class="o">*</span> <span class="mf">0.0</span>
+
+    <span class="c1"># ramp = fault 1 + fault 2</span>
+
+    <span class="n">ux</span><span class="o">=</span><span class="n">ux1</span><span class="o">+</span><span class="n">ux2</span>
+    <span class="n">uy</span><span class="o">=</span><span class="n">uy1</span><span class="o">+</span><span class="n">uy2</span>
+
+    <span class="k">return</span><span class="p">(</span><span class="n">ux</span><span class="p">,</span><span class="n">uy</span><span class="p">)</span></div>
+
+    
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Useful functions for two-dimensional models on a profile</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+
+<span class="c1">###################################################################</span>
+<div class="viewcode-block" id="unit_vector_profile"><a class="viewcode-back" href="../../../pyeq.lib.eq_disloc_2d.html#pyeq.lib.eq_disloc_2d.unit_vector_profile">[docs]</a><span class="k">def</span> <span class="nf">unit_vector_profile</span><span class="p">(</span><span class="n">ilon</span><span class="p">,</span><span class="n">ilat</span><span class="p">,</span><span class="n">flon</span><span class="p">,</span><span class="n">flat</span><span class="p">):</span>
+<span class="c1">###################################################################</span>
+
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Returns the unit direction vector in ENU coordinates for a profile</span>
+<span class="sd">    </span>
+<span class="sd">    :param ilon: longitude in dec.deg for initial point of the profile</span>
+<span class="sd">    :param ilat: latitude in dec.deg for initial point of the profile</span>
+<span class="sd">    :param flon: longitude in dec.deg for end point of the profile</span>
+<span class="sd">    :param flat: latitude in dec.deg for end point of the profile</span>
+<span class="sd">    :param N   : unit vector in ENU coordinate system as a 1D numpy array</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    
+    <span class="c1"># import</span>
+    
+    <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+    
+    <span class="kn">from</span> <span class="nn">pyacs.lib</span> <span class="kn">import</span> <span class="n">coordinates</span> <span class="k">as</span> <span class="n">Coordinates</span>
+    <span class="kn">from</span> <span class="nn">pyacs.lib.gmtpoint</span> <span class="kn">import</span> <span class="n">GMT_Point</span>
+    <span class="kn">import</span> <span class="nn">pyacs.lib.vectors</span> <span class="k">as</span> <span class="nn">vectors</span>
+    <span class="kn">import</span> <span class="nn">pyacs.lib.euler</span> <span class="k">as</span> <span class="nn">euler</span>
+
+    <span class="p">(</span><span class="n">xi</span><span class="p">,</span><span class="n">yi</span><span class="p">,</span><span class="n">zi</span><span class="p">)</span><span class="o">=</span><span class="n">Coordinates</span><span class="o">.</span><span class="n">geo2xyz</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">radians</span><span class="p">(</span><span class="n">ilon</span><span class="p">),</span><span class="n">np</span><span class="o">.</span><span class="n">radians</span><span class="p">(</span><span class="n">ilat</span><span class="p">),</span><span class="mf">0.0</span><span class="p">)</span>
+    <span class="n">Xi</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">xi</span><span class="p">,</span><span class="n">yi</span><span class="p">,</span><span class="n">zi</span><span class="p">])</span>
+    <span class="n">MI</span><span class="o">=</span><span class="n">GMT_Point</span><span class="p">(</span><span class="n">lon</span><span class="o">=</span><span class="n">ilon</span><span class="p">,</span><span class="n">lat</span><span class="o">=</span><span class="n">ilat</span><span class="p">)</span>
+    
+    <span class="p">(</span><span class="n">xs</span><span class="p">,</span><span class="n">ys</span><span class="p">,</span><span class="n">zs</span><span class="p">)</span><span class="o">=</span><span class="n">Coordinates</span><span class="o">.</span><span class="n">geo2xyz</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">radians</span><span class="p">(</span><span class="n">flon</span><span class="p">),</span><span class="n">np</span><span class="o">.</span><span class="n">radians</span><span class="p">(</span><span class="n">flat</span><span class="p">),</span><span class="mf">0.0</span><span class="p">)</span>
+    <span class="n">Xs</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">xs</span><span class="p">,</span><span class="n">ys</span><span class="p">,</span><span class="n">zs</span><span class="p">])</span>
+    <span class="n">MS</span><span class="o">=</span><span class="n">GMT_Point</span><span class="p">(</span><span class="n">lon</span><span class="o">=</span><span class="n">flon</span><span class="p">,</span><span class="n">lat</span><span class="o">=</span><span class="n">flat</span><span class="p">)</span>
+
+    
+    <span class="n">POLE</span><span class="o">=</span><span class="n">vectors</span><span class="o">.</span><span class="n">vector_product</span><span class="p">(</span><span class="n">Xi</span><span class="p">,</span><span class="n">Xs</span><span class="p">)</span>
+    <span class="n">POLE</span><span class="o">=</span><span class="n">vectors</span><span class="o">.</span><span class="n">normalize</span><span class="p">(</span><span class="n">POLE</span><span class="p">)</span>
+    
+    <span class="p">(</span><span class="n">llambda</span><span class="p">,</span><span class="n">phi</span><span class="p">,</span><span class="n">omega</span><span class="p">)</span><span class="o">=</span><span class="n">euler</span><span class="o">.</span><span class="n">rot2euler</span><span class="p">(</span><span class="n">POLE</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span><span class="n">POLE</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span><span class="n">POLE</span><span class="p">[</span><span class="mi">2</span><span class="p">])</span>
+    
+    <span class="n">Mmiddle</span><span class="o">=</span><span class="n">GMT_Point</span><span class="p">(</span><span class="n">lon</span><span class="o">=</span><span class="p">(</span><span class="n">ilon</span><span class="o">+</span><span class="n">flon</span><span class="p">)</span><span class="o">/</span><span class="mf">2.</span><span class="p">,</span><span class="n">lat</span><span class="o">=</span><span class="p">(</span><span class="n">ilat</span><span class="o">+</span><span class="n">flat</span><span class="p">)</span><span class="o">/</span><span class="mf">2.</span><span class="p">)</span>
+    
+    <span class="p">(</span><span class="n">x</span><span class="p">,</span><span class="n">y</span><span class="p">,</span><span class="n">z</span><span class="p">)</span><span class="o">=</span><span class="n">Coordinates</span><span class="o">.</span><span class="n">geo2xyz</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">radians</span><span class="p">(</span><span class="n">Mmiddle</span><span class="o">.</span><span class="n">lon</span><span class="p">),</span><span class="n">np</span><span class="o">.</span><span class="n">radians</span><span class="p">(</span><span class="n">Mmiddle</span><span class="o">.</span><span class="n">lat</span><span class="p">),</span><span class="mf">0.0</span><span class="p">)</span>
+    
+    <span class="n">R</span><span class="o">=</span><span class="n">Coordinates</span><span class="o">.</span><span class="n">mat_rot_general_to_local</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">radians</span><span class="p">(</span><span class="n">Mmiddle</span><span class="o">.</span><span class="n">lon</span><span class="p">),</span><span class="n">np</span><span class="o">.</span><span class="n">radians</span><span class="p">(</span><span class="n">Mmiddle</span><span class="o">.</span><span class="n">lat</span><span class="p">),</span><span class="n">Mmiddle</span><span class="o">.</span><span class="n">he</span><span class="p">)</span>
+    <span class="n">OM</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">x</span><span class="p">,</span><span class="n">y</span><span class="p">,</span><span class="n">z</span><span class="p">])</span>
+    <span class="n">OM</span><span class="o">=</span><span class="n">vectors</span><span class="o">.</span><span class="n">normalize</span><span class="p">(</span><span class="n">OM</span><span class="p">)</span>
+    
+    <span class="n">unit_parallele_xyz</span><span class="o">=</span><span class="n">vectors</span><span class="o">.</span><span class="n">vector_product</span><span class="p">(</span><span class="n">POLE</span><span class="p">,</span><span class="n">OM</span><span class="p">)</span>
+    <span class="n">unit_parallele_enu</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">R</span><span class="p">,</span><span class="n">unit_parallele_xyz</span><span class="p">)</span>
+
+    <span class="k">return</span><span class="p">(</span><span class="n">unit_parallele_enu</span><span class="p">)</span></div>
+
+<span class="c1">###################################################################</span>
+<div class="viewcode-block" id="ds_2_los"><a class="viewcode-back" href="../../../pyeq.lib.eq_disloc_2d.html#pyeq.lib.eq_disloc_2d.ds_2_los">[docs]</a><span class="k">def</span> <span class="nf">ds_2_los</span><span class="p">(</span><span class="n">ux</span><span class="p">,</span><span class="n">uy</span><span class="p">,</span><span class="n">u_profile</span><span class="p">,</span><span class="n">u_los</span><span class="p">):</span>
+<span class="c1">###################################################################</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Returns the LOS displacement given the unit direction vector of a profile and LOS</span>
+<span class="sd">    </span>
+<span class="sd">    :param ux,uy: 1D numpy array including horizontal and vertical displacements</span>
+<span class="sd">    :param u_profile: unit direction vector in ENU coordinates</span>
+<span class="sd">    :param u_los : unit direction vector for LOS in ENU coordinates</span>
+<span class="sd">    :return dlos : 1D numpy array of displacement in the LOS</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+    
+    <span class="c1"># horizontal displacement in EN</span>
+    <span class="n">DIS_ENU</span><span class="o">=</span><span class="n">ux</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">)</span><span class="o">*</span><span class="n">u_profile</span>
+    <span class="c1"># Up displacement</span>
+    <span class="n">DIS_ENU</span><span class="p">[:,</span><span class="mi">2</span><span class="p">]</span><span class="o">=</span><span class="n">uy</span>
+    
+    <span class="n">LOS</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">DIS_ENU</span><span class="p">,</span><span class="n">u_los</span><span class="p">)</span>
+
+    
+    
+    <span class="k">return</span><span class="p">(</span><span class="n">LOS</span><span class="p">)</span></div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</pre></div>
+
+           </div>
+           
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        
+        &copy; Copyright 2016, Jean-Mathieu Nocquet IRD/Geoazur
+
+    </p>
+  </div>
+    
+    
+    
+    Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

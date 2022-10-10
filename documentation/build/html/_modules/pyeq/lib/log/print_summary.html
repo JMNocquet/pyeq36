@@ -1,0 +1,447 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>pyeq.lib.log.print_summary &mdash; pyeq 0.51.8 documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="../../../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../../../_static/pygments.css" type="text/css" />
+
+  
+  
+  
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="../../../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../../../../" src="../../../../_static/documentation_options.js"></script>
+        <script src="../../../../_static/jquery.js"></script>
+        <script src="../../../../_static/underscore.js"></script>
+        <script src="../../../../_static/doctools.js"></script>
+        <script src="../../../../_static/language_data.js"></script>
+    
+    <script type="text/javascript" src="../../../../_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../../../../index.html" class="icon icon-home" alt="Documentation Home"> pyeq
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                0.51.8
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../foreword.html">PYEQ: full time-dependent slip inversion</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../behaviour.html">Options controlling the overall behaviour</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../tutorial_static_inversion.html">Tutorial static inversion</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../dates.html">dates</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../roxane.html">Roxane’s notes on PYEQ</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../modules.html">for developpers</a></li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../../index.html">pyeq</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../../../index.html" class="icon icon-home"></a> &raquo;</li>
+        
+          <li><a href="../../../index.html">Module code</a> &raquo;</li>
+        
+      <li>pyeq.lib.log.print_summary</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>Source code for pyeq.lib.log.print_summary</h1><div class="highlight"><pre>
+<div class="viewcode-block" id="print_summary"><a class="viewcode-back" href="../../../../pyeq.lib.log.print_summary.html#pyeq.lib.log.print_summary.print_summary">[docs]</a><span></span><span class="k">def</span> <span class="nf">print_summary</span><span class="p">(</span> <span class="n">model</span> <span class="p">):</span>
+
+    <span class="c1">###################################################################</span>
+    <span class="c1"># IMPORT</span>
+    <span class="c1">###################################################################</span>
+    
+    <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+    <span class="kn">import</span> <span class="nn">pyacs.lib.astrotime</span> <span class="k">as</span> <span class="nn">at</span>
+    <span class="kn">from</span> <span class="nn">shutil</span> <span class="kn">import</span> <span class="n">copyfile</span>
+    <span class="kn">import</span> <span class="nn">copy</span>
+    <span class="kn">import</span> <span class="nn">os</span>
+    <span class="kn">import</span> <span class="nn">shapefile</span>
+    <span class="kn">from</span> <span class="nn">datetime</span> <span class="kn">import</span> <span class="n">datetime</span><span class="p">,</span><span class="n">timedelta</span>
+    <span class="kn">import</span> <span class="nn">time</span>
+    
+    <span class="kn">import</span> <span class="nn">pyacs</span>
+    <span class="kn">from</span> <span class="nn">pyeq.lib</span> <span class="kn">import</span> <span class="n">eq_disloc_3d</span> <span class="k">as</span> <span class="n">DL</span>
+    <span class="kn">from</span> <span class="nn">pyacs.lib.vel_field</span> <span class="kn">import</span> <span class="n">Velocity_Field</span> <span class="k">as</span> <span class="n">VF</span>
+    <span class="kn">from</span> <span class="nn">pyacs.lib.gmtpoint</span> <span class="kn">import</span> <span class="n">GMT_Point</span>
+    <span class="kn">import</span> <span class="nn">pyacs.lib.utils</span>
+    <span class="kn">import</span> <span class="nn">pyacs.lib.glinalg</span>
+    <span class="kn">from</span> <span class="nn">pyacs.gts.Sgts</span> <span class="kn">import</span> <span class="n">Sgts</span>
+    <span class="kn">from</span> <span class="nn">pyacs.gts.Gts</span> <span class="kn">import</span> <span class="n">Gts</span>
+    <span class="kn">import</span> <span class="nn">pyacs.lib.coordinates</span>
+    <span class="kn">import</span> <span class="nn">pyeq.lib.lib_inversion</span>
+    <span class="kn">import</span> <span class="nn">pyeq.lib.green_tensor</span>
+    <span class="kn">import</span> <span class="nn">pyeq.lib.geometry</span>
+<span class="c1">#    import pyeq.lib.log.make_dir_pyeq_output</span>
+<span class="c1">#    import pyeq.lib.log.model2shp_gmt</span>
+
+    <span class="n">fsumn</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">odir</span><span class="o">+</span><span class="s1">&#39;/summary/sum.dat&#39;</span>
+
+
+    <span class="n">fsum</span><span class="o">=</span><span class="nb">open</span><span class="p">(</span><span class="n">fsumn</span><span class="p">,</span><span class="s1">&#39;w&#39;</span><span class="p">)</span>
+    <span class="n">fsum</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">&#39;#--------------------------------------------------------------------------</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)</span>
+    <span class="n">fsum</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">&#39;# User and System information </span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)</span>
+    <span class="n">fsum</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">&#39;#--------------------------------------------------------------------------</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)</span>
+    
+    <span class="n">fsum</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;    user                             : </span><span class="si">%s</span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">model</span><span class="o">.</span><span class="n">username</span><span class="p">)</span> 
+    <span class="n">fsum</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;    OS                               : </span><span class="si">%s</span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">model</span><span class="o">.</span><span class="n">os_version</span><span class="p">)</span>
+    <span class="n">fsum</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;    hostname                         : </span><span class="si">%s</span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">model</span><span class="o">.</span><span class="n">hostname</span><span class="p">)</span>
+    <span class="n">fsum</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;    directory                        : </span><span class="si">%s</span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">model</span><span class="o">.</span><span class="n">wdir</span> <span class="p">)</span>
+    <span class="n">fsum</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;    number of cpu                    : </span><span class="si">%d</span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">model</span><span class="o">.</span><span class="n">n_cpu</span><span class="p">)</span>   
+    <span class="n">fsum</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;    number of threads                : </span><span class="si">%d</span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">model</span><span class="o">.</span><span class="n">n_thread</span> <span class="p">)</span>
+    <span class="n">fsum</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;    available memory in Gb           : </span><span class="si">%.2f</span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">model</span><span class="o">.</span><span class="n">memory</span><span class="p">)</span>
+    <span class="n">fsum</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;    python version                   : </span><span class="si">%s</span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">model</span><span class="o">.</span><span class="n">python_version</span><span class="p">)</span>
+    <span class="n">fsum</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;    pyacs  version                   : </span><span class="si">%s</span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">model</span><span class="o">.</span><span class="n">pyacs_version</span><span class="p">)</span>
+    <span class="n">fsum</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;    pyeq   version                   : </span><span class="si">%s</span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">model</span><span class="o">.</span><span class="n">pyeq_version</span><span class="p">)</span>
+
+    
+    <span class="n">fsum</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">&#39;#--------------------------------------------------------------------------</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)</span>
+    <span class="n">fsum</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">&#39;# Inversion speed and memory usage: </span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)</span>
+    <span class="n">fsum</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">&#39;#--------------------------------------------------------------------------</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)</span>
+    <span class="n">fsum</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;    number of parameters estimated   : </span><span class="si">%d</span><span class="s2"> ( </span><span class="si">%d</span><span class="s2"> faults </span><span class="si">%d</span><span class="s2"> steps) </span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">nparameters</span> <span class="p">,</span> <span class="n">model</span><span class="o">.</span><span class="n">nfaults</span><span class="p">,</span> <span class="n">model</span><span class="o">.</span><span class="n">nstep</span> <span class="p">))</span>
+    <span class="n">fsum</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;    run start date &amp; time            : </span><span class="si">%s</span><span class="s2"> </span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">time</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="s2">&quot;%Y/%m/</span><span class="si">%d</span><span class="s2">  %H:%M:%S&quot;</span><span class="p">,</span> <span class="n">time</span><span class="o">.</span><span class="n">localtime</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">start_time</span><span class="p">)</span> <span class="p">)</span> <span class="p">)</span>
+    <span class="n">end_time</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
+    <span class="n">fsum</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;    run end   date &amp; time            : </span><span class="si">%s</span><span class="s2"> </span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">time</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="s2">&quot;%Y/%m/</span><span class="si">%d</span><span class="s2">  %H:%M:%S&quot;</span><span class="p">,</span> <span class="n">time</span><span class="o">.</span><span class="n">localtime</span><span class="p">(</span> <span class="n">end_time</span> <span class="p">)</span> <span class="p">)</span> <span class="p">)</span>
+    <span class="n">duration</span> <span class="o">=</span> <span class="n">end_time</span> <span class="o">-</span> <span class="n">model</span><span class="o">.</span><span class="n">start_time</span>
+    <span class="n">fsum</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;    run duration                     : </span><span class="si">%.1lf</span><span class="s2"> s = </span><span class="si">%.1lf</span><span class="s2"> mn = </span><span class="si">%.1lf</span><span class="s2"> h </span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span> <span class="n">duration</span> <span class="p">,</span> <span class="n">duration</span><span class="o">/</span><span class="mf">60.</span><span class="p">,</span> <span class="n">duration</span><span class="o">/</span><span class="mf">3600.</span><span class="p">)</span> <span class="p">)</span>
+    <span class="n">fsum</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;    build obs. linear system (s)     : </span><span class="si">%.1lf</span><span class="s2"> </span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">model</span><span class="o">.</span><span class="n">time_build</span><span class="p">)</span>
+    <span class="n">fsum</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;    build regularization     (s)     : </span><span class="si">%.1lf</span><span class="s2"> </span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">model</span><span class="o">.</span><span class="n">time_regularization</span><span class="p">)</span>
+    <span class="n">fsum</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;    merging obs &amp; regularization (s) : </span><span class="si">%.1lf</span><span class="s2"> </span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">model</span><span class="o">.</span><span class="n">time_merging_obs_regularization</span><span class="p">)</span>
+    <span class="n">fsum</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;    time nnls (s)                    : </span><span class="si">%.1lf</span><span class="s2"> </span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">model</span><span class="o">.</span><span class="n">time_inversion</span><span class="p">)</span>
+    <span class="n">fsum</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;    nnls algorithm                   : </span><span class="si">%s</span><span class="s2"> </span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">model</span><span class="o">.</span><span class="n">nnls</span><span class="p">)</span>
+    <span class="n">fsum</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;    total memory used in Gb          : </span><span class="si">%.1lf</span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">%</span>  <span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">memory_usage</span><span class="p">)</span> <span class="p">)</span>
+    <span class="n">fsum</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;    memory after  loading data       : </span><span class="si">%.1lf</span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">%</span>  <span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">memory_before_ons</span><span class="p">)</span> <span class="p">)</span>
+    <span class="n">fsum</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;    memory after  build N_obs        : </span><span class="si">%.1lf</span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">%</span>  <span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">memory_before_rns</span> <span class="p">)</span> <span class="p">)</span>
+    <span class="n">fsum</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;    memory after  build N_reg        : </span><span class="si">%.1lf</span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">%</span>  <span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">memory_before_mns</span> <span class="p">)</span> <span class="p">)</span>
+    <span class="n">fsum</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;    memory after  N_obs + N_reg      : </span><span class="si">%.1lf</span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">%</span>  <span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">memory_before_inv</span> <span class="p">)</span> <span class="p">)</span>
+    <span class="n">fsum</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;    Normal matrix in Gb              : </span><span class="si">%.1lf</span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">%</span>  <span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">N_size</span> <span class="p">)</span> <span class="p">)</span>
+
+    
+    <span class="n">fsum</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">&#39;#--------------------------------------------------------------------------</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)</span>
+    <span class="n">fsum</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">&#39;# Inversion argument: </span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)</span>
+    <span class="n">fsum</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">&#39;#--------------------------------------------------------------------------</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)</span>
+    <span class="n">fsum</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;    command line                     : </span><span class="si">%s</span><span class="s2"> </span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">odir</span><span class="o">+</span><span class="s1">&#39;/info/command_line.dat&#39;</span><span class="p">))</span>
+    <span class="n">fsum</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;    input npz file                   : </span><span class="si">%s</span><span class="s2"> </span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">model</span><span class="o">.</span><span class="n">input_npz</span><span class="p">)</span>
+
+    <span class="n">fsum</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">&#39;#--------------------------------------------------------------------------</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)</span>
+    <span class="n">fsum</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">&#39;# Geometry information: </span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)</span>
+    <span class="n">fsum</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">&#39;#--------------------------------------------------------------------------</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)</span>
+    <span class="n">fsum</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;    number of subfaults              : </span><span class="si">%d</span><span class="s2"> </span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">model</span><span class="o">.</span><span class="n">nfaults</span><span class="p">)</span>
+
+    <span class="n">fsum</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">&#39;#--------------------------------------------------------------------------</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)</span>
+    <span class="n">fsum</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">&#39;# Regularization: </span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)</span>
+    <span class="n">fsum</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">&#39;#--------------------------------------------------------------------------</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)</span>
+    <span class="n">fsum</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;    regularization                   : </span><span class="si">%s</span><span class="s2"> </span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">model</span><span class="o">.</span><span class="n">regularization</span><span class="p">)</span>
+
+    <span class="c1"># case regularization covariance</span>
+    <span class="k">if</span> <span class="n">model</span><span class="o">.</span><span class="n">regularization</span> <span class="o">==</span> <span class="s1">&#39;covariance&#39;</span><span class="p">:</span>
+        <span class="n">fsum</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;    user input sigma                 : </span><span class="si">%s</span><span class="s2"> </span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">model</span><span class="o">.</span><span class="n">sigma</span><span class="p">)</span>
+        <span class="n">fsum</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;    pyeq input sigma                 : </span><span class="si">%s</span><span class="s2"> </span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">model</span><span class="o">.</span><span class="n">sigma_type</span><span class="p">)</span>
+        <span class="k">if</span> <span class="s1">&#39;time_variable&#39;</span> <span class="ow">in</span> <span class="n">model</span><span class="o">.</span><span class="n">sigma_type</span><span class="p">:</span>
+            <span class="n">fsum</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;    sigma_time min - max             : </span><span class="si">%.1f</span><span class="s2"> - </span><span class="si">%.1f</span><span class="s2"> mm/sqrt(day)</span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span> <span class="n">np</span><span class="o">.</span><span class="n">min</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">sigma_time</span><span class="p">)</span> <span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">sigma_time</span><span class="p">)</span> <span class="p">)</span> <span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">fsum</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;    sigma_time                       : </span><span class="si">%.1f</span><span class="s2"> mm/sqrt(day)</span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span> <span class="n">model</span><span class="o">.</span><span class="n">sigma_time</span> <span class="p">)</span> <span class="p">)</span>
+
+        <span class="k">if</span> <span class="s1">&#39;fault_variable&#39;</span> <span class="ow">in</span> <span class="n">model</span><span class="o">.</span><span class="n">sigma_type</span><span class="p">:</span>
+            <span class="n">fsum</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;    sigma_fault min - max            : </span><span class="si">%.1f</span><span class="s2"> - </span><span class="si">%.1f</span><span class="s2"> mm/sqrt(day)</span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span> <span class="n">np</span><span class="o">.</span><span class="n">min</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">sigma_fault</span><span class="p">)</span> <span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">sigma_fault</span><span class="p">)</span> <span class="p">)</span> <span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">fsum</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;    sigma_fault                      : </span><span class="si">%.1f</span><span class="s2"> mm/sqrt(day)</span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span> <span class="n">model</span><span class="o">.</span><span class="n">sigma_fault</span> <span class="p">)</span> <span class="p">)</span>
+
+        <span class="n">fsum</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;    dc (km)                          : </span><span class="si">%.1f</span><span class="s2"> </span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">model</span><span class="o">.</span><span class="n">dc</span><span class="p">)</span>
+        <span class="c1"># TAU</span>
+        <span class="k">if</span> <span class="n">model</span><span class="o">.</span><span class="n">tau</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">fsum</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;    tau (days) no temporal smoothing : </span><span class="si">%.1f</span><span class="s2"> </span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">model</span><span class="o">.</span><span class="n">tau</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">fsum</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;    tau (days) temporal smoothing    : </span><span class="si">%.1f</span><span class="s2"> </span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">model</span><span class="o">.</span><span class="n">tau</span><span class="p">)</span>
+        <span class="n">fsum</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;    cm_type                          : </span><span class="si">%s</span><span class="s2"> </span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">model</span><span class="o">.</span><span class="n">cm_type</span> <span class="p">)</span>
+        <span class="k">if</span> <span class="n">model</span><span class="o">.</span><span class="n">cm_norm</span> <span class="o">==</span> <span class="s1">&#39;d0&#39;</span><span class="p">:</span>
+            <span class="n">fsum</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;    cm_norm                          : normalized </span><span class="se">\n</span><span class="s2">&quot;</span> <span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">fsum</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;    cm_norm                          : not normalized </span><span class="se">\n</span><span class="s2">&quot;</span> <span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">model</span><span class="o">.</span><span class="n">regularization</span> <span class="o">==</span> <span class="s1">&#39;laplacian_like&#39;</span><span class="p">:</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">lambda_spatial_smoothing</span><span class="p">,</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">):</span>
+            <span class="n">fsum</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;    lambda spatial  smoothing        : </span><span class="si">%.1f</span><span class="s2"> - </span><span class="si">%.1f</span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span> <span class="n">np</span><span class="o">.</span><span class="n">min</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">lambda_spatial_smoothing</span><span class="p">)</span> <span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">lambda_spatial_smoothing</span><span class="p">)</span> <span class="p">)</span> <span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">fsum</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;    lambda spatial  smoothing        : </span><span class="si">%.1f</span><span class="s2"> </span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">model</span><span class="o">.</span><span class="n">lambda_spatial_smoothing</span> <span class="p">)</span>
+        <span class="n">fsum</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;    lambda temporal smoothing        : </span><span class="si">%.1f</span><span class="s2"> </span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">model</span><span class="o">.</span><span class="n">lambda_temporal_smoothing</span> <span class="p">)</span>
+        <span class="n">fsum</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;    lambda damping                   : </span><span class="si">%.1f</span><span class="s2"> </span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">model</span><span class="o">.</span><span class="n">lambda_damping</span> <span class="p">)</span>
+
+
+    <span class="n">fsum</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">&#39;#--------------------------------------------------------------------------</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)</span>
+    <span class="n">fsum</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">&#39;# Rake information: </span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)</span>
+    <span class="n">fsum</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">&#39;#--------------------------------------------------------------------------</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)</span>
+    <span class="n">fsum</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;    rake_type (Euler or constant)    : </span><span class="si">%s</span><span class="s2"> </span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">model</span><span class="o">.</span><span class="n">rake_type</span><span class="p">)</span>
+    <span class="n">fsum</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;    rake_value (Euler pole or value) : </span><span class="si">%s</span><span class="s2"> </span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">model</span><span class="o">.</span><span class="n">rake_value</span><span class="p">)</span>
+    <span class="n">fsum</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;    rake_constraint (0=fixed, float) : </span><span class="si">%s</span><span class="s2"> </span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">model</span><span class="o">.</span><span class="n">rake_constraint</span><span class="p">)</span>
+<span class="c1">#    fsum.write(&quot;    max_slip (0=from Euler,else user): %s \n&quot; % model.max_slip)</span>
+
+    <span class="n">fsum</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">&#39;#--------------------------------------------------------------------------</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)</span>
+    <span class="n">fsum</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">&#39;# Observation information: </span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)</span>
+    <span class="n">fsum</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">&#39;#--------------------------------------------------------------------------</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)</span>
+    <span class="n">fsum</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;    time series are from             : </span><span class="si">%s</span><span class="s2"> </span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">model</span><span class="o">.</span><span class="n">dir_ts</span><span class="p">)</span>
+    <span class="n">fsum</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;    number of input GPS time series  : </span><span class="si">%d</span><span class="s2"> </span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">%</span>  <span class="n">model</span><span class="o">.</span><span class="n">n_site_input_ts</span> <span class="p">)</span>
+    <span class="n">fsum</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;    number of input time series epoch: </span><span class="si">%d</span><span class="s2"> </span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">%</span>  <span class="n">model</span><span class="o">.</span><span class="n">n_date_input_ts</span> <span class="p">)</span>
+    <span class="n">fsum</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;    number of GPS sites without data : </span><span class="si">%d</span><span class="s2"> </span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">%</span>  <span class="n">model</span><span class="o">.</span><span class="n">n_site_no_data</span> <span class="p">)</span>
+<span class="c1">#    fsum.write(&quot;    number of input Green functions  : %d \n&quot; %  model.n_site_in_green )</span>
+    <span class="n">fsum</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;    number of GPS sites used         : </span><span class="si">%d</span><span class="s2"> </span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">%</span>  <span class="n">model</span><span class="o">.</span><span class="n">t_obs</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="p">)</span>
+    <span class="n">fsum</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;    number of epochs used            : </span><span class="si">%d</span><span class="s2"> </span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">%</span>  <span class="n">model</span><span class="o">.</span><span class="n">t_obs</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="p">)</span>
+    <span class="n">fsum</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;    uncertainties E &amp; N              : </span><span class="si">%s</span><span class="s2"> </span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">%</span>  <span class="n">model</span><span class="o">.</span><span class="n">h_uncertainty</span> <span class="p">)</span>
+    <span class="n">fsum</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;    up component                     : </span><span class="si">%s</span><span class="s2"> </span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">%</span>  <span class="n">model</span><span class="o">.</span><span class="n">up</span> <span class="p">)</span>
+    <span class="n">fsum</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;    uncertainty up rescaled by       : </span><span class="si">%s</span><span class="s2"> </span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">%</span>  <span class="n">model</span><span class="o">.</span><span class="n">s_up</span> <span class="p">)</span>
+
+    <span class="n">fsum</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">&#39;#--------------------------------------------------------------------------</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)</span>
+    <span class="n">fsum</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">&#39;# Green tensor information: </span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)</span>
+    <span class="n">fsum</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">&#39;#--------------------------------------------------------------------------</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)</span>
+    <span class="n">fsum</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;    Green tensor used for inversion  : </span><span class="si">%s</span><span class="s2"> </span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">%</span>  <span class="nb">str</span><span class="p">(</span> <span class="n">model</span><span class="o">.</span><span class="n">green</span><span class="o">.</span><span class="n">shape</span> <span class="p">)</span> <span class="p">)</span>
+
+
+    <span class="n">fsum</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">&#39;#--------------------------------------------------------------------------</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)</span>
+    <span class="n">fsum</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">&#39;# Date information: </span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)</span>
+    <span class="n">fsum</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">&#39;#--------------------------------------------------------------------------</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)</span>
+    <span class="n">fsum</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;    date rounding option             : </span><span class="si">%s</span><span class="s2"> </span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span> <span class="n">model</span><span class="o">.</span><span class="n">rounding</span> <span class="p">))</span>
+    <span class="n">fsum</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;    number of model dates            : </span><span class="si">%d</span><span class="s2"> </span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span> <span class="n">model</span><span class="o">.</span><span class="n">np_model_date_s</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="p">))</span>
+    <span class="n">fsum</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;    number of model time steps       : </span><span class="si">%d</span><span class="s2"> </span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span> <span class="n">model</span><span class="o">.</span><span class="n">np_model_step_duration_s</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="p">))</span>
+    <span class="n">fsum</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;    model start date                 : </span><span class="si">%s</span><span class="s2"> doy </span><span class="si">%03d</span><span class="s2"> </span><span class="si">%13.8lf</span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">%</span> \
+               <span class="p">(</span> <span class="n">model</span><span class="o">.</span><span class="n">np_model_date_isoformat</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="p">,</span> <span class="n">at</span><span class="o">.</span><span class="n">datetime2dayno</span><span class="p">(</span> <span class="n">model</span><span class="o">.</span><span class="n">np_model_datetime</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="p">)[</span><span class="mi">1</span><span class="p">]</span> <span class="p">,</span> <span class="n">at</span><span class="o">.</span><span class="n">datetime2decyear</span><span class="p">(</span> <span class="n">model</span><span class="o">.</span><span class="n">np_model_datetime</span><span class="p">[</span><span class="mi">0</span><span class="p">])))</span>
+    <span class="n">fsum</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;    model end  date                  : </span><span class="si">%s</span><span class="s2"> doy </span><span class="si">%03d</span><span class="s2"> </span><span class="si">%13.8lf</span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">%</span> \
+               <span class="p">(</span> <span class="n">model</span><span class="o">.</span><span class="n">np_model_date_isoformat</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="p">,</span> <span class="n">at</span><span class="o">.</span><span class="n">datetime2dayno</span><span class="p">(</span> <span class="n">model</span><span class="o">.</span><span class="n">np_model_datetime</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="p">)[</span><span class="mi">1</span><span class="p">]</span> <span class="p">,</span> <span class="n">at</span><span class="o">.</span><span class="n">datetime2decyear</span><span class="p">(</span> <span class="n">model</span><span class="o">.</span><span class="n">np_model_datetime</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">])))</span>
+    <span class="n">fsum</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;    median,shortest,longest time step: </span><span class="si">%.2lf</span><span class="s2"> </span><span class="si">%.2lf</span><span class="s2"> </span><span class="si">%.2lf</span><span class="s2"> days</span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">%</span> \
+               <span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">median_time_step_days</span><span class="p">,</span><span class="n">model</span><span class="o">.</span><span class="n">shortest_time_step_days</span><span class="p">,</span><span class="n">model</span><span class="o">.</span><span class="n">longest_time_step_days</span><span class="p">))</span>
+        
+    
+    <span class="n">fsum</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">&#39;#--------------------------------------------------------------------------</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)</span>
+    <span class="n">fsum</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">&#39;#   Inversion results: </span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)</span>
+    <span class="n">fsum</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">&#39;#--------------------------------------------------------------------------</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)</span>
+    <span class="n">fsum</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;    Cumulative Moment (N.m)          : </span><span class="si">%8.2E</span><span class="s2"> </span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">model</span><span class="o">.</span><span class="n">M0</span><span class="p">)</span>
+    <span class="n">fsum</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;    Equivalent Mw                    : </span><span class="si">%8.1f</span><span class="s2"> </span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">model</span><span class="o">.</span><span class="n">magnitude</span><span class="p">)</span>
+
+    <span class="n">i_mr_max</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">argmax</span><span class="p">(</span> <span class="n">model</span><span class="o">.</span><span class="n">STF</span> <span class="p">)</span> 
+    
+    <span class="n">fsum</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;    max moment rate (N.m / day )     : </span><span class="si">%8.2E</span><span class="s2"> #</span><span class="si">%05d</span><span class="s2"> </span><span class="si">%s</span><span class="s2">-</span><span class="si">%s</span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">%</span> \
+               <span class="p">(</span> <span class="n">model</span><span class="o">.</span><span class="n">STF</span><span class="p">[</span><span class="n">i_mr_max</span><span class="p">],</span> <span class="n">i_mr_max</span><span class="p">,</span> <span class="n">model</span><span class="o">.</span><span class="n">np_model_date_isoformat</span><span class="p">[</span><span class="n">i_mr_max</span><span class="p">],</span> <span class="n">model</span><span class="o">.</span><span class="n">np_model_date_isoformat</span><span class="p">[</span><span class="n">i_mr_max</span><span class="o">+</span><span class="mi">1</span><span class="p">]))</span>
+
+    <span class="n">magnitude_mr</span><span class="o">=</span> <span class="mf">2.</span><span class="o">/</span><span class="mf">3.</span><span class="o">*</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">log10</span><span class="p">(</span> <span class="n">model</span><span class="o">.</span><span class="n">STF</span><span class="p">[</span> <span class="n">i_mr_max</span> <span class="p">])</span><span class="o">-</span><span class="mf">9.1</span><span class="p">)</span>
+    <span class="n">fsum</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;    Equivalent Mw / day              : </span><span class="si">%8.1f</span><span class="s2"> </span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">magnitude_mr</span><span class="p">)</span>
+
+    <span class="n">i_cs_max</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">unravel_index</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">argmax</span><span class="p">(</span> <span class="n">model</span><span class="o">.</span><span class="n">NORM_CUMULATIVE_SLIP_PER_TIME_STEP</span><span class="p">),</span> <span class="n">model</span><span class="o">.</span><span class="n">NORM_CUMULATIVE_SLIP_PER_TIME_STEP</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
+    <span class="n">slip_max</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">NORM_CUMULATIVE_SLIP_PER_TIME_STEP</span><span class="p">[</span> <span class="n">i_cs_max</span> <span class="p">]</span>
+    
+    <span class="n">model</span><span class="o">.</span><span class="n">cumulative_slip_max</span> <span class="o">=</span> <span class="n">slip_max</span>
+    <span class="n">model</span><span class="o">.</span><span class="n">idx_cumulative_slip_max</span> <span class="o">=</span> <span class="n">i_cs_max</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+    
+    <span class="n">fsum</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;    cumulative slip max  (mm)        : </span><span class="si">%8.1f</span><span class="s2"> fault #</span><span class="si">%d</span><span class="s2"> </span><span class="si">%s</span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span> <span class="n">slip_max</span> <span class="p">,</span> <span class="n">i_cs_max</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="p">,</span> <span class="n">model</span><span class="o">.</span><span class="n">np_model_date_isoformat</span><span class="p">[</span> <span class="n">i_cs_max</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="p">]</span> <span class="p">)</span> <span class="p">)</span>
+
+
+    <span class="n">i_is_max</span> <span class="o">=</span>  <span class="n">np</span><span class="o">.</span><span class="n">unravel_index</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">argmax</span> <span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">NORM_INC_SLIP_PER_TIME_STEP</span><span class="p">),</span> <span class="n">model</span><span class="o">.</span><span class="n">NORM_INC_SLIP_PER_TIME_STEP</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
+    <span class="n">inc_slip_max</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">NORM_INC_SLIP_PER_TIME_STEP</span><span class="p">[</span> <span class="n">i_is_max</span> <span class="p">]</span>
+    
+    <span class="n">fsum</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;    incremental slip max  (mm)       : </span><span class="si">%8.1f</span><span class="s2"> fault #</span><span class="si">%04d</span><span class="s2"> time_step </span><span class="si">%04d</span><span class="s2"> </span><span class="si">%s</span><span class="s2"> -&gt; </span><span class="si">%s</span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">%</span> \
+               <span class="p">(</span><span class="n">inc_slip_max</span><span class="p">,</span><span class="n">i_is_max</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span><span class="n">i_is_max</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span><span class="n">model</span><span class="o">.</span><span class="n">np_model_date_isoformat</span><span class="p">[</span><span class="n">i_is_max</span><span class="p">[</span><span class="mi">0</span><span class="p">]],</span><span class="n">model</span><span class="o">.</span><span class="n">np_model_date_isoformat</span><span class="p">[</span><span class="n">i_is_max</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">+</span><span class="mi">1</span><span class="p">]))</span>
+
+
+
+    <span class="n">i_rs_max</span> <span class="o">=</span> <span class="n">lindex</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">unravel_index</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">argmax</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">NORM_RATE_SLIP_PER_TIME_STEP</span><span class="p">),</span> <span class="n">model</span><span class="o">.</span><span class="n">NORM_RATE_SLIP_PER_TIME_STEP</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
+    <span class="n">rate_slip_max</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">NORM_RATE_SLIP_PER_TIME_STEP</span><span class="p">[</span> <span class="n">i_rs_max</span> <span class="p">]</span>
+    
+    <span class="n">model</span><span class="o">.</span><span class="n">rate_slip_max</span> <span class="o">=</span> <span class="n">rate_slip_max</span>
+    
+
+    
+    <span class="n">fsum</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;    slip rate max  (mm/day)          : </span><span class="si">%8.1f</span><span class="s2"> fault #</span><span class="si">%04d</span><span class="s2"> time_step </span><span class="si">%04d</span><span class="s2"> </span><span class="si">%s</span><span class="s2"> -&gt; </span><span class="si">%s</span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">%</span> \
+               <span class="p">(</span><span class="n">rate_slip_max</span><span class="p">,</span><span class="n">i_rs_max</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span><span class="n">i_rs_max</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span><span class="n">model</span><span class="o">.</span><span class="n">np_model_date_isoformat</span><span class="p">[</span><span class="n">i_rs_max</span><span class="p">[</span><span class="mi">0</span><span class="p">]],</span><span class="n">model</span><span class="o">.</span><span class="n">np_model_date_isoformat</span><span class="p">[</span><span class="n">i_rs_max</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">+</span><span class="mi">1</span><span class="p">]))</span>
+    
+    
+    <span class="n">fsum</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">&#39;#--------------------------------------------------------------------------</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)</span>
+    <span class="n">fsum</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">&#39;#   Inversion statistics: </span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)</span>
+    <span class="n">fsum</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">&#39;#--------------------------------------------------------------------------</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)</span>
+    <span class="n">fsum</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;    rms  horizontal  (mm)            : </span><span class="si">%8.1f</span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span> <span class="n">model</span><span class="o">.</span><span class="n">rms_h</span> <span class="p">))</span>
+    <span class="n">fsum</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;    rms  3D          (mm)            : </span><span class="si">%8.1f</span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span> <span class="n">model</span><span class="o">.</span><span class="n">rms_all</span> <span class="p">))</span>
+
+    <span class="n">fsum</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;    wrms  horizontal (mm)            : </span><span class="si">%8.1f</span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span> <span class="n">model</span><span class="o">.</span><span class="n">wrms_h</span> <span class="p">))</span>
+    <span class="n">fsum</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;    wrms  3D         (mm)            : </span><span class="si">%8.1f</span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span> <span class="n">model</span><span class="o">.</span><span class="n">wrms_all</span> <span class="p">))</span>
+
+
+    <span class="n">fsum</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;    bias overall  east (mm)          : </span><span class="si">%8.1f</span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">model</span><span class="o">.</span><span class="n">bias</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+    <span class="n">fsum</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;    bias overall north (mm)          : </span><span class="si">%8.1f</span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">model</span><span class="o">.</span><span class="n">bias</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+    <span class="n">fsum</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;    bias overall    up (mm)          : </span><span class="si">%8.1f</span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">model</span><span class="o">.</span><span class="n">bias</span><span class="p">[</span><span class="mi">2</span><span class="p">])</span>
+
+    <span class="n">fsum</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;    chi2 obs horizontal              : </span><span class="si">%15.1f</span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">%</span>  <span class="n">model</span><span class="o">.</span><span class="n">chi2_h</span> <span class="p">)</span>
+    <span class="n">fsum</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;    chi2 obs 3D                      : </span><span class="si">%15.1f</span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">%</span>  <span class="n">model</span><span class="o">.</span><span class="n">chi2_all</span> <span class="p">)</span>
+
+    <span class="n">fsum</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;    reduced chi2 obs horizontal      : </span><span class="si">%8.1f</span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">%</span>  <span class="n">model</span><span class="o">.</span><span class="n">reduced_chi2_h</span> <span class="p">)</span>
+    <span class="n">fsum</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;    reduced chi2 obs 3D              : </span><span class="si">%8.1f</span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">%</span>  <span class="n">model</span><span class="o">.</span><span class="n">reduced_chi2_all</span> <span class="p">)</span>
+    
+    <span class="n">fsum</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;    number of observations           : </span><span class="si">%8d</span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">%</span>  <span class="n">model</span><span class="o">.</span><span class="n">n_obs_inversion</span> <span class="p">)</span>
+    <span class="n">fsum</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;    worst site rms ENU (mm)          : </span><span class="si">%s</span><span class="s2"> </span><span class="si">%8.2lf</span><span class="s2"> </span><span class="si">%8.2lf</span><span class="s2"> </span><span class="si">%8.2lf</span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span> <span class="n">model</span><span class="o">.</span><span class="n">worst_site</span> <span class="p">,</span> <span class="n">model</span><span class="o">.</span><span class="n">rms_worst</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="p">,</span> <span class="n">model</span><span class="o">.</span><span class="n">rms_worst</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="p">,</span> <span class="n">model</span><span class="o">.</span><span class="n">rms_worst</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="p">)</span> <span class="p">)</span>
+
+    <span class="n">fsum</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+    
+    <span class="c1"># PRINT RESULTS ON SCREEN</span>
+    
+    <span class="n">f</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="n">fsumn</span><span class="p">,</span> <span class="s2">&quot;r&quot;</span><span class="p">)</span>
+    <span class="n">text</span> <span class="o">=</span> <span class="n">f</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">text</span><span class="p">)</span>
+    <span class="n">f</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+
+
+    <span class="k">return</span> <span class="n">model</span> </div>
+</pre></div>
+
+           </div>
+           
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        
+        &copy; Copyright 2016, Jean-Mathieu Nocquet IRD/Geoazur
+
+    </p>
+  </div>
+    
+    
+    
+    Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

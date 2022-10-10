@@ -18,8 +18,10 @@ def make_GAMMA_MATRIX( T_OBS , np_obs_date_s , np_model_date_s ):
     for idx_site in np.arange( T_OBS.shape[1] ):
     
         # get the first not nan observation for the current site
-        idx_first_obs = np.where( np.isfinite(T_OBS[:,idx_site,0])  )[0][0]
-        
+        try:
+            idx_first_obs = np.where( np.isfinite(T_OBS[:,idx_site,0])  )[0][0]
+        except:
+            continue
         GAMMA_MATRIX[ idx_site , : ] = np.heaviside( ( np_model_date_s[1:] - np_obs_date_s[ idx_first_obs ] ) , 0 ) 
         
         # get the first model time step for site idx_site 

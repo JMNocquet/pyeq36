@@ -60,7 +60,7 @@ def get_np_dates_from_arg(arg, np_obs_date_s, rounding='day', verbose=False):
 
     ###################################################################
     # DATES PROVIDED AS PANDAS.DATE_RANGE COMMAND
-    # THE COMMAND IS USE TO GENERATE A FILE EXECUTED BY PYTHON
+    # THE COMMAND IS USED TO GENERATE A FILE EXECUTED BY PYTHON
     # THAT WILL CREATE A DATE FILE
     ###################################################################
     

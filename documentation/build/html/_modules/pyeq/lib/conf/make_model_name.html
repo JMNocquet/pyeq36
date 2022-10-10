@@ -1,0 +1,306 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>pyeq.lib.conf.make_model_name &mdash; pyeq 0.51.8 documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="../../../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../../../_static/pygments.css" type="text/css" />
+
+  
+  
+  
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="../../../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../../../../" src="../../../../_static/documentation_options.js"></script>
+        <script src="../../../../_static/jquery.js"></script>
+        <script src="../../../../_static/underscore.js"></script>
+        <script src="../../../../_static/doctools.js"></script>
+        <script src="../../../../_static/language_data.js"></script>
+    
+    <script type="text/javascript" src="../../../../_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../../../../index.html" class="icon icon-home" alt="Documentation Home"> pyeq
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                0.51.8
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../foreword.html">PYEQ: full time-dependent slip inversion</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../behaviour.html">Options controlling the overall behaviour</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../tutorial_static_inversion.html">Tutorial static inversion</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../dates.html">dates</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../roxane.html">Roxane’s notes on PYEQ</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../modules.html">for developpers</a></li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../../index.html">pyeq</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../../../index.html" class="icon icon-home"></a> &raquo;</li>
+        
+          <li><a href="../../../index.html">Module code</a> &raquo;</li>
+        
+      <li>pyeq.lib.conf.make_model_name</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>Source code for pyeq.lib.conf.make_model_name</h1><div class="highlight"><pre>
+<div class="viewcode-block" id="make_model_name"><a class="viewcode-back" href="../../../../pyeq.lib.conf.make_model_name.html#pyeq.lib.conf.make_model_name.make_model_name">[docs]</a><span></span><span class="k">def</span> <span class="nf">make_model_name</span><span class="p">(</span> <span class="n">model</span> <span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    produces output name according to input parameters</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># import</span>
+    
+    <span class="kn">import</span> <span class="nn">pyacs.lib.astrotime</span> <span class="k">as</span> <span class="nn">at</span>
+    <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+
+
+    <span class="c1"># start_date</span>
+    <span class="n">model_datetime</span> <span class="o">=</span> <span class="n">at</span><span class="o">.</span><span class="n">seconds2datetime</span><span class="p">(</span> <span class="n">model</span><span class="o">.</span><span class="n">np_model_date_s</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="p">)</span>
+    <span class="n">str_yr</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">model_datetime</span><span class="o">.</span><span class="n">year</span><span class="p">)[</span><span class="o">-</span><span class="mi">2</span><span class="p">:]</span>
+    <span class="n">doy</span> <span class="o">=</span> <span class="n">at</span><span class="o">.</span><span class="n">datetime2dayno</span><span class="p">(</span> <span class="n">model_datetime</span><span class="p">)[</span><span class="mi">1</span><span class="p">]</span>
+    <span class="n">duration</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span> <span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">np_model_date_s</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="n">model</span><span class="o">.</span><span class="n">np_model_date_s</span><span class="p">[</span><span class="o">-</span><span class="mi">0</span><span class="p">]</span> <span class="p">)</span> <span class="o">/</span><span class="mf">86400.</span> <span class="p">)</span>
+
+    <span class="n">str_date</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;</span><span class="si">%s%03d</span><span class="s2">_</span><span class="si">%d</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span> <span class="n">str_yr</span> <span class="p">,</span> <span class="n">doy</span> <span class="p">,</span> <span class="nb">int</span><span class="p">(</span> <span class="n">duration</span> <span class="p">)</span> <span class="p">)</span> <span class="p">)</span>
+
+
+    <span class="c1"># regularization covariance case</span>
+    <span class="k">if</span> <span class="n">model</span><span class="o">.</span><span class="n">regularization</span> <span class="o">==</span> <span class="s1">&#39;covariance&#39;</span><span class="p">:</span>
+        <span class="n">str_reg</span> <span class="o">=</span> <span class="s1">&#39;cov&#39;</span>
+
+        <span class="k">if</span> <span class="n">model</span><span class="o">.</span><span class="n">sigma_type</span> <span class="o">==</span> <span class="s1">&#39;time_constant/fault_constant&#39;</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">model</span><span class="o">.</span><span class="n">sigma_time</span> <span class="o">&lt;</span> <span class="mi">1</span><span class="p">:</span>
+                <span class="n">tmp_str</span><span class="o">=</span><span class="s1">&#39;</span><span class="si">{0:1.0E}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">sigma_time</span><span class="p">)</span>
+                <span class="n">number</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">tmp_str</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;E&#39;</span><span class="p">)[</span><span class="mi">0</span><span class="p">])</span>
+                <span class="n">exponent</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">tmp_str</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;-&#39;</span><span class="p">)[</span><span class="mi">1</span><span class="p">])</span>
+                <span class="n">str_sigma</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;</span><span class="si">%d</span><span class="s2">E</span><span class="si">%d</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span> <span class="n">number</span> <span class="p">,</span> <span class="n">exponent</span> <span class="p">)</span> <span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">str_sigma</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;</span><span class="si">%d</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span> <span class="nb">int</span><span class="p">(</span> <span class="n">model</span><span class="o">.</span><span class="n">sigma_time</span> <span class="p">)</span> <span class="p">)</span> <span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">if</span> <span class="s1">&#39;time_constant&#39;</span> <span class="ow">in</span> <span class="n">model</span><span class="o">.</span><span class="n">sigma_type</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">model</span><span class="o">.</span><span class="n">sigma_time</span> <span class="o">&lt;</span> <span class="mi">1</span><span class="p">:</span>
+                    <span class="n">str_sigma</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;</span><span class="si">%d</span><span class="s2">E1v&quot;</span> <span class="o">%</span> <span class="p">(</span> <span class="nb">int</span><span class="p">(</span> <span class="n">model</span><span class="o">.</span><span class="n">sigma_time</span> <span class="o">*</span> <span class="mi">10</span> <span class="p">)</span> <span class="p">)</span> <span class="p">)</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">str_sigma</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;</span><span class="si">%d</span><span class="s2">v&quot;</span> <span class="o">%</span> <span class="p">(</span> <span class="nb">int</span><span class="p">(</span> <span class="n">model</span><span class="o">.</span><span class="n">sigma_time</span> <span class="p">)</span> <span class="p">)</span> <span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">if</span> <span class="s1">&#39;fault_constant&#39;</span> <span class="ow">in</span> <span class="n">model</span><span class="o">.</span><span class="n">sigma_type</span><span class="p">:</span>
+                    <span class="n">str_sigma</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;vc&quot;</span> <span class="p">)</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">str_sigma</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;vv&quot;</span> <span class="p">)</span>
+
+        <span class="c1"># dc</span>
+        <span class="n">str_dc</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;</span><span class="si">%d</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span> <span class="nb">int</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">dc</span><span class="p">)</span> <span class="p">)</span> <span class="p">)</span>
+
+        <span class="c1"># tau</span>
+        <span class="n">str_tau</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;</span><span class="si">%d</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">tau</span><span class="p">)))</span>
+
+        <span class="c1"># final name</span>
+        <span class="n">name</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;</span><span class="si">%s</span><span class="s2">_</span><span class="si">%s</span><span class="s2">_</span><span class="si">%s</span><span class="s2">_</span><span class="si">%s</span><span class="s2">_</span><span class="si">%s</span><span class="s2">_</span><span class="si">%d</span><span class="s2">_</span><span class="si">%d</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span> <span class="n">str_reg</span> <span class="p">,</span> <span class="n">str_sigma</span> <span class="p">,</span> <span class="n">str_dc</span> <span class="p">,</span> <span class="n">str_tau</span> <span class="p">,</span> <span class="n">str_date</span> <span class="p">,</span> <span class="n">model</span><span class="o">.</span><span class="n">nstep</span><span class="p">,</span> <span class="n">model</span><span class="o">.</span><span class="n">geometry</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="p">)</span> <span class="p">)</span>
+
+    <span class="c1"># regularization laplacian_like case</span>
+
+    <span class="k">if</span> <span class="n">model</span><span class="o">.</span><span class="n">regularization</span> <span class="o">==</span> <span class="s1">&#39;laplacian_like&#39;</span><span class="p">:</span>
+        <span class="n">str_reg</span> <span class="o">=</span> <span class="s1">&#39;ll&#39;</span>
+    <span class="k">if</span> <span class="n">model</span><span class="o">.</span><span class="n">regularization</span> <span class="o">==</span> <span class="s1">&#39;cvxopt&#39;</span><span class="p">:</span>
+        <span class="n">str_reg</span> <span class="o">=</span> <span class="s1">&#39;cvx&#39;</span>
+
+    <span class="k">if</span> <span class="n">model</span><span class="o">.</span><span class="n">regularization</span> <span class="ow">in</span><span class="p">[</span> <span class="s1">&#39;laplacian_like&#39;</span> <span class="p">,</span> <span class="s1">&#39;cvxopt&#39;</span><span class="p">]:</span>
+
+        <span class="c1"># lambda_spatial_smoothing</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">lambda_spatial_smoothing</span><span class="p">,</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">):</span>
+            <span class="n">str_lss</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;vs&quot;</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">if</span> <span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">lambda_spatial_smoothing</span> <span class="o">&lt;</span> <span class="mi">1</span><span class="p">)</span> <span class="ow">and</span> <span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">lambda_spatial_smoothing</span> <span class="o">!=</span><span class="mi">0</span><span class="p">)</span> <span class="p">:</span>
+                <span class="n">tmp_str</span><span class="o">=</span><span class="s1">&#39;</span><span class="si">{0:1.0E}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">lambda_spatial_smoothing</span><span class="p">)</span>
+                <span class="n">number</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">tmp_str</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;E&#39;</span><span class="p">)[</span><span class="mi">0</span><span class="p">])</span>
+                <span class="n">exponent</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">tmp_str</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;-&#39;</span><span class="p">)[</span><span class="mi">1</span><span class="p">])</span>
+                <span class="n">str_lss</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;</span><span class="si">%d</span><span class="s2">E</span><span class="si">%d</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span> <span class="n">number</span> <span class="p">,</span> <span class="n">exponent</span> <span class="p">)</span> <span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">str_lss</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;</span><span class="si">%d</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span> <span class="nb">int</span><span class="p">(</span> <span class="n">model</span><span class="o">.</span><span class="n">lambda_spatial_smoothing</span> <span class="p">)</span> <span class="p">)</span> <span class="p">)</span>
+
+        <span class="c1"># lambda_temporal_smoothing</span>
+        <span class="k">if</span> <span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">lambda_temporal_smoothing</span><span class="p">)</span> <span class="o">&lt;</span> <span class="mi">1</span> <span class="ow">and</span> <span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">lambda_temporal_smoothing</span> <span class="o">!=</span><span class="mi">0</span><span class="p">):</span>
+            <span class="n">tmp_str</span><span class="o">=</span><span class="s1">&#39;</span><span class="si">{0:1.0E}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">lambda_temporal_smoothing</span><span class="p">)</span>
+            <span class="n">number</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">tmp_str</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;E&#39;</span><span class="p">)[</span><span class="mi">0</span><span class="p">])</span>
+            <span class="n">exponent</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">tmp_str</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;-&#39;</span><span class="p">)[</span><span class="mi">1</span><span class="p">])</span>
+            <span class="n">str_lts</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;</span><span class="si">%d</span><span class="s2">E</span><span class="si">%d</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span> <span class="n">number</span> <span class="p">,</span> <span class="n">exponent</span> <span class="p">)</span> <span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">str_lts</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;</span><span class="si">%d</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span> <span class="nb">int</span><span class="p">(</span> <span class="n">model</span><span class="o">.</span><span class="n">lambda_temporal_smoothing</span> <span class="p">)</span> <span class="p">)</span> <span class="p">)</span>
+
+        <span class="c1"># lambda_damping</span>
+        <span class="k">if</span> <span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">lambda_damping</span> <span class="o">&lt;</span> <span class="mi">1</span><span class="p">)</span> <span class="ow">and</span> <span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">lambda_damping</span> <span class="o">!=</span><span class="mi">0</span><span class="p">):</span>
+            <span class="n">tmp_str</span><span class="o">=</span><span class="s1">&#39;</span><span class="si">{0:1.0E}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">lambda_damping</span><span class="p">)</span>
+            <span class="n">number</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">tmp_str</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;E&#39;</span><span class="p">)[</span><span class="mi">0</span><span class="p">])</span>
+            <span class="k">if</span> <span class="n">model</span><span class="o">.</span><span class="n">lambda_damping</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="n">str_ld</span> <span class="o">=</span> <span class="s1">&#39;00&#39;</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">exponent</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">tmp_str</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;-&#39;</span><span class="p">)[</span><span class="mi">1</span><span class="p">])</span>
+                <span class="n">str_ld</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;</span><span class="si">%d</span><span class="s2">E</span><span class="si">%d</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span> <span class="n">number</span> <span class="p">,</span> <span class="n">exponent</span> <span class="p">)</span> <span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">str_ld</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;</span><span class="si">%d</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span> <span class="nb">int</span><span class="p">(</span> <span class="n">model</span><span class="o">.</span><span class="n">lambda_damping</span> <span class="p">)</span> <span class="p">)</span> <span class="p">)</span>
+
+
+        <span class="c1"># final name</span>
+        <span class="n">name</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;</span><span class="si">%s</span><span class="s2">_</span><span class="si">%s</span><span class="s2">_</span><span class="si">%s</span><span class="s2">_</span><span class="si">%s</span><span class="s2">_</span><span class="si">%s</span><span class="s2">_</span><span class="si">%d</span><span class="s2">_</span><span class="si">%d</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span> <span class="n">str_reg</span> <span class="p">,</span> <span class="n">str_lss</span> <span class="p">,</span> <span class="n">str_lts</span> <span class="p">,</span> <span class="n">str_ld</span> <span class="p">,</span> <span class="n">str_date</span> <span class="p">,</span> <span class="n">model</span><span class="o">.</span><span class="n">nstep</span><span class="p">,</span> <span class="n">model</span><span class="o">.</span><span class="n">geometry</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="p">)</span> <span class="p">)</span>
+
+    <span class="k">return</span><span class="p">(</span> <span class="n">name</span>  <span class="p">)</span></div>
+    
+</pre></div>
+
+           </div>
+           
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        
+        &copy; Copyright 2016, Jean-Mathieu Nocquet IRD/Geoazur
+
+    </p>
+  </div>
+    
+    
+    
+    Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

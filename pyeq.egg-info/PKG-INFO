@@ -1,0 +1,15 @@
+Metadata-Version: 1.1
+Name: pyeq
+Version: 0.54.7
+Summary: PYEQ: PYACS modeling tools for fault slip inversion
+Home-page: UNKNOWN
+Author: Jean-Mathieu Nocquet (Geoazur, IRD, CNRS, OCA, Cote d Azur University, France)
+Author-email: nocquet@geoazur.unice.fr
+License: NA
+Description: PYACS modeling tools for static and kinematic slip inversion
+Keywords: geodesy GPS earthquake elastic dislocation time series
+Platform: UNKNOWN
+Classifier: Development Status :: 3 - Alpha
+Classifier: License :: OSI Approved :: MIT License
+Classifier: Programming Language :: Python :: 3.6
+Classifier: Topic :: Geodesy :: Geophysics

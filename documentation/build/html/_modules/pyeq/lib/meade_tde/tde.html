@@ -1,0 +1,615 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>pyeq.lib.meade_tde.tde &mdash; pyeq 0.51.8 documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="../../../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../../../_static/pygments.css" type="text/css" />
+
+  
+  
+  
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="../../../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../../../../" src="../../../../_static/documentation_options.js"></script>
+        <script src="../../../../_static/jquery.js"></script>
+        <script src="../../../../_static/underscore.js"></script>
+        <script src="../../../../_static/doctools.js"></script>
+        <script src="../../../../_static/language_data.js"></script>
+    
+    <script type="text/javascript" src="../../../../_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../../../../index.html" class="icon icon-home" alt="Documentation Home"> pyeq
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                0.51.8
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../foreword.html">PYEQ: full time-dependent slip inversion</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../behaviour.html">Options controlling the overall behaviour</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../tutorial_static_inversion.html">Tutorial static inversion</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../dates.html">dates</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../roxane.html">Roxane’s notes on PYEQ</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../modules.html">for developpers</a></li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../../index.html">pyeq</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../../../index.html" class="icon icon-home"></a> &raquo;</li>
+        
+          <li><a href="../../../index.html">Module code</a> &raquo;</li>
+        
+      <li>pyeq.lib.meade_tde.tde</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>Source code for pyeq.lib.meade_tde.tde</h1><div class="highlight"><pre>
+<span></span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="c1">#from numpy import sin, cos, pi</span>
+
+<span class="kn">from</span> <span class="nn">.</span> <span class="kn">import</span> <span class="n">disp_functions</span> <span class="k">as</span> <span class="n">df</span>
+
+<span class="k">try</span><span class="p">:</span>
+    <span class="kn">import</span> <span class="nn">strain_functions_cy</span> <span class="k">as</span> <span class="nn">sf</span>
+<span class="k">except</span> <span class="ne">ImportError</span><span class="p">:</span>
+    <span class="kn">from</span> <span class="nn">.</span> <span class="kn">import</span> <span class="n">strain_functions</span> <span class="k">as</span> <span class="n">sf</span>
+
+
+<span class="sd">&#39;&#39;&#39;</span>
+
+<span class="sd">from https://github.com/cossatot/tri_dislocations_python</span>
+
+<span class="sd">Functions modified from Brendan Meade&#39;s &quot;tde&quot; MATLAB routines</span>
+<span class="sd">(https://github.com/brendanjmeade/tde) detailed in</span>
+<span class="sd">Computers and Geosciences (2006).</span>
+
+<span class="sd">I would love to have more thorough documentation but I didn&#39;t spend the time</span>
+<span class="sd">to follow the derivation well enough to know what is really going on. In</span>
+<span class="sd">most cases, names of variables, functions and so forth either follow</span>
+<span class="sd">directly from Meade&#39;s code, or is a guess of mine what is going on.</span>
+
+<span class="sd">Ported by Richard Styron, 2015</span>
+<span class="sd">&#39;&#39;&#39;</span>
+
+
+<span class="n">eps</span> <span class="o">=</span> <span class="mf">7.</span><span class="o">/</span><span class="mi">3</span> <span class="o">-</span> <span class="mf">4.</span><span class="o">/</span><span class="mi">3</span> <span class="o">-</span> <span class="mi">1</span> <span class="c1"># get machine epsilon</span>
+
+<div class="viewcode-block" id="calc_tri_strains"><a class="viewcode-back" href="../../../../pyeq.lib.meade_tde.tde.html#pyeq.lib.meade_tde.tde.calc_tri_strains">[docs]</a><span class="k">def</span> <span class="nf">calc_tri_strains</span><span class="p">(</span><span class="n">sx</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">sy</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">sz</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">x</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> 
+                     <span class="n">z</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">pr</span><span class="o">=</span><span class="mf">0.25</span><span class="p">,</span> <span class="n">ss</span><span class="o">=</span><span class="mf">0.</span><span class="p">,</span> <span class="n">ts</span><span class="o">=</span><span class="mf">0.</span><span class="p">,</span> <span class="n">ds</span><span class="o">=</span><span class="mf">0.</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    Calculates strains due to slip on a triangular dislocation in an</span>
+<span class="sd">    elastic half space utilizing the symbolically differentiated</span>
+<span class="sd">    displacement gradient tensor derived from the expressions for</span>
+<span class="sd">    the displacements due to an angular dislocation in an elastic half</span>
+<span class="sd">    space (Comninou and Dunders, 1975).</span>
+<span class="sd">    </span>
+<span class="sd">    Arguments</span>
+<span class="sd">     sx : x-coordinates of observation points</span>
+<span class="sd">     sy : y-coordinates of observation points</span>
+<span class="sd">     sz : z-coordinates of observation points</span>
+<span class="sd">     x  : x-coordinates of triangle vertices.</span>
+<span class="sd">     y  : y-coordinates of triangle vertices.</span>
+<span class="sd">     z  : z-coordinates of triangle vertices.</span>
+<span class="sd">     pr : Poisson&#39;s ratio</span>
+<span class="sd">     ss : strike slip displacement</span>
+<span class="sd">     ts : tensile slip displacement</span>
+<span class="sd">     ds : dip slip displacement</span>
+<span class="sd">    </span>
+<span class="sd">    Returns</span>
+<span class="sd">     E  : structure containing the strains (E.xx, E.yy, E.zz, E.xy, E.xz, E.yz)</span>
+<span class="sd">    </span>
+<span class="sd">    This paper should and related code should be cited as:</span>
+<span class="sd">    Brendan J. Meade, Algorithms for the calculation of exact </span>
+<span class="sd">    displacements, strains, and stresses for Triangular Dislocation </span>
+<span class="sd">    Elements in a uniform elastic half space, Computers &amp; </span>
+<span class="sd">    Geosciences (2007), doi:10.1016/j.cageo.2006.12.003.</span>
+<span class="sd">    </span>
+<span class="sd">    Use at your own risk and please let me know of any bugs/errors.</span>
+<span class="sd">    </span>
+<span class="sd">    Copyright (c) 2006 Brendan Meade</span>
+
+<span class="sd">    Ported to Python by Richard Styron 2015.</span>
+
+<span class="sd">    &#39;&#39;&#39;</span>
+
+    <span class="n">xx</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+    <span class="n">yy</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="n">y</span><span class="p">)</span>
+    <span class="n">zz</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="n">z</span><span class="p">)</span>
+
+    <span class="n">slip_vec</span> <span class="o">=</span> <span class="n">calc_slip_vector</span><span class="p">(</span><span class="n">xx</span><span class="p">,</span> <span class="n">yy</span><span class="p">,</span> <span class="n">zz</span><span class="p">,</span> <span class="n">ss</span><span class="p">,</span> <span class="n">ts</span><span class="p">,</span> <span class="n">ds</span><span class="p">)</span>
+
+    <span class="n">E</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="s1">&#39;xx&#39;</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">sx</span><span class="p">)),</span>
+        <span class="s1">&#39;yy&#39;</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">sx</span><span class="p">)),</span>
+        <span class="s1">&#39;zz&#39;</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">sx</span><span class="p">)),</span>
+        <span class="s1">&#39;xy&#39;</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">sx</span><span class="p">)),</span>
+        <span class="s1">&#39;xz&#39;</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">sx</span><span class="p">)),</span>
+        <span class="s1">&#39;yz&#39;</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">sx</span><span class="p">))</span>
+    <span class="p">}</span>
+
+    <span class="n">xx</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">xx</span><span class="p">,</span> <span class="n">xx</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span> <span class="c1"># for indexing during loops</span>
+    <span class="n">yy</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">yy</span><span class="p">,</span> <span class="n">yy</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+    <span class="n">zz</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">zz</span><span class="p">,</span> <span class="n">zz</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+
+    <span class="k">for</span> <span class="n">i_tri</span> <span class="ow">in</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">]:</span>
+        <span class="n">strike</span><span class="p">,</span> <span class="n">_dip</span><span class="p">,</span> <span class="n">beta</span><span class="p">,</span> <span class="n">lss</span><span class="p">,</span> <span class="n">lts</span><span class="p">,</span> <span class="n">lds</span> <span class="o">=</span> <span class="n">get_edge_params</span><span class="p">(</span><span class="n">i_tri</span><span class="p">,</span> <span class="n">xx</span><span class="p">,</span> <span class="n">yy</span><span class="p">,</span> <span class="n">zz</span><span class="p">,</span> 
+                                                          <span class="n">slip_vec</span><span class="p">)</span>
+        
+        <span class="n">e</span> <span class="o">=</span> <span class="n">get_edge_strains</span><span class="p">(</span><span class="n">sx</span><span class="p">,</span> <span class="n">sy</span><span class="p">,</span> <span class="n">sz</span><span class="p">,</span> <span class="n">xx</span><span class="p">,</span> <span class="n">yy</span><span class="p">,</span> <span class="n">zz</span><span class="p">,</span> <span class="n">i_tri</span><span class="p">,</span> <span class="n">beta</span><span class="p">,</span> <span class="n">pr</span><span class="p">,</span> <span class="n">lss</span><span class="p">,</span> <span class="n">lts</span><span class="p">,</span>
+                             <span class="n">lds</span><span class="p">,</span> <span class="n">strike</span><span class="p">)</span>
+
+        <span class="n">E</span><span class="p">[</span><span class="s1">&#39;xx&#39;</span><span class="p">]</span> <span class="o">+=</span> <span class="n">e</span><span class="p">[</span><span class="s1">&#39;11&#39;</span><span class="p">]</span>
+        <span class="n">E</span><span class="p">[</span><span class="s1">&#39;yy&#39;</span><span class="p">]</span> <span class="o">+=</span> <span class="n">e</span><span class="p">[</span><span class="s1">&#39;22&#39;</span><span class="p">]</span>
+        <span class="n">E</span><span class="p">[</span><span class="s1">&#39;zz&#39;</span><span class="p">]</span> <span class="o">+=</span> <span class="n">e</span><span class="p">[</span><span class="s1">&#39;33&#39;</span><span class="p">]</span>
+        <span class="n">E</span><span class="p">[</span><span class="s1">&#39;xy&#39;</span><span class="p">]</span> <span class="o">+=</span> <span class="n">e</span><span class="p">[</span><span class="s1">&#39;12&#39;</span><span class="p">]</span>
+        <span class="n">E</span><span class="p">[</span><span class="s1">&#39;xz&#39;</span><span class="p">]</span> <span class="o">+=</span> <span class="n">e</span><span class="p">[</span><span class="s1">&#39;13&#39;</span><span class="p">]</span>
+        <span class="n">E</span><span class="p">[</span><span class="s1">&#39;yz&#39;</span><span class="p">]</span> <span class="o">+=</span> <span class="n">e</span><span class="p">[</span><span class="s1">&#39;23&#39;</span><span class="p">]</span>
+
+    <span class="k">return</span> <span class="n">E</span></div>
+
+
+<div class="viewcode-block" id="calc_tri_displacements"><a class="viewcode-back" href="../../../../pyeq.lib.meade_tde.tde.html#pyeq.lib.meade_tde.tde.calc_tri_displacements">[docs]</a><span class="k">def</span> <span class="nf">calc_tri_displacements</span><span class="p">(</span><span class="n">sx</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">sy</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">sz</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">x</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">z</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> 
+                           <span class="n">pr</span><span class="o">=</span><span class="mf">0.25</span><span class="p">,</span> <span class="n">ss</span><span class="o">=</span><span class="mf">0.</span><span class="p">,</span> <span class="n">ts</span><span class="o">=</span><span class="mf">0.</span><span class="p">,</span> <span class="n">ds</span><span class="o">=</span><span class="mf">0.</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    Calculates displacements due to slip on a triangular dislocation in an</span>
+<span class="sd">    elastic half space utilizing the Comninou and Dunders (1975) expressions</span>
+<span class="sd">    for the displacements due to an angular dislocation in an elastic half</span>
+<span class="sd">    space.</span>
+<span class="sd">    </span>
+<span class="sd">    Arguments</span>
+<span class="sd">     sx : x-coordinates of observation points</span>
+<span class="sd">     sy : y-coordinates of observation points</span>
+<span class="sd">     sz : z-coordinates of observation points</span>
+<span class="sd">     x  : x-coordinates of triangle vertices.</span>
+<span class="sd">     y  : y-coordinates of triangle vertices.</span>
+<span class="sd">     z  : z-coordinates of triangle vertices.</span>
+<span class="sd">     pr : Poisson&#39;s ratio</span>
+<span class="sd">     ss : strike slip displacement</span>
+<span class="sd">     ts : tensile slip displacement</span>
+<span class="sd">     ds : dip slip displacement</span>
+<span class="sd">    </span>
+<span class="sd">    Returns</span>
+<span class="sd">     U  : Dictionary containing the displacements (U[&#39;x&#39;], U[&#39;y&#39;], U[&#39;z&#39;])</span>
+<span class="sd">    </span>
+<span class="sd">    This paper should and related code should be cited as:</span>
+<span class="sd">    Brendan J. Meade, Algorithms for the calculation of exact </span>
+<span class="sd">    displacements, strains, and stresses for Triangular Dislocation </span>
+<span class="sd">    Elements in a uniform elastic half space, Computers &amp; </span>
+<span class="sd">    Geosciences (2007), doi:10.1016/j.cageo.2006.12.003.</span>
+
+<span class="sd">    That code Copyright (c) 2006 Brendan Meade</span>
+
+<span class="sd">    Ported to Python by Richard Styron, Aug 2015</span>
+
+<span class="sd">    &#39;&#39;&#39;</span>
+
+    <span class="n">xx</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+    <span class="n">yy</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="n">y</span><span class="p">)</span>
+    <span class="n">zz</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="n">z</span><span class="p">)</span>
+
+
+    <span class="n">slip_vec</span> <span class="o">=</span> <span class="n">calc_slip_vector</span><span class="p">(</span><span class="n">xx</span><span class="p">,</span> <span class="n">yy</span><span class="p">,</span> <span class="n">zz</span><span class="p">,</span> <span class="n">ss</span><span class="p">,</span> <span class="n">ts</span><span class="p">,</span> <span class="n">ds</span><span class="p">)</span>
+
+    <span class="n">U</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="s1">&#39;x&#39;</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">sx</span><span class="p">)),</span>
+        <span class="s1">&#39;y&#39;</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">sx</span><span class="p">)),</span>
+        <span class="s1">&#39;z&#39;</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">sx</span><span class="p">))</span>
+    <span class="p">}</span>
+
+    <span class="n">xx</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">xx</span><span class="p">,</span> <span class="n">xx</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span> <span class="c1"># for indexing during loops</span>
+    <span class="n">yy</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">yy</span><span class="p">,</span> <span class="n">yy</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+    <span class="n">zz</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">zz</span><span class="p">,</span> <span class="n">zz</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+
+    <span class="k">for</span> <span class="n">i_tri</span> <span class="ow">in</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">]:</span>
+        <span class="n">strike</span><span class="p">,</span> <span class="n">_dip</span><span class="p">,</span> <span class="n">beta</span><span class="p">,</span> <span class="n">lss</span><span class="p">,</span> <span class="n">lts</span><span class="p">,</span> <span class="n">lds</span> <span class="o">=</span> <span class="n">get_edge_params</span><span class="p">(</span><span class="n">i_tri</span><span class="p">,</span> <span class="n">xx</span><span class="p">,</span> <span class="n">yy</span><span class="p">,</span> <span class="n">zz</span><span class="p">,</span> 
+                                                           <span class="n">slip_vec</span><span class="p">)</span>
+        
+        <span class="n">uxn</span><span class="p">,</span> <span class="n">uyn</span><span class="p">,</span> <span class="n">uzn</span> <span class="o">=</span> <span class="n">get_edge_displacements</span><span class="p">(</span><span class="n">sx</span><span class="p">,</span> <span class="n">sy</span><span class="p">,</span> <span class="n">sz</span><span class="p">,</span> <span class="n">xx</span><span class="p">,</span> <span class="n">yy</span><span class="p">,</span> <span class="n">zz</span><span class="p">,</span> <span class="n">i_tri</span><span class="p">,</span> 
+                                              <span class="n">beta</span><span class="p">,</span> <span class="n">pr</span><span class="p">,</span> <span class="n">lss</span><span class="p">,</span> <span class="n">lts</span><span class="p">,</span> <span class="n">lds</span><span class="p">,</span> <span class="n">strike</span><span class="p">)</span>
+
+        <span class="n">U</span><span class="p">[</span><span class="s1">&#39;x&#39;</span><span class="p">]</span> <span class="o">+=</span> <span class="n">uxn</span>
+        <span class="n">U</span><span class="p">[</span><span class="s1">&#39;y&#39;</span><span class="p">]</span> <span class="o">+=</span> <span class="n">uyn</span>
+        <span class="n">U</span><span class="p">[</span><span class="s1">&#39;z&#39;</span><span class="p">]</span> <span class="o">+=</span> <span class="n">uzn</span>
+
+    <span class="n">U</span> <span class="o">=</span> <span class="n">offset_underlying_points</span><span class="p">(</span><span class="n">xx</span><span class="p">,</span> <span class="n">yy</span><span class="p">,</span> <span class="n">zz</span><span class="p">,</span> <span class="n">sx</span><span class="p">,</span> <span class="n">sy</span><span class="p">,</span> <span class="n">sz</span><span class="p">,</span> <span class="n">slip_vec</span><span class="p">,</span> <span class="n">U</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">U</span></div>
+
+
+
+<div class="viewcode-block" id="calc_slip_vector"><a class="viewcode-back" href="../../../../pyeq.lib.meade_tde.tde.html#pyeq.lib.meade_tde.tde.calc_slip_vector">[docs]</a><span class="k">def</span> <span class="nf">calc_slip_vector</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">z</span><span class="p">,</span> <span class="n">ss</span><span class="o">=</span><span class="mf">0.</span><span class="p">,</span> <span class="n">ts</span><span class="o">=</span><span class="mf">0.</span><span class="p">,</span> <span class="n">ds</span><span class="o">=</span><span class="mf">0.</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    Calculates a 3D slip vector for displacement on a triangle, given</span>
+<span class="sd">    strike-slip, tensile-slip and dip-slip displacement components.</span>
+
+<span class="sd">    Arguments</span>
+<span class="sd">     x  : x-coordinates of triangle vertices.</span>
+<span class="sd">     y  : y-coordinates of triangle vertices.</span>
+<span class="sd">     z  : z-coordinates of triangle vertices.</span>
+<span class="sd">     ss : strike slip displacement</span>
+<span class="sd">     ts : tensile slip displacement</span>
+<span class="sd">     ds : dip slip displacement</span>
+
+
+<span class="sd">    Note: Will modify the ordering of triangle coordinates variables passed,</span>
+<span class="sd">    even outside of the function scope, if &#39;clockwise circulation&#39; does not</span>
+<span class="sd">    hold. If this function is used outside of `calc_tri_displacement` or</span>
+<span class="sd">    `calc_tri_strains`, make sure to send it a copy of the triangle coordinate</span>
+<span class="sd">    variables instead of the original, or strange bugs could result.</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="c1"># Calculate the slip vector in XYZ coordinates</span>
+    <span class="n">v0</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">x</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">y</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">z</span><span class="p">[</span><span class="mi">0</span><span class="p">]])</span>
+    <span class="n">v1</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">x</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">y</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">z</span><span class="p">[</span><span class="mi">1</span><span class="p">]])</span>
+    <span class="n">v2</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">x</span><span class="p">[</span><span class="mi">2</span><span class="p">],</span> <span class="n">y</span><span class="p">[</span><span class="mi">2</span><span class="p">],</span> <span class="n">z</span><span class="p">[</span><span class="mi">2</span><span class="p">]])</span>
+
+    <span class="n">norm_vec</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">cross</span><span class="p">(</span> <span class="p">(</span><span class="n">v1</span> <span class="o">-</span> <span class="n">v0</span><span class="p">),</span> <span class="p">(</span><span class="n">v2</span> <span class="o">-</span> <span class="n">v0</span><span class="p">))</span>
+
+    <span class="n">norm_vec</span> <span class="o">=</span> <span class="n">norm_vec</span> <span class="o">/</span> <span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">norm</span><span class="p">(</span><span class="n">norm_vec</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">norm_vec</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">:</span> <span class="c1"># Enforce clockwise circulation</span>
+        <span class="n">norm_vec</span> <span class="o">*=</span> <span class="o">-</span><span class="mi">1</span>
+        <span class="n">x</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">x</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="o">=</span> <span class="n">x</span><span class="p">[</span><span class="mi">2</span><span class="p">],</span> <span class="n">x</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+        <span class="n">y</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">y</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="o">=</span> <span class="n">y</span><span class="p">[</span><span class="mi">2</span><span class="p">],</span> <span class="n">y</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+        <span class="n">z</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">z</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="o">=</span> <span class="n">z</span><span class="p">[</span><span class="mi">2</span><span class="p">],</span> <span class="n">z</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+
+    <span class="n">strike_vec</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="o">-</span><span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span> <span class="n">np</span><span class="o">.</span><span class="n">arctan2</span><span class="p">(</span> <span class="n">norm_vec</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">norm_vec</span><span class="p">[</span><span class="mi">0</span><span class="p">])),</span>
+                            <span class="n">np</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span> <span class="n">np</span><span class="o">.</span><span class="n">arctan2</span><span class="p">(</span> <span class="n">norm_vec</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">norm_vec</span><span class="p">[</span><span class="mi">0</span><span class="p">])),</span> <span class="mi">0</span><span class="p">])</span>
+    
+    <span class="n">dip_vec</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">cross</span><span class="p">(</span> <span class="n">norm_vec</span><span class="p">,</span> <span class="n">strike_vec</span><span class="p">)</span>
+    
+    <span class="n">slip_comp</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">ss</span><span class="p">,</span> <span class="n">ds</span><span class="p">,</span> <span class="n">ts</span><span class="p">])</span>
+    
+    <span class="n">fault_mat</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([[</span><span class="n">strike_vec</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">dip_vec</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">norm_vec</span><span class="p">[</span><span class="mi">0</span><span class="p">]],</span>
+                          <span class="p">[</span><span class="n">strike_vec</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">dip_vec</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">norm_vec</span><span class="p">[</span><span class="mi">1</span><span class="p">]],</span>
+                          <span class="p">[</span><span class="n">strike_vec</span><span class="p">[</span><span class="mi">2</span><span class="p">],</span> <span class="n">dip_vec</span><span class="p">[</span><span class="mi">2</span><span class="p">],</span> <span class="n">norm_vec</span><span class="p">[</span><span class="mi">2</span><span class="p">]]])</span>
+
+    <span class="n">slip_vec</span> <span class="o">=</span> <span class="n">fault_mat</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">slip_comp</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">slip_vec</span></div>
+
+
+<div class="viewcode-block" id="get_edge_params"><a class="viewcode-back" href="../../../../pyeq.lib.meade_tde.tde.html#pyeq.lib.meade_tde.tde.get_edge_params">[docs]</a><span class="k">def</span> <span class="nf">get_edge_params</span><span class="p">(</span><span class="n">i_tri</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">z</span><span class="p">,</span> <span class="n">slip_vec</span><span class="p">):</span>
+
+    <span class="c1"># calculate strike and dip (trend and plunge?) of current leg</span>
+    <span class="n">x_dist</span> <span class="o">=</span> <span class="n">x</span><span class="p">[</span><span class="n">i_tri</span> <span class="o">+</span> <span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="n">x</span><span class="p">[</span><span class="n">i_tri</span><span class="p">]</span>
+    <span class="n">y_dist</span> <span class="o">=</span> <span class="n">y</span><span class="p">[</span><span class="n">i_tri</span> <span class="o">+</span> <span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="n">y</span><span class="p">[</span><span class="n">i_tri</span><span class="p">]</span>
+    <span class="n">z_dist</span> <span class="o">=</span> <span class="n">z</span><span class="p">[</span><span class="n">i_tri</span> <span class="o">+</span> <span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="n">z</span><span class="p">[</span><span class="n">i_tri</span><span class="p">]</span>
+
+    <span class="n">strike_rad</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arctan2</span><span class="p">(</span> <span class="n">y_dist</span><span class="p">,</span> <span class="n">x_dist</span><span class="p">)</span>
+    <span class="n">strike</span> <span class="o">=</span> <span class="mf">180.</span> <span class="o">/</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span> <span class="o">*</span> <span class="n">strike_rad</span>
+
+<span class="c1">#    seg_map_length = np.sqrt(x_dist**2 + y_dist**2)</span>
+    <span class="n">rx</span><span class="p">,</span> <span class="n">_ry</span> <span class="o">=</span> <span class="n">rotate_xy_vec</span><span class="p">(</span><span class="n">x_dist</span><span class="p">,</span> <span class="n">y_dist</span><span class="p">,</span> <span class="o">-</span><span class="n">strike</span><span class="p">)</span>
+    <span class="n">dip</span> <span class="o">=</span> <span class="mf">180.</span> <span class="o">/</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">arctan2</span><span class="p">(</span> <span class="n">z_dist</span><span class="p">,</span> <span class="n">rx</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">dip</span> <span class="o">&gt;=</span> <span class="mf">0.</span><span class="p">:</span>
+        <span class="n">beta</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span> <span class="o">/</span> <span class="mf">180.</span> <span class="o">*</span> <span class="p">(</span><span class="mf">90.</span> <span class="o">-</span> <span class="n">dip</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">beta</span> <span class="o">&gt;</span> <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="o">/</span><span class="mf">2.</span><span class="p">):</span>
+            <span class="n">beta</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="o">/</span><span class="mf">2.</span> <span class="o">-</span> <span class="n">beta</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">beta</span> <span class="o">=</span> <span class="o">-</span><span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="o">/</span><span class="mf">180.</span> <span class="o">*</span> <span class="p">(</span><span class="mf">90.</span> <span class="o">+</span> <span class="n">dip</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">beta</span> <span class="o">&lt;</span> <span class="p">(</span><span class="o">-</span><span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="o">/</span><span class="mf">2.</span><span class="p">):</span>
+            <span class="n">beta</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="o">/</span><span class="mf">2.</span> <span class="o">-</span> <span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">beta</span><span class="p">)</span>
+
+    <span class="n">ss_vec</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span> <span class="n">np</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">strike_rad</span><span class="p">),</span> <span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">strike_rad</span><span class="p">),</span> <span class="mf">0.</span><span class="p">])</span>
+    <span class="n">ts_vec</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="o">-</span><span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">strike_rad</span><span class="p">),</span> <span class="n">np</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">strike_rad</span><span class="p">),</span> <span class="mf">0.</span><span class="p">])</span>
+    <span class="n">ds_vec</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">cross</span><span class="p">(</span><span class="n">ss_vec</span><span class="p">,</span> <span class="n">ts_vec</span><span class="p">)</span>
+    <span class="n">lss</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">slip_vec</span><span class="p">,</span> <span class="n">ss_vec</span><span class="p">)</span>
+    <span class="n">lts</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">slip_vec</span><span class="p">,</span> <span class="n">ts_vec</span><span class="p">)</span>
+    <span class="n">lds</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">slip_vec</span><span class="p">,</span> <span class="n">ds_vec</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">strike</span><span class="p">,</span> <span class="n">dip</span><span class="p">,</span> <span class="n">beta</span><span class="p">,</span> <span class="n">lss</span><span class="p">,</span> <span class="n">lts</span><span class="p">,</span> <span class="n">lds</span></div>
+
+
+<div class="viewcode-block" id="get_edge_strains"><a class="viewcode-back" href="../../../../pyeq.lib.meade_tde.tde.html#pyeq.lib.meade_tde.tde.get_edge_strains">[docs]</a><span class="k">def</span> <span class="nf">get_edge_strains</span><span class="p">(</span><span class="n">sx</span><span class="p">,</span> <span class="n">sy</span><span class="p">,</span> <span class="n">sz</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">z</span><span class="p">,</span> <span class="n">i_tri</span><span class="p">,</span> <span class="n">beta</span><span class="p">,</span> <span class="n">pr</span><span class="p">,</span> <span class="n">lss</span><span class="p">,</span> <span class="n">lts</span><span class="p">,</span><span class="n">lds</span><span class="p">,</span> 
+                     <span class="n">strike</span><span class="p">):</span>
+    
+    <span class="n">sx1</span><span class="p">,</span> <span class="n">sy1</span> <span class="o">=</span> <span class="n">rotate_xy_vec</span><span class="p">(</span><span class="n">sx</span><span class="o">-</span><span class="n">x</span><span class="p">[</span><span class="n">i_tri</span><span class="p">],</span> <span class="n">sy</span><span class="o">-</span><span class="n">y</span><span class="p">[</span><span class="n">i_tri</span><span class="p">],</span> <span class="o">-</span><span class="n">strike</span><span class="p">)</span>
+    <span class="n">a</span> <span class="o">=</span> <span class="n">sf</span><span class="o">.</span><span class="n">advs</span><span class="p">(</span><span class="n">sx1</span><span class="p">,</span> <span class="n">sy1</span><span class="p">,</span> <span class="n">sz</span><span class="o">-</span><span class="n">z</span><span class="p">[</span><span class="n">i_tri</span><span class="p">],</span> <span class="n">z</span><span class="p">[</span><span class="n">i_tri</span><span class="p">],</span> <span class="n">beta</span><span class="p">,</span> <span class="n">pr</span><span class="p">,</span> <span class="n">lss</span><span class="p">,</span> <span class="n">lts</span><span class="p">,</span> <span class="n">lds</span><span class="p">)</span>
+
+    <span class="n">sx2</span><span class="p">,</span> <span class="n">sy2</span> <span class="o">=</span> <span class="n">rotate_xy_vec</span><span class="p">(</span><span class="n">sx</span><span class="o">-</span><span class="n">x</span><span class="p">[</span><span class="n">i_tri</span><span class="o">+</span><span class="mi">1</span><span class="p">],</span> <span class="n">sy</span><span class="o">-</span><span class="n">y</span><span class="p">[</span><span class="n">i_tri</span><span class="o">+</span><span class="mi">1</span><span class="p">],</span> <span class="o">-</span><span class="n">strike</span><span class="p">)</span>
+    <span class="n">b</span> <span class="o">=</span> <span class="n">sf</span><span class="o">.</span><span class="n">advs</span><span class="p">(</span><span class="n">sx2</span><span class="p">,</span> <span class="n">sy2</span><span class="p">,</span> <span class="n">sz</span><span class="o">-</span><span class="n">z</span><span class="p">[</span><span class="n">i_tri</span><span class="o">+</span><span class="mi">1</span><span class="p">],</span> <span class="n">z</span><span class="p">[</span><span class="n">i_tri</span><span class="o">+</span><span class="mi">1</span><span class="p">],</span> <span class="n">beta</span><span class="p">,</span> <span class="n">pr</span><span class="p">,</span> <span class="n">lss</span><span class="p">,</span> <span class="n">lts</span><span class="p">,</span> <span class="n">lds</span><span class="p">)</span>
+
+    <span class="n">bxx</span> <span class="o">=</span> <span class="n">a</span><span class="p">[</span><span class="s1">&#39;11&#39;</span><span class="p">]</span><span class="o">-</span><span class="n">b</span><span class="p">[</span><span class="s1">&#39;11&#39;</span><span class="p">]</span> 
+    <span class="n">byy</span> <span class="o">=</span> <span class="n">a</span><span class="p">[</span><span class="s1">&#39;22&#39;</span><span class="p">]</span><span class="o">-</span><span class="n">b</span><span class="p">[</span><span class="s1">&#39;22&#39;</span><span class="p">]</span> 
+    <span class="n">bzz</span> <span class="o">=</span> <span class="n">a</span><span class="p">[</span><span class="s1">&#39;33&#39;</span><span class="p">]</span><span class="o">-</span><span class="n">b</span><span class="p">[</span><span class="s1">&#39;33&#39;</span><span class="p">]</span> 
+    <span class="n">bxy</span> <span class="o">=</span> <span class="n">a</span><span class="p">[</span><span class="s1">&#39;12&#39;</span><span class="p">]</span><span class="o">-</span><span class="n">b</span><span class="p">[</span><span class="s1">&#39;12&#39;</span><span class="p">]</span> 
+    <span class="n">bxz</span> <span class="o">=</span> <span class="n">a</span><span class="p">[</span><span class="s1">&#39;13&#39;</span><span class="p">]</span><span class="o">-</span><span class="n">b</span><span class="p">[</span><span class="s1">&#39;13&#39;</span><span class="p">]</span> 
+    <span class="n">byz</span> <span class="o">=</span> <span class="n">a</span><span class="p">[</span><span class="s1">&#39;23&#39;</span><span class="p">]</span><span class="o">-</span><span class="n">b</span><span class="p">[</span><span class="s1">&#39;23&#39;</span><span class="p">]</span> 
+
+    <span class="n">g</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span> <span class="o">/</span> <span class="mf">180.</span> <span class="o">*</span> <span class="n">strike</span>
+
+    <span class="n">e</span> <span class="o">=</span> <span class="p">{}</span>
+
+    <span class="n">e</span><span class="p">[</span><span class="s1">&#39;11&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">((</span><span class="n">np</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">g</span><span class="p">)</span> <span class="o">*</span> <span class="n">bxx</span> <span class="o">-</span> <span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">g</span><span class="p">)</span> <span class="o">*</span> <span class="n">bxy</span><span class="p">)</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">g</span><span class="p">)</span> <span class="o">-</span>
+               <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">g</span><span class="p">)</span> <span class="o">*</span> <span class="n">bxy</span> <span class="o">-</span> <span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">g</span><span class="p">)</span> <span class="o">*</span> <span class="n">byy</span><span class="p">)</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">g</span><span class="p">))</span>
+    <span class="n">e</span><span class="p">[</span><span class="s1">&#39;12&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">((</span><span class="n">np</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">g</span><span class="p">)</span> <span class="o">*</span> <span class="n">bxx</span> <span class="o">-</span> <span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">g</span><span class="p">)</span> <span class="o">*</span> <span class="n">bxy</span><span class="p">)</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">g</span><span class="p">)</span> <span class="o">+</span>
+               <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">g</span><span class="p">)</span> <span class="o">*</span> <span class="n">bxy</span> <span class="o">-</span> <span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">g</span><span class="p">)</span> <span class="o">*</span> <span class="n">byy</span><span class="p">)</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">g</span><span class="p">))</span>
+    <span class="n">e</span><span class="p">[</span><span class="s1">&#39;13&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">g</span><span class="p">)</span> <span class="o">*</span> <span class="n">bxz</span> <span class="o">-</span> <span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">g</span><span class="p">)</span> <span class="o">*</span> <span class="n">byz</span>
+    <span class="n">e</span><span class="p">[</span><span class="s1">&#39;22&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">((</span><span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">g</span><span class="p">)</span> <span class="o">*</span> <span class="n">bxx</span> <span class="o">+</span> <span class="n">np</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">g</span><span class="p">)</span> <span class="o">*</span> <span class="n">bxy</span><span class="p">)</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">g</span><span class="p">)</span> <span class="o">+</span>
+               <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">g</span><span class="p">)</span> <span class="o">*</span> <span class="n">bxy</span> <span class="o">+</span> <span class="n">np</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">g</span><span class="p">)</span> <span class="o">*</span> <span class="n">byy</span><span class="p">)</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">g</span><span class="p">))</span>
+    <span class="n">e</span><span class="p">[</span><span class="s1">&#39;23&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">g</span><span class="p">)</span> <span class="o">*</span> <span class="n">bxz</span> <span class="o">+</span> <span class="n">np</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">g</span><span class="p">)</span> <span class="o">*</span> <span class="n">byz</span>
+    <span class="n">e</span><span class="p">[</span><span class="s1">&#39;33&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">bzz</span>
+
+    <span class="k">return</span> <span class="n">e</span></div>
+               
+
+<div class="viewcode-block" id="get_edge_displacements"><a class="viewcode-back" href="../../../../pyeq.lib.meade_tde.tde.html#pyeq.lib.meade_tde.tde.get_edge_displacements">[docs]</a><span class="k">def</span> <span class="nf">get_edge_displacements</span><span class="p">(</span><span class="n">sx</span><span class="p">,</span> <span class="n">sy</span><span class="p">,</span> <span class="n">sz</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">z</span><span class="p">,</span> <span class="n">i_tri</span><span class="p">,</span> <span class="n">beta</span><span class="p">,</span> <span class="n">pr</span><span class="p">,</span> <span class="n">lss</span><span class="p">,</span> <span class="n">lts</span><span class="p">,</span><span class="n">lds</span><span class="p">,</span> 
+                           <span class="n">strike</span><span class="p">):</span>
+
+    <span class="n">sx1</span><span class="p">,</span> <span class="n">sy1</span> <span class="o">=</span> <span class="n">rotate_xy_vec</span><span class="p">(</span><span class="n">sx</span><span class="o">-</span><span class="n">x</span><span class="p">[</span><span class="n">i_tri</span><span class="p">],</span> <span class="n">sy</span><span class="o">-</span><span class="n">y</span><span class="p">[</span><span class="n">i_tri</span><span class="p">],</span> <span class="o">-</span><span class="n">strike</span><span class="p">)</span>
+    <span class="n">ux1</span><span class="p">,</span> <span class="n">uy1</span><span class="p">,</span> <span class="n">uz1</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">adv</span><span class="p">(</span><span class="n">sx1</span><span class="p">,</span> <span class="n">sy1</span><span class="p">,</span> <span class="n">sz</span><span class="o">-</span><span class="n">z</span><span class="p">[</span><span class="n">i_tri</span><span class="p">],</span> <span class="n">z</span><span class="p">[</span><span class="n">i_tri</span><span class="p">],</span> <span class="n">beta</span><span class="p">,</span> <span class="n">pr</span><span class="p">,</span> <span class="n">lss</span><span class="p">,</span> <span class="n">lts</span><span class="p">,</span> 
+                           <span class="n">lds</span><span class="p">)</span>
+
+    <span class="n">sx2</span><span class="p">,</span> <span class="n">sy2</span> <span class="o">=</span> <span class="n">rotate_xy_vec</span><span class="p">(</span><span class="n">sx</span><span class="o">-</span><span class="n">x</span><span class="p">[</span><span class="n">i_tri</span><span class="o">+</span><span class="mi">1</span><span class="p">],</span> <span class="n">sy</span><span class="o">-</span><span class="n">y</span><span class="p">[</span><span class="n">i_tri</span><span class="o">+</span><span class="mi">1</span><span class="p">],</span> <span class="o">-</span><span class="n">strike</span><span class="p">)</span>
+    <span class="n">ux2</span><span class="p">,</span> <span class="n">uy2</span><span class="p">,</span> <span class="n">uz2</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">adv</span><span class="p">(</span><span class="n">sx2</span><span class="p">,</span> <span class="n">sy2</span><span class="p">,</span> <span class="n">sz</span><span class="o">-</span><span class="n">z</span><span class="p">[</span><span class="n">i_tri</span><span class="o">+</span><span class="mi">1</span><span class="p">],</span> <span class="n">z</span><span class="p">[</span><span class="n">i_tri</span><span class="o">+</span><span class="mi">1</span><span class="p">],</span> <span class="n">beta</span><span class="p">,</span> <span class="n">pr</span><span class="p">,</span> <span class="n">lss</span><span class="p">,</span> 
+                           <span class="n">lts</span><span class="p">,</span> <span class="n">lds</span><span class="p">)</span>
+
+    <span class="n">uxn</span><span class="p">,</span> <span class="n">uyn</span> <span class="o">=</span> <span class="n">rotate_xy_vec</span><span class="p">((</span><span class="n">ux1</span> <span class="o">-</span> <span class="n">ux2</span><span class="p">),</span> <span class="p">(</span><span class="n">uy1</span><span class="o">-</span><span class="n">uy2</span><span class="p">),</span> <span class="n">strike</span><span class="p">)</span>
+    <span class="n">uzn</span> <span class="o">=</span> <span class="n">uz1</span> <span class="o">-</span> <span class="n">uz2</span>
+
+    <span class="k">return</span> <span class="n">uxn</span><span class="p">,</span> <span class="n">uyn</span><span class="p">,</span> <span class="n">uzn</span></div>
+    
+
+<div class="viewcode-block" id="rotate_xy_vec"><a class="viewcode-back" href="../../../../pyeq.lib.meade_tde.tde.html#pyeq.lib.meade_tde.tde.rotate_xy_vec">[docs]</a><span class="k">def</span> <span class="nf">rotate_xy_vec</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">alpha</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;Rotates a vector by an angle alpha&#39;&#39;&#39;</span>
+    <span class="n">alpha_rad</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span> <span class="o">/</span> <span class="mf">180.</span> <span class="o">*</span> <span class="n">alpha</span>
+
+    <span class="n">xp</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">alpha_rad</span><span class="p">)</span> <span class="o">*</span> <span class="n">x</span> <span class="o">-</span> <span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">alpha_rad</span><span class="p">)</span> <span class="o">*</span> <span class="n">y</span>
+    <span class="n">yp</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">alpha_rad</span><span class="p">)</span> <span class="o">*</span> <span class="n">x</span> <span class="o">+</span> <span class="n">np</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">alpha_rad</span><span class="p">)</span> <span class="o">*</span> <span class="n">y</span>
+
+    <span class="k">return</span> <span class="n">xp</span><span class="p">,</span> <span class="n">yp</span></div>
+
+
+<div class="viewcode-block" id="offset_underlying_points"><a class="viewcode-back" href="../../../../pyeq.lib.meade_tde.tde.html#pyeq.lib.meade_tde.tde.offset_underlying_points">[docs]</a><span class="k">def</span> <span class="nf">offset_underlying_points</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">z</span><span class="p">,</span> <span class="n">sx</span><span class="p">,</span> <span class="n">sy</span><span class="p">,</span> <span class="n">sz</span><span class="p">,</span> <span class="n">slip_vec</span><span class="p">,</span> <span class="n">U</span><span class="p">):</span>
+
+    <span class="n">poly</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="nb">zip</span><span class="p">(</span><span class="n">x</span><span class="p">,</span><span class="n">y</span><span class="p">))</span>
+
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">sx</span><span class="p">)):</span>
+        <span class="n">xi</span><span class="p">,</span> <span class="n">yi</span><span class="p">,</span> <span class="n">zi</span> <span class="o">=</span> <span class="n">sx</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">sy</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">sz</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+
+        <span class="k">if</span> <span class="n">line_plane_intersect</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">z</span><span class="p">,</span> <span class="n">xi</span><span class="p">,</span> <span class="n">yi</span><span class="p">,</span> <span class="n">zi</span><span class="p">)[</span><span class="mi">2</span><span class="p">]</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">point_in_poly</span><span class="p">(</span><span class="n">xi</span><span class="p">,</span> <span class="n">yi</span><span class="p">,</span> <span class="n">poly</span><span class="p">):</span>
+                <span class="n">U</span><span class="p">[</span><span class="s1">&#39;x&#39;</span><span class="p">][</span><span class="n">i</span><span class="p">]</span> <span class="o">-=</span> <span class="n">slip_vec</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+                <span class="n">U</span><span class="p">[</span><span class="s1">&#39;y&#39;</span><span class="p">][</span><span class="n">i</span><span class="p">]</span> <span class="o">-=</span> <span class="n">slip_vec</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+                <span class="n">U</span><span class="p">[</span><span class="s1">&#39;z&#39;</span><span class="p">][</span><span class="n">i</span><span class="p">]</span> <span class="o">-=</span> <span class="n">slip_vec</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span>
+    <span class="k">return</span> <span class="n">U</span></div>
+
+
+<div class="viewcode-block" id="point_in_poly"><a class="viewcode-back" href="../../../../pyeq.lib.meade_tde.tde.html#pyeq.lib.meade_tde.tde.point_in_poly">[docs]</a><span class="k">def</span> <span class="nf">point_in_poly</span><span class="p">(</span><span class="n">x</span><span class="p">,</span><span class="n">y</span><span class="p">,</span><span class="n">poly</span><span class="p">):</span>
+    <span class="c1"># from http://www.ariel.com.au/a/python-point-int-poly.html</span>
+
+    <span class="n">n</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">poly</span><span class="p">)</span>
+    <span class="n">inside</span> <span class="o">=</span> <span class="kc">False</span>
+
+    <span class="n">p1x</span><span class="p">,</span><span class="n">p1y</span> <span class="o">=</span> <span class="n">poly</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n</span><span class="o">+</span><span class="mi">1</span><span class="p">):</span>
+        <span class="n">p2x</span><span class="p">,</span><span class="n">p2y</span> <span class="o">=</span> <span class="n">poly</span><span class="p">[</span><span class="n">i</span> <span class="o">%</span> <span class="n">n</span><span class="p">]</span>
+        <span class="k">if</span> <span class="n">y</span> <span class="o">&gt;</span> <span class="nb">min</span><span class="p">(</span><span class="n">p1y</span><span class="p">,</span><span class="n">p2y</span><span class="p">):</span>
+            <span class="k">if</span> <span class="n">y</span> <span class="o">&lt;=</span> <span class="nb">max</span><span class="p">(</span><span class="n">p1y</span><span class="p">,</span><span class="n">p2y</span><span class="p">):</span>
+                <span class="k">if</span> <span class="n">x</span> <span class="o">&lt;=</span> <span class="nb">max</span><span class="p">(</span><span class="n">p1x</span><span class="p">,</span><span class="n">p2x</span><span class="p">):</span>
+                    <span class="k">if</span> <span class="n">p1y</span> <span class="o">!=</span> <span class="n">p2y</span><span class="p">:</span>
+                        <span class="n">xints</span> <span class="o">=</span> <span class="p">(</span><span class="n">y</span><span class="o">-</span><span class="n">p1y</span><span class="p">)</span><span class="o">*</span><span class="p">(</span><span class="n">p2x</span><span class="o">-</span><span class="n">p1x</span><span class="p">)</span><span class="o">/</span><span class="p">(</span><span class="n">p2y</span><span class="o">-</span><span class="n">p1y</span><span class="p">)</span><span class="o">+</span><span class="n">p1x</span>
+                    <span class="k">if</span> <span class="n">p1x</span> <span class="o">==</span> <span class="n">p2x</span> <span class="ow">or</span> <span class="n">x</span> <span class="o">&lt;=</span> <span class="n">xints</span><span class="p">:</span>
+                        <span class="n">inside</span> <span class="o">=</span> <span class="ow">not</span> <span class="n">inside</span>
+        <span class="n">p1x</span><span class="p">,</span><span class="n">p1y</span> <span class="o">=</span> <span class="n">p2x</span><span class="p">,</span><span class="n">p2y</span>
+
+    <span class="k">return</span> <span class="n">inside</span></div>
+
+
+<div class="viewcode-block" id="line_plane_intersect"><a class="viewcode-back" href="../../../../pyeq.lib.meade_tde.tde.html#pyeq.lib.meade_tde.tde.line_plane_intersect">[docs]</a><span class="k">def</span> <span class="nf">line_plane_intersect</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">z</span><span class="p">,</span> <span class="n">sx</span><span class="p">,</span> <span class="n">sy</span><span class="p">,</span> <span class="n">sz</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    Calculate the intersection of a line and a plane using a parametric</span>
+<span class="sd">    representation of the plane. This is hardcoded for a vertical line.</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+
+    <span class="n">numerator</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([[</span><span class="mf">1.</span><span class="p">,</span> <span class="mf">1.</span><span class="p">,</span> <span class="mf">1.</span><span class="p">,</span> <span class="mf">1.</span><span class="p">],</span>
+                          <span class="p">[</span><span class="n">x</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">x</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">x</span><span class="p">[</span><span class="mi">2</span><span class="p">],</span> <span class="n">sx</span><span class="p">],</span>
+                          <span class="p">[</span><span class="n">y</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">y</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">y</span><span class="p">[</span><span class="mi">2</span><span class="p">],</span> <span class="n">sy</span><span class="p">],</span>
+                          <span class="p">[</span><span class="n">z</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">z</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">z</span><span class="p">[</span><span class="mi">2</span><span class="p">],</span> <span class="n">sz</span><span class="p">]])</span>
+
+    <span class="n">numerator</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">det</span><span class="p">(</span><span class="n">numerator</span><span class="p">)</span>
+
+    <span class="n">denominator</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([[</span><span class="mf">1.</span><span class="p">,</span> <span class="mf">1.</span><span class="p">,</span> <span class="mf">1.</span><span class="p">,</span> <span class="mf">1.</span><span class="p">],</span>
+                            <span class="p">[</span><span class="n">x</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">x</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">x</span><span class="p">[</span><span class="mi">2</span><span class="p">],</span> <span class="mi">0</span><span class="p">],</span>
+                            <span class="p">[</span><span class="n">y</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">y</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">y</span><span class="p">[</span><span class="mi">2</span><span class="p">],</span> <span class="mi">0</span><span class="p">],</span>
+                            <span class="p">[</span><span class="n">z</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">z</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">z</span><span class="p">[</span><span class="mi">2</span><span class="p">],</span> <span class="o">-</span><span class="n">sz</span><span class="p">]])</span>
+
+    <span class="n">denominator</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">det</span><span class="p">(</span><span class="n">denominator</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">denominator</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="n">denominator</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">spacing</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+
+    <span class="n">t</span> <span class="o">=</span> <span class="n">numerator</span> <span class="o">/</span> <span class="n">denominator</span>
+    <span class="n">d</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">sx</span><span class="p">,</span> <span class="n">sy</span><span class="p">,</span> <span class="n">sz</span><span class="p">])</span> <span class="o">-</span> <span class="n">t</span> <span class="o">*</span> <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">sx</span><span class="p">,</span> <span class="n">sy</span><span class="p">,</span> <span class="mi">0</span><span class="p">])</span><span class="o">-</span> 
+                                      <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">sx</span><span class="p">,</span> <span class="n">sy</span><span class="p">,</span> <span class="n">sz</span><span class="p">]))</span>
+    <span class="k">return</span> <span class="n">d</span></div>
+
+ 
+                          
+<div class="viewcode-block" id="strain_to_stress"><a class="viewcode-back" href="../../../../pyeq.lib.meade_tde.tde.html#pyeq.lib.meade_tde.tde.strain_to_stress">[docs]</a><span class="k">def</span> <span class="nf">strain_to_stress</span><span class="p">(</span><span class="n">E</span><span class="p">,</span> <span class="n">lamda</span><span class="p">,</span> <span class="n">mu</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;Calculate stresses and invariants given a strain tensor and elastic</span>
+<span class="sd">       moduli lambda and mu.</span>
+
+<span class="sd">       Returns a dict S with the stress components and invariants.</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+
+    <span class="n">S</span> <span class="o">=</span> <span class="p">{}</span>
+
+    
+    <span class="n">S</span><span class="p">[</span><span class="s1">&#39;xx&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">mu</span> <span class="o">*</span> <span class="n">E</span><span class="p">[</span><span class="s1">&#39;xx&#39;</span><span class="p">]</span> <span class="o">+</span> <span class="n">lamda</span> <span class="o">*</span> <span class="p">(</span><span class="n">E</span><span class="p">[</span><span class="s1">&#39;xx&#39;</span><span class="p">]</span><span class="o">+</span><span class="n">E</span><span class="p">[</span><span class="s1">&#39;yy&#39;</span><span class="p">]</span><span class="o">+</span><span class="n">E</span><span class="p">[</span><span class="s1">&#39;zz&#39;</span><span class="p">])</span>
+    <span class="n">S</span><span class="p">[</span><span class="s1">&#39;yy&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">mu</span> <span class="o">*</span> <span class="n">E</span><span class="p">[</span><span class="s1">&#39;yy&#39;</span><span class="p">]</span> <span class="o">+</span> <span class="n">lamda</span> <span class="o">*</span> <span class="p">(</span><span class="n">E</span><span class="p">[</span><span class="s1">&#39;xx&#39;</span><span class="p">]</span><span class="o">+</span><span class="n">E</span><span class="p">[</span><span class="s1">&#39;yy&#39;</span><span class="p">]</span><span class="o">+</span><span class="n">E</span><span class="p">[</span><span class="s1">&#39;zz&#39;</span><span class="p">])</span>
+    <span class="n">S</span><span class="p">[</span><span class="s1">&#39;zz&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">mu</span> <span class="o">*</span> <span class="n">E</span><span class="p">[</span><span class="s1">&#39;zz&#39;</span><span class="p">]</span> <span class="o">+</span> <span class="n">lamda</span> <span class="o">*</span> <span class="p">(</span><span class="n">E</span><span class="p">[</span><span class="s1">&#39;xx&#39;</span><span class="p">]</span><span class="o">+</span><span class="n">E</span><span class="p">[</span><span class="s1">&#39;yy&#39;</span><span class="p">]</span><span class="o">+</span><span class="n">E</span><span class="p">[</span><span class="s1">&#39;zz&#39;</span><span class="p">])</span>
+    <span class="n">S</span><span class="p">[</span><span class="s1">&#39;xy&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">mu</span> <span class="o">*</span> <span class="n">E</span><span class="p">[</span><span class="s1">&#39;xy&#39;</span><span class="p">]</span>
+    <span class="n">S</span><span class="p">[</span><span class="s1">&#39;xz&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">mu</span> <span class="o">*</span> <span class="n">E</span><span class="p">[</span><span class="s1">&#39;xz&#39;</span><span class="p">]</span>
+    <span class="n">S</span><span class="p">[</span><span class="s1">&#39;yz&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">mu</span> <span class="o">*</span> <span class="n">E</span><span class="p">[</span><span class="s1">&#39;yz&#39;</span><span class="p">]</span>
+    
+    <span class="n">S</span><span class="p">[</span><span class="s1">&#39;I1&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">S</span><span class="p">[</span><span class="s1">&#39;xx&#39;</span><span class="p">]</span> <span class="o">+</span> <span class="n">S</span><span class="p">[</span><span class="s1">&#39;yy&#39;</span><span class="p">]</span> <span class="o">+</span> <span class="n">S</span><span class="p">[</span><span class="s1">&#39;zz&#39;</span><span class="p">]</span>
+    <span class="n">S</span><span class="p">[</span><span class="s1">&#39;I2&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="o">-</span><span class="p">(</span><span class="n">S</span><span class="p">[</span><span class="s1">&#39;xx&#39;</span><span class="p">]</span> <span class="o">*</span> <span class="n">S</span><span class="p">[</span><span class="s1">&#39;yy&#39;</span><span class="p">]</span> <span class="o">+</span> <span class="n">S</span><span class="p">[</span><span class="s1">&#39;yy&#39;</span><span class="p">]</span> <span class="o">*</span> <span class="n">S</span><span class="p">[</span><span class="s1">&#39;zz&#39;</span><span class="p">]</span> <span class="o">+</span> <span class="n">S</span><span class="p">[</span><span class="s1">&#39;xx&#39;</span><span class="p">]</span> <span class="o">*</span> <span class="n">S</span><span class="p">[</span><span class="s1">&#39;zz&#39;</span><span class="p">])</span> <span class="o">+</span> 
+               <span class="n">S</span><span class="p">[</span><span class="s1">&#39;xy&#39;</span><span class="p">]</span> <span class="o">*</span> <span class="n">S</span><span class="p">[</span><span class="s1">&#39;xy&#39;</span><span class="p">]</span> <span class="o">+</span> <span class="n">S</span><span class="p">[</span><span class="s1">&#39;xz&#39;</span><span class="p">]</span> <span class="o">*</span> <span class="n">S</span><span class="p">[</span><span class="s1">&#39;xz&#39;</span><span class="p">]</span> <span class="o">+</span> <span class="n">S</span><span class="p">[</span><span class="s1">&#39;yz&#39;</span><span class="p">]</span> <span class="o">*</span> <span class="n">S</span><span class="p">[</span><span class="s1">&#39;yz&#39;</span><span class="p">])</span>
+    <span class="n">S</span><span class="p">[</span><span class="s1">&#39;I3&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">S</span><span class="p">[</span><span class="s1">&#39;xx&#39;</span><span class="p">]</span> <span class="o">*</span> <span class="n">S</span><span class="p">[</span><span class="s1">&#39;yy&#39;</span><span class="p">]</span> <span class="o">*</span> <span class="n">S</span><span class="p">[</span><span class="s1">&#39;zz&#39;</span><span class="p">]</span> <span class="o">+</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">S</span><span class="p">[</span><span class="s1">&#39;xy&#39;</span><span class="p">]</span> <span class="o">*</span> <span class="n">S</span><span class="p">[</span><span class="s1">&#39;xz&#39;</span><span class="p">]</span> <span class="o">*</span> <span class="n">S</span><span class="p">[</span><span class="s1">&#39;yz&#39;</span><span class="p">]</span> <span class="o">-</span> 
+               <span class="p">(</span><span class="n">S</span><span class="p">[</span><span class="s1">&#39;xx&#39;</span><span class="p">]</span> <span class="o">*</span> <span class="n">S</span><span class="p">[</span><span class="s1">&#39;yz&#39;</span><span class="p">]</span> <span class="o">*</span> <span class="n">S</span><span class="p">[</span><span class="s1">&#39;yz&#39;</span><span class="p">]</span> <span class="o">+</span> <span class="n">S</span><span class="p">[</span><span class="s1">&#39;yy&#39;</span><span class="p">]</span> <span class="o">*</span> <span class="n">S</span><span class="p">[</span><span class="s1">&#39;xz&#39;</span><span class="p">]</span> <span class="o">*</span> <span class="n">S</span><span class="p">[</span><span class="s1">&#39;xz&#39;</span><span class="p">]</span> <span class="o">+</span> 
+                <span class="n">S</span><span class="p">[</span><span class="s1">&#39;zz&#39;</span><span class="p">]</span> <span class="o">*</span> <span class="n">S</span><span class="p">[</span><span class="s1">&#39;xy&#39;</span><span class="p">]</span> <span class="o">*</span> <span class="n">S</span><span class="p">[</span><span class="s1">&#39;xy&#39;</span><span class="p">]))</span>
+
+    <span class="k">return</span> <span class="n">S</span></div>
+</pre></div>
+
+           </div>
+           
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        
+        &copy; Copyright 2016, Jean-Mathieu Nocquet IRD/Geoazur
+
+    </p>
+  </div>
+    
+    
+    
+    Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

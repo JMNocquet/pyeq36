@@ -1,0 +1,481 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>pyeq.lib.conf.parse_command_line &mdash; pyeq 0.51.8 documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="../../../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../../../_static/pygments.css" type="text/css" />
+
+  
+  
+  
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="../../../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../../../../" src="../../../../_static/documentation_options.js"></script>
+        <script src="../../../../_static/jquery.js"></script>
+        <script src="../../../../_static/underscore.js"></script>
+        <script src="../../../../_static/doctools.js"></script>
+        <script src="../../../../_static/language_data.js"></script>
+    
+    <script type="text/javascript" src="../../../../_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../../../../index.html" class="icon icon-home" alt="Documentation Home"> pyeq
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                0.51.8
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../foreword.html">PYEQ: full time-dependent slip inversion</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../behaviour.html">Options controlling the overall behaviour</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../tutorial_static_inversion.html">Tutorial static inversion</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../dates.html">dates</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../roxane.html">Roxane’s notes on PYEQ</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../modules.html">for developpers</a></li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../../index.html">pyeq</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../../../index.html" class="icon icon-home"></a> &raquo;</li>
+        
+          <li><a href="../../../index.html">Module code</a> &raquo;</li>
+        
+      <li>pyeq.lib.conf.parse_command_line</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>Source code for pyeq.lib.conf.parse_command_line</h1><div class="highlight"><pre>
+<span></span>
+<div class="viewcode-block" id="parse_command_line"><a class="viewcode-back" href="../../../../pyeq.lib.conf.parse_command_line.html#pyeq.lib.conf.parse_command_line.parse_command_line">[docs]</a><span class="k">def</span> <span class="nf">parse_command_line</span><span class="p">():</span>
+
+    <span class="c1">###################################################################</span>
+    <span class="c1"># NOTES</span>
+    <span class="c1"># 21/03/2020: all default values are set to None. This allows</span>
+    <span class="c1">#             to use simultaneously a conf file</span>
+    <span class="c1">###################################################################</span>
+
+
+    <span class="c1">###################################################################</span>
+    <span class="c1"># IMPORT</span>
+    <span class="c1">###################################################################</span>
+    
+    <span class="kn">import</span> <span class="nn">argparse</span>
+    <span class="kn">from</span> <span class="nn">argparse</span> <span class="kn">import</span> <span class="n">RawTextHelpFormatter</span>
+    <span class="kn">import</span> <span class="nn">sys</span>
+    
+    <span class="c1">###################################################################</span>
+    <span class="c1"># PARSE ARGUMENT LINE</span>
+    <span class="c1">###################################################################</span>
+    
+    <span class="n">prog_info</span><span class="o">=</span><span class="s2">&quot;pyeq_kinematic.py : performs a kinematic inversion of slip using GPS time series as input</span><span class="se">\n</span><span class="s2">&quot;</span>
+    <span class="n">prog_info</span><span class="o">+=</span><span class="s2">&quot;--------------------------------------------------------------------------------------------------------------------------------------</span><span class="se">\n</span><span class="s2">&quot;</span>
+    <span class="n">prog_info</span><span class="o">+=</span><span class="s2">&quot;REQUIRED INPUT FOR ALL INVERSION SCHEME</span><span class="se">\n</span><span class="s2">&quot;</span>
+    <span class="n">prog_info</span><span class="o">+=</span><span class="s2">&quot;--------------------------------------------------------------------------------------------------------------------------------------</span><span class="se">\n</span><span class="s2">&quot;</span>
+    <span class="n">prog_info</span><span class="o">+=</span><span class="s2">&quot;    - Input Numpy npz file generated by pyeq_model_make_green.py</span><span class="se">\n</span><span class="s2">&quot;</span>
+    <span class="n">prog_info</span><span class="o">+=</span><span class="s2">&quot;    - Parameters for the inversion</span><span class="se">\n</span><span class="s2">&quot;</span>
+    <span class="n">prog_info</span><span class="o">+=</span><span class="s2">&quot;    - sigma      : regularization value. 1/sigma**2 is the weight given to regularization (Cm-1)</span><span class="se">\n</span><span class="s2">&quot;</span>
+    <span class="n">prog_info</span><span class="o">+=</span><span class="s2">&quot;    - dc         : critical distance in km for building Cm-1</span><span class="se">\n</span><span class="s2">&quot;</span>
+    <span class="n">prog_info</span><span class="o">+=</span><span class="s2">&quot;    - date dates to be provided as a list of decimal dates</span><span class="se">\n</span><span class="s2">&quot;</span>
+    <span class="n">prog_info</span><span class="o">+=</span><span class="s2">&quot;    - dir_ts directory of time series to be included in the inversion (.pos format)</span><span class="se">\n</span><span class="s2">&quot;</span>
+    
+    <span class="n">prog_info</span><span class="o">+=</span><span class="s2">&quot;--------------------------------------------------------------------------------------------------------------------------------------</span><span class="se">\n</span><span class="s2">&quot;</span>
+    
+    <span class="n">prog_epilog</span><span class="o">=</span><span class="s2">&quot;J.-M. Nocquet (Geoazur-CNRS) - July 2016&quot;</span>
+    
+    <span class="c1">#----------------------------------------------------------</span>
+    <span class="c1"># REQUIRED INPUT FOR ALL INVERSION SCHEME</span>
+    <span class="c1">#----------------------------------------------------------</span>
+    
+    <span class="n">parser</span> <span class="o">=</span> <span class="n">argparse</span><span class="o">.</span><span class="n">ArgumentParser</span><span class="p">(</span><span class="n">description</span><span class="o">=</span><span class="n">prog_info</span><span class="p">,</span><span class="n">epilog</span><span class="o">=</span><span class="n">prog_epilog</span><span class="p">,</span><span class="n">formatter_class</span><span class="o">=</span><span class="n">RawTextHelpFormatter</span><span class="p">)</span>
+    
+    <span class="c1">###########################################################################</span>
+    <span class="c1"># CONF</span>
+    <span class="c1">###########################################################################</span>
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s1">&#39;-conf&#39;</span><span class="p">,</span> \
+                        <span class="n">action</span><span class="o">=</span><span class="s1">&#39;store&#39;</span><span class="p">,</span> \
+                        <span class="n">dest</span><span class="o">=</span><span class="s1">&#39;conf&#39;</span><span class="p">,</span>\
+                        <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span>\
+                        <span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>\
+                        <span class="n">help</span><span class="o">=</span><span class="s1">&#39;pyeq configuration file&#39;</span><span class="p">)</span>
+    
+    <span class="c1">###########################################################################</span>
+    <span class="c1"># GEOMETRY</span>
+    <span class="c1">###########################################################################</span>
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s1">&#39;-input_npz&#39;</span><span class="p">,</span> \
+                        <span class="n">action</span><span class="o">=</span><span class="s1">&#39;store&#39;</span><span class="p">,</span> \
+                        <span class="n">dest</span><span class="o">=</span><span class="s1">&#39;input_npz&#39;</span><span class="p">,</span>\
+                        <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span>\
+                        <span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>\
+                        <span class="n">help</span><span class="o">=</span><span class="s1">&#39;input npz file including all information&#39;</span><span class="p">)</span>
+
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s1">&#39;-geometry_range_lon&#39;</span><span class="p">,</span> \
+                        <span class="n">action</span><span class="o">=</span><span class="s1">&#39;store&#39;</span><span class="p">,</span>\
+                        <span class="n">dest</span><span class="o">=</span><span class="s1">&#39;geometry_range_lon&#39;</span><span class="p">,</span>\
+                        <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span>\
+                        <span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>\
+                        <span class="n">help</span><span class="o">=</span><span class="s1">&#39;removes all subfaults with centroid strictly outside the provided longitude range [min_lon,max_lon] (unit dec.deg)&#39;</span><span class="p">)</span>
+    
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s1">&#39;-geometry_range_lat&#39;</span><span class="p">,</span> \
+                        <span class="n">action</span><span class="o">=</span><span class="s1">&#39;store&#39;</span><span class="p">,</span>\
+                        <span class="n">dest</span><span class="o">=</span><span class="s1">&#39;geometry_range_lat&#39;</span><span class="p">,</span>\
+                        <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span><span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>\
+                        <span class="n">help</span><span class="o">=</span><span class="s1">&#39;removes all subfaults with centroid strictly outside the provided latitude range [min_lon,max_lon] (unit dec.deg)&#39;</span><span class="p">)</span>
+    
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s1">&#39;-geometry_range_depth&#39;</span><span class="p">,</span>\
+                        <span class="n">action</span><span class="o">=</span><span class="s1">&#39;store&#39;</span><span class="p">,</span>\
+                        <span class="n">dest</span><span class="o">=</span><span class="s1">&#39;geometry_range_depth&#39;</span><span class="p">,</span>\
+                        <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span>\
+                        <span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>\
+                        <span class="n">help</span><span class="o">=</span><span class="s1">&#39;removes all subfaults with centroid strictly outside the provided longitude range [min_depth,max_depth] (unit km)&#39;</span><span class="p">)</span>
+    
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s1">&#39;-geometry_remove_idx&#39;</span><span class="p">,</span> \
+                        <span class="n">action</span><span class="o">=</span><span class="s1">&#39;store&#39;</span><span class="p">,</span>\
+                        <span class="n">dest</span><span class="o">=</span><span class="s1">&#39;geometry_remove_idx&#39;</span><span class="p">,</span>\
+                        <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span><span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>\
+                        <span class="n">help</span><span class="o">=</span><span class="s1">&#39;list of index of dislocation to be removed &#39;</span><span class="p">)</span>
+    
+    <span class="c1">###########################################################################</span>
+    <span class="c1"># REGULARIZATION</span>
+    <span class="c1">###########################################################################</span>
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s1">&#39;-dc&#39;</span><span class="p">,</span> \
+                        <span class="n">action</span><span class="o">=</span><span class="s1">&#39;store&#39;</span><span class="p">,</span> \
+                        <span class="n">dest</span><span class="o">=</span><span class="s1">&#39;dc&#39;</span><span class="p">,</span>\
+                        <span class="nb">type</span><span class="o">=</span><span class="nb">float</span><span class="p">,</span><span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>\
+                        <span class="n">help</span><span class="o">=</span><span class="s1">&#39;Correlation length in km&#39;</span><span class="p">)</span>
+    
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s1">&#39;-sigma&#39;</span><span class="p">,</span> \
+                        <span class="n">action</span><span class="o">=</span><span class="s1">&#39;store&#39;</span> <span class="p">,</span>\
+                        <span class="n">dest</span><span class="o">=</span><span class="s1">&#39;sigma&#39;</span><span class="p">,</span> \
+                        <span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> \
+                        <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span> \
+                        <span class="n">help</span><span class="o">=</span><span class="s1">&#39;sigma in mm controlling the regularization weight. &#39;</span><span class="o">+</span>\
+                        <span class="s1">&#39;Can also be provided as /sdotmax/sdotmin/relaxation_time&#39;</span><span class="p">)</span>
+
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s1">&#39;-tau&#39;</span><span class="p">,</span> \
+                        <span class="n">action</span><span class="o">=</span><span class="s1">&#39;store&#39;</span> <span class="p">,</span>\
+                        <span class="n">dest</span><span class="o">=</span><span class="s1">&#39;tau&#39;</span><span class="p">,</span>\
+                        <span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>\
+                        <span class="nb">type</span><span class="o">=</span><span class="nb">float</span><span class="p">,</span> \
+                        <span class="n">help</span><span class="o">=</span><span class="s1">&#39;correlation time for temporal smoothing&#39;</span><span class="p">)</span>
+
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s1">&#39;-cm_type&#39;</span><span class="p">,</span> \
+                        <span class="n">action</span><span class="o">=</span><span class="s1">&#39;store&#39;</span><span class="p">,</span>\
+                        <span class="n">dest</span><span class="o">=</span><span class="s1">&#39;cm_type&#39;</span><span class="p">,</span>\
+                        <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span>\
+                        <span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>\
+                        <span class="n">help</span><span class="o">=</span><span class="s1">&#39;Correlation matrix type&#39;</span><span class="p">)</span>
+
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s1">&#39;-cm_norm&#39;</span><span class="p">,</span> \
+                        <span class="n">action</span><span class="o">=</span><span class="s1">&#39;store&#39;</span> <span class="p">,</span>\
+                        <span class="n">dest</span><span class="o">=</span><span class="s1">&#39;cm_norm&#39;</span><span class="p">,</span> \
+                        <span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>\
+                        <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span> \
+                        <span class="n">help</span><span class="o">=</span><span class="s1">&#39;normalization for spatial model covariance&#39;</span><span class="p">)</span>
+
+    
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s1">&#39;-m0&#39;</span><span class="p">,</span> \
+                        <span class="n">action</span><span class="o">=</span><span class="s1">&#39;store&#39;</span> <span class="p">,</span>\
+                        <span class="n">dest</span><span class="o">=</span><span class="s1">&#39;m0&#39;</span><span class="p">,</span>  \
+                        <span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> \
+                        <span class="nb">type</span><span class="o">=</span><span class="nb">float</span><span class="p">,</span> \
+                        <span class="n">help</span><span class="o">=</span><span class="s1">&#39;a priori model&#39;</span><span class="p">)</span>
+
+    <span class="c1">###########################################################################</span>
+    <span class="c1"># RAKE</span>
+    <span class="c1">###########################################################################</span>
+
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s1">&#39;-rake_type&#39;</span><span class="p">,</span> \
+                        <span class="n">action</span><span class="o">=</span><span class="s1">&#39;store&#39;</span> <span class="p">,</span>\
+                        <span class="n">dest</span><span class="o">=</span><span class="s1">&#39;rake_type&#39;</span><span class="p">,</span> \
+                        <span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>\
+                        <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span> \
+                        <span class="n">help</span><span class="o">=</span><span class="s1">&#39;rake_type: Euler or constant&#39;</span><span class="p">)</span>
+    
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s1">&#39;-rake_value&#39;</span><span class="p">,</span> \
+                        <span class="n">action</span><span class="o">=</span><span class="s1">&#39;store&#39;</span> <span class="p">,</span> \
+                        <span class="n">dest</span><span class="o">=</span><span class="s1">&#39;rake_value&#39;</span><span class="p">,</span> \
+                        <span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> \
+                        <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span> \
+                        <span class="n">help</span><span class="o">=</span><span class="s1">&#39;Euler pole /long/lat/w/style &#39;</span><span class="o">+</span>\
+                        <span class="s1">&#39;(style among inverse, normal, leftlateral,rightlateral) or rake value in degrees&#39;</span><span class="p">)</span>
+    
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s1">&#39;-rake_constraint&#39;</span><span class="p">,</span> \
+                        <span class="n">action</span><span class="o">=</span><span class="s1">&#39;store&#39;</span> <span class="p">,</span>\
+                        <span class="n">dest</span><span class="o">=</span><span class="s1">&#39;rake_constraint&#39;</span><span class="p">,</span> \
+                        <span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>\
+                        <span class="nb">type</span><span class="o">=</span><span class="nb">float</span><span class="p">,</span> \
+                        <span class="n">help</span><span class="o">=</span><span class="s1">&#39;constraint on rake; 0 means fixed; &#39;</span><span class="o">+</span>
+                        <span class="s1">&#39;any positive value means sigma on the conjugate rake. This option is not implemented yet.&#39;</span><span class="p">)</span>
+    
+    <span class="c1">###########################################################################</span>
+    <span class="c1"># DATES</span>
+    <span class="c1">###########################################################################</span>
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s1">&#39;-dates&#39;</span><span class="p">,</span>\
+                        <span class="n">action</span><span class="o">=</span><span class="s1">&#39;store&#39;</span> <span class="p">,</span>\
+                        <span class="n">dest</span><span class="o">=</span><span class="s1">&#39;dates&#39;</span><span class="p">,</span> \
+                        <span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> \
+                        <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span> \
+                        <span class="n">help</span><span class="o">=</span> \
+                        <span class="s1">&#39;dates at which the slip estimation will be made&#39;</span> <span class="o">+</span>\
+                        <span class="s1">&#39;</span><span class="se">\n</span><span class="s1">Options available:&#39;</span> <span class="o">+</span>\
+                        <span class="s1">&#39;</span><span class="se">\n</span><span class="s1">all:all dates will be used. The start and end dates will be the one available in the time series&#39;</span> <span class="o">+</span>\
+                        <span class="s1">&#39;</span><span class="se">\n</span><span class="s1">[yr1,all,yr2]: all dates will be used between yr1 and yr2&#39;</span> <span class="o">+</span>\
+                        <span class="s1">&#39;</span><span class="se">\n</span><span class="s1">[yr1,step,yr2]: all dates will be used between yr1 and yr2 by step; &#39;</span> <span class="o">+</span>\
+                        <span class="s1">&#39;step can be specified in days like 2d or decimal years&#39;</span> <span class="o">+</span>\
+                        <span class="s1">&#39;</span><span class="se">\n</span><span class="s1">[t1,t2,...,tn]: list of dates in decimal years&#39;</span> <span class="o">+</span>\
+                        <span class="s1">&#39;</span><span class="se">\n</span><span class="s1"> or a file name generated by pyeq_model2_generate_dates_file.py&#39;</span> 
+                        <span class="p">)</span>
+    
+    <span class="c1">###########################################################################</span>
+    <span class="c1"># INPUT GPS DATA</span>
+    <span class="c1">###########################################################################</span>
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s1">&#39;-rounding&#39;</span><span class="p">,</span> \
+                        <span class="n">action</span><span class="o">=</span><span class="s1">&#39;store&#39;</span><span class="p">,</span>\
+                        <span class="n">dest</span><span class="o">=</span><span class="s1">&#39;rounding&#39;</span><span class="p">,</span>\
+                        <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span><span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>\
+                        <span class="n">help</span><span class="o">=</span><span class="s1">&#39;specify date rounding for both model and observation dates. Choose among day, hour, minute, second.&#39;</span><span class="p">)</span>
+    
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s1">&#39;-dir_ts&#39;</span><span class="p">,</span>\
+                        <span class="n">action</span><span class="o">=</span><span class="s1">&#39;store&#39;</span> <span class="p">,</span><span class="n">dest</span><span class="o">=</span><span class="s1">&#39;dir_ts&#39;</span><span class="p">,</span>\
+                        <span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> \
+                        <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span> \
+                        <span class="n">help</span><span class="o">=</span><span class="s1">&#39;directory of time series to be included in the inversion (.pos format). Alternatively a pck or tsr file can be specified (more efficient).&#39;</span><span class="p">)</span>
+    
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s1">&#39;-no_up&#39;</span><span class="p">,</span> \
+                        <span class="n">action</span><span class="o">=</span><span class="s1">&#39;count&#39;</span><span class="p">,</span> \
+                        <span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> \
+                        <span class="n">help</span><span class="o">=</span><span class="s1">&#39;do not use the vertical component in the inversion&#39;</span><span class="p">)</span>
+    
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s1">&#39;-s_up&#39;</span><span class="p">,</span> \
+                        <span class="n">action</span><span class="o">=</span><span class="s1">&#39;store&#39;</span><span class="p">,</span>\
+                        <span class="n">dest</span><span class="o">=</span><span class="s1">&#39;s_up&#39;</span><span class="p">,</span>\
+                        <span class="nb">type</span><span class="o">=</span><span class="nb">float</span><span class="p">,</span><span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>\
+                        <span class="n">help</span><span class="o">=</span><span class="s1">&#39;rescale up uncertainty. default is 5.&#39;</span><span class="p">)</span>
+    
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s1">&#39;-s_h&#39;</span><span class="p">,</span> \
+                        <span class="n">action</span><span class="o">=</span><span class="s1">&#39;store&#39;</span><span class="p">,</span>\
+                        <span class="n">dest</span><span class="o">=</span><span class="s1">&#39;s_h&#39;</span><span class="p">,</span>\
+                        <span class="nb">type</span><span class="o">=</span><span class="nb">float</span><span class="p">,</span><span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>\
+                        <span class="n">help</span><span class="o">=</span><span class="s1">&#39;rescale horizontal component. default is 1.&#39;</span><span class="p">)</span>
+
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s1">&#39;-exclude_gps&#39;</span><span class="p">,</span>\
+                        <span class="n">action</span><span class="o">=</span><span class="s1">&#39;append&#39;</span><span class="p">,</span>\
+                        <span class="n">dest</span><span class="o">=</span><span class="s1">&#39;lexclude_gps&#39;</span><span class="p">,</span>\
+                        <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span><span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>\
+                        <span class="n">help</span><span class="o">=</span><span class="s1">&#39;GPS site to be excluded from inversion.&#39;</span><span class="p">)</span>
+    
+    <span class="c1">###########################################################################</span>
+    <span class="c1"># ALGORITHM &amp; INVERSION OPTIONS</span>
+    <span class="c1">###########################################################################</span>
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s1">&#39;-nnls&#39;</span><span class="p">,</span>\
+                        <span class="n">action</span><span class="o">=</span><span class="s1">&#39;store&#39;</span><span class="p">,</span>\
+                        <span class="n">dest</span><span class="o">=</span><span class="s1">&#39;nnls&#39;</span><span class="p">,</span>\
+                        <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span><span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>\
+                        <span class="n">help</span><span class="o">=</span><span class="s1">&#39;non-negative least-squares algorithm. Choose among: &#39;</span>\
+                        <span class="s1">&#39;scipy_nnls , nnls_predotted , lsqnonneg , nnlsm_block_pivot , nnlsm_activeset , scipy_lsq_linear,&#39;</span><span class="o">+</span>\
+                        <span class="s1">&#39;scipy_lbfgsb&#39;</span><span class="p">)</span>
+    
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s1">&#39;-build&#39;</span><span class="p">,</span> \
+                        <span class="n">action</span><span class="o">=</span><span class="s1">&#39;store&#39;</span><span class="p">,</span>\
+                        <span class="n">dest</span><span class="o">=</span><span class="s1">&#39;build&#39;</span><span class="p">,</span>\
+                        <span class="nb">type</span><span class="o">=</span><span class="nb">int</span><span class="p">,</span>\
+                        <span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>\
+                        <span class="n">help</span><span class="o">=</span><span class="s1">&#39;specify the routine used to build the normal system. Default is 2&#39;</span><span class="p">)</span>
+
+    <span class="c1">###########################################################################</span>
+    <span class="c1"># GENERAL</span>
+    <span class="c1">###########################################################################</span>
+
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s1">&#39;-pck&#39;</span><span class="p">,</span> \
+                        <span class="n">action</span><span class="o">=</span><span class="s1">&#39;store&#39;</span><span class="p">,</span> \
+                        <span class="n">dest</span><span class="o">=</span><span class="s1">&#39;pck&#39;</span><span class="p">,</span> \
+                        <span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> \
+                        <span class="n">help</span><span class="o">=</span><span class="s1">&#39;model.pck file&#39;</span><span class="p">)</span>
+
+    
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s1">&#39;-save&#39;</span><span class="p">,</span> <span class="n">action</span><span class="o">=</span><span class="s1">&#39;store&#39;</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> \
+                        <span class="n">help</span><span class="o">=</span><span class="s1">&#39;save matrices. Can be N_obs for the observationnal normal system or N for the full (observation and regularization system)&#39;</span><span class="p">)</span>
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s1">&#39;-no_opt&#39;</span><span class="p">,</span> <span class="n">action</span><span class="o">=</span><span class="s1">&#39;count&#39;</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s1">&#39;stop before doing the inversion&#39;</span><span class="p">)</span>
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s1">&#39;-verbose&#39;</span><span class="p">,</span> <span class="s1">&#39;-v&#39;</span><span class="p">,</span> <span class="n">action</span><span class="o">=</span><span class="s1">&#39;count&#39;</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s1">&#39;verbose mode&#39;</span><span class="p">)</span>
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s1">&#39;-debug&#39;</span><span class="p">,</span> <span class="n">action</span><span class="o">=</span><span class="s1">&#39;count&#39;</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s1">&#39;debug mode&#39;</span><span class="p">)</span>
+    
+    
+    <span class="c1">#----------------------------------------------------------</span>
+    <span class="c1"># OPTION FOR RESOLUTION TESTS</span>
+    <span class="c1">#----------------------------------------------------------</span>
+    
+    <span class="c1"># parser.add_argument(&#39;--c&#39;, action=&#39;append&#39; ,dest=&#39;c&#39;,  default=None, type=str, help=&#39;constraints on a specific patch n/value&#39;)</span>
+    
+    <span class="c1">#parser.add_argument(&#39;--c&#39;, action=&#39;append&#39; ,dest=&#39;c&#39;,  default=None, type=str, help=&#39;constraints for cumulated slip value for a specific subfault at a given time step e.g.--c index_subfault/slip/time_step/constraint&#39;)</span>
+    <span class="c1">#parser.add_argument(&#39;--e&#39;, action=&#39;append&#39; ,dest=&#39;e&#39;,  default=None, type=str, help=&#39;constraints for final slip value equality for two subfaults e.g.--c index1_subfault/index2_subfault/constraint&#39;)</span>
+    <span class="c1">#parser.add_argument(&#39;--x&#39;, action=&#39;append&#39; ,dest=&#39;x&#39;,  default=None, type=str, help=&#39;constraints on the cumulated slip for a specific area given as subfault index and radius at a given time step e.g.--x index_subfault/radius/slip/time_step/constraint&#39;)</span>
+    
+    
+    <span class="n">args</span> <span class="o">=</span> <span class="n">parser</span><span class="o">.</span><span class="n">parse_args</span><span class="p">()</span>
+    
+    <span class="k">if</span> <span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">sys</span><span class="o">.</span><span class="n">argv</span><span class="p">)</span><span class="o">&lt;</span><span class="mi">2</span><span class="p">):</span>
+        <span class="n">parser</span><span class="o">.</span><span class="n">print_help</span><span class="p">()</span>
+        <span class="n">sys</span><span class="o">.</span><span class="n">exit</span><span class="p">()</span>
+
+
+
+    <span class="k">return</span> <span class="n">args</span> </div>
+</pre></div>
+
+           </div>
+           
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        
+        &copy; Copyright 2016, Jean-Mathieu Nocquet IRD/Geoazur
+
+    </p>
+  </div>
+    
+    
+    
+    Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

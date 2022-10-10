@@ -1,0 +1,313 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>pyeq.lib.elastic_tensor.shrink &mdash; pyeq 0.51.8 documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="../../../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../../../_static/pygments.css" type="text/css" />
+
+  
+  
+  
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="../../../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../../../../" src="../../../../_static/documentation_options.js"></script>
+        <script src="../../../../_static/jquery.js"></script>
+        <script src="../../../../_static/underscore.js"></script>
+        <script src="../../../../_static/doctools.js"></script>
+        <script src="../../../../_static/language_data.js"></script>
+    
+    <script type="text/javascript" src="../../../../_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../../../../index.html" class="icon icon-home" alt="Documentation Home"> pyeq
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                0.51.8
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../foreword.html">PYEQ: full time-dependent slip inversion</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../behaviour.html">Options controlling the overall behaviour</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../tutorial_static_inversion.html">Tutorial static inversion</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../dates.html">dates</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../roxane.html">Roxane’s notes on PYEQ</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../modules.html">for developpers</a></li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../../index.html">pyeq</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../../../index.html" class="icon icon-home"></a> &raquo;</li>
+        
+          <li><a href="../../../index.html">Module code</a> &raquo;</li>
+        
+      <li>pyeq.lib.elastic_tensor.shrink</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>Source code for pyeq.lib.elastic_tensor.shrink</h1><div class="highlight"><pre>
+<span></span>
+<span class="c1">###############################################################################</span>
+<div class="viewcode-block" id="shrink"><a class="viewcode-back" href="../../../../pyeq.lib.elastic_tensor.shrink.html#pyeq.lib.elastic_tensor.shrink.shrink">[docs]</a><span class="k">def</span> <span class="nf">shrink</span><span class="p">(</span><span class="n">G</span> <span class="p">,</span> <span class="n">lfaults</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">lobs</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">lcomponent</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">lrake</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="c1">###############################################################################</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    </span>
+<span class="sd">    From a 4-dimension elastic tensor G, creates a 2-dimension matrix G&#39; so that np.dot(G&#39;,slip)=d</span>
+<span class="sd">    where slip is the slip component vector and d the displacement vector</span>
+<span class="sd">    </span>
+<span class="sd">    The input G tensor is assumed to be organized as follows:</span>
+<span class="sd">    </span>
+<span class="sd">    G(i,j,k,l) is the prediction for dislocation j at site i component k for rake l</span>
+<span class="sd">    k=0,1,2 = east, north, up</span>
+<span class="sd">    l=0,1 : rake_principal &amp; rake_conjugate</span>
+
+<span class="sd">    The return matrix (2D-numpy array) is organized so that:</span>
+<span class="sd">    </span>
+<span class="sd">    the slip vector is partitioned into a main rake component and optionally a conjugate rake component m=[ m_mr , m_cr ]</span>
+<span class="sd">    the observation displacement vector is organized by components d=[de,dn,du] where de,dn,du are the vectors of E,N,U displacements ( the length of de is the length of lobs )</span>
+
+<span class="sd">    :param lfaults   : list of fault indexes to be kept</span>
+<span class="sd">    :param lobs      : list of observation indexes sites to be kept</span>
+<span class="sd">    :param lcomponent: list of component indexes to be kept</span>
+<span class="sd">    :param lrake     : list of rake component indexes to be kept</span>
+<span class="sd">    </span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="c1">###########################################################################</span>
+    <span class="c1"># import </span>
+    <span class="c1">###########################################################################</span>
+    
+    <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+    
+    <span class="c1">###########################################################################</span>
+    <span class="c1"># check input argument</span>
+    <span class="c1">###########################################################################</span>
+    
+    <span class="c1"># Dimension of input G</span>
+    <span class="k">if</span> <span class="n">G</span><span class="o">.</span><span class="n">ndim</span> <span class="o">!=</span> <span class="mi">4</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;!!! ERROR: Input array MUST have 4 dimensions&quot;</span><span class="p">)</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">()</span>
+    
+    <span class="c1"># lfaults</span>
+    
+    <span class="k">if</span> <span class="n">lfaults</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">np_fault</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span> <span class="n">G</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">np_fault</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">unique</span><span class="p">(</span> <span class="n">lfaults</span> <span class="p">)</span>
+
+    <span class="c1"># lobs</span>
+    
+    <span class="k">if</span> <span class="n">lobs</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">np_obs</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span> <span class="n">G</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">np_obs</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">unique</span><span class="p">(</span> <span class="n">lobs</span> <span class="p">)</span>
+
+    <span class="c1"># lcomponent</span>
+
+    <span class="k">if</span> <span class="n">lcomponent</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">np_component</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span> <span class="n">G</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">np_component</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">unique</span><span class="p">(</span> <span class="n">lcomponent</span> <span class="p">)</span>
+    
+    <span class="c1"># lrake</span>
+
+    <span class="k">if</span> <span class="n">lrake</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">np_rake</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span> <span class="n">G</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span> <span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">np_rake</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">unique</span><span class="p">(</span> <span class="n">lrake</span> <span class="p">)</span>
+
+    <span class="c1">###########################################################################</span>
+    <span class="c1"># remove unwanted component</span>
+    <span class="c1">###########################################################################</span>
+
+    <span class="n">G4</span> <span class="o">=</span> <span class="n">G</span><span class="p">[</span> <span class="n">np_obs</span><span class="p">][:,</span> <span class="n">np_fault</span><span class="p">][:,:,</span><span class="n">np_component</span><span class="p">][:,:,:,</span><span class="n">np_rake</span><span class="p">]</span>
+
+
+    <span class="c1">###########################################################################</span>
+    <span class="c1"># convert to numpy 2D array</span>
+    <span class="c1">###########################################################################</span>
+
+    <span class="c1"># lengths</span>
+    <span class="n">nf</span> <span class="o">=</span> <span class="n">np_fault</span><span class="o">.</span><span class="n">size</span>
+    <span class="n">no</span> <span class="o">=</span> <span class="n">np_obs</span><span class="o">.</span><span class="n">size</span>
+    <span class="n">nc</span> <span class="o">=</span> <span class="n">np_component</span><span class="o">.</span><span class="n">size</span>
+    <span class="n">nr</span> <span class="o">=</span> <span class="n">np_rake</span><span class="o">.</span><span class="n">size</span>
+
+    <span class="c1"># slow approach</span>
+    <span class="c1">#</span>
+    <span class="c1">#G = np.zeros( ( no*nc , nf*nr ) )</span>
+    <span class="c1">#</span>
+    <span class="c1">#for nobs in np.arange(no):</span>
+    <span class="c1">#    for nfault in np.arange(nf):</span>
+    <span class="c1">#        for ncomponent in np.arange(nc):</span>
+    <span class="c1">#            for nrake in np.arange(nr):</span>
+    <span class="c1">#                G[ ncomponent*no + nobs , nrake*nf + nfault ] = G4[ nobs, nfault, ncomponent, nrake ]</span>
+    
+    <span class="c1"># fast approach</span>
+
+    <span class="n">G</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">moveaxis</span><span class="p">(</span><span class="n">G4</span><span class="p">,[</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">],[</span><span class="mi">1</span><span class="p">,</span><span class="mi">3</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">2</span><span class="p">])</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span> <span class="n">no</span><span class="o">*</span><span class="n">nc</span> <span class="p">,</span> <span class="n">nf</span><span class="o">*</span><span class="n">nr</span> <span class="p">)</span> 
+
+    <span class="k">return</span><span class="p">(</span> <span class="n">G</span> <span class="p">)</span> </div>
+    
+
+    
+
+
+</pre></div>
+
+           </div>
+           
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        
+        &copy; Copyright 2016, Jean-Mathieu Nocquet IRD/Geoazur
+
+    </p>
+  </div>
+    
+    
+    
+    Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

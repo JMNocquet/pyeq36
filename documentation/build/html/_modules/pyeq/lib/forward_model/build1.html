@@ -1,0 +1,805 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>pyeq.lib.forward_model.build1 &mdash; pyeq 0.51.8 documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="../../../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../../../_static/pygments.css" type="text/css" />
+
+  
+  
+  
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="../../../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../../../../" src="../../../../_static/documentation_options.js"></script>
+        <script src="../../../../_static/jquery.js"></script>
+        <script src="../../../../_static/underscore.js"></script>
+        <script src="../../../../_static/doctools.js"></script>
+        <script src="../../../../_static/language_data.js"></script>
+    
+    <script type="text/javascript" src="../../../../_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../../../../index.html" class="icon icon-home" alt="Documentation Home"> pyeq
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                0.51.8
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../foreword.html">PYEQ: full time-dependent slip inversion</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../behaviour.html">Options controlling the overall behaviour</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../tutorial_static_inversion.html">Tutorial static inversion</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../dates.html">dates</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../roxane.html">Roxane’s notes on PYEQ</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../modules.html">for developpers</a></li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../../index.html">pyeq</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../../../index.html" class="icon icon-home"></a> &raquo;</li>
+        
+          <li><a href="../../../index.html">Module code</a> &raquo;</li>
+        
+      <li>pyeq.lib.forward_model.build1</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>Source code for pyeq.lib.forward_model.build1</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Routines to build the linear system</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="build1"><a class="viewcode-back" href="../../../../pyeq.lib.forward_model.build1.html#pyeq.lib.forward_model.build1.build1">[docs]</a><span class="k">def</span> <span class="nf">build1</span><span class="p">(</span><span class="n">lGts</span><span class="p">,</span><span class="n">np_dates</span><span class="p">,</span><span class="n">NAME_OBS</span><span class="p">,</span><span class="n">GREEN</span><span class="p">,</span> <span class="n">UP</span><span class="p">,</span> <span class="n">s_up</span><span class="p">,</span> <span class="n">date_tol</span><span class="o">=</span><span class="mf">0.1</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span><span class="n">debug</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    </span>
+<span class="sd">    :param lGts: list of Gts</span>
+<span class="sd">    :param np_dates: numpy 1D array of dates</span>
+<span class="sd">    :param NAME_OBS: numpy 1D array of site name</span>
+<span class="sd">    :param GREEN: Green tensor as a 4D numpy array</span>
+<span class="sd">    :param UP: boolean, True means up component will be included</span>
+<span class="sd">    :param date_tol: tolerance (unit in fractional day) on dates to search for dates in time series corresponding to the modeling period. Use 0.1 days for daily time series.</span>
+<span class="sd">    :param verbose: verbose mode</span>
+<span class="sd">    </span>
+<span class="sd">    :return ATPA, ATPB: LHS matrix and RHS vector ready for inversion algorithm</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;-- Building the linear system using routine build_linear_system_kinematic_no_uncertainty&#39;</span><span class="p">)</span>
+    
+    <span class="c1"># debug - verbose</span>
+    <span class="k">if</span> <span class="n">debug</span><span class="p">:</span>
+        <span class="n">verbose</span><span class="o">=</span><span class="kc">True</span>
+    
+    <span class="c1"># import</span>
+    
+    <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+    <span class="kn">import</span> <span class="nn">pyacs.lib.astrotime</span> <span class="k">as</span> <span class="nn">at</span>
+    <span class="kn">import</span> <span class="nn">resource</span>
+    
+<span class="c1">#    from numba import autojit    </span>
+    
+    <span class="c1"># initialize the list of components to be included in the linear system</span>
+    <span class="k">if</span> <span class="n">UP</span><span class="p">:</span>
+        <span class="n">lcomponents</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">]</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">lcomponents</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">]</span>
+    
+    <span class="c1"># shapes of the linear system to be built</span>
+    <span class="n">nfaults</span><span class="o">=</span><span class="n">GREEN</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+    <span class="n">nstep</span> <span class="o">=</span> <span class="n">np_dates</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">-</span><span class="mi">1</span>
+    <span class="n">nparameters</span><span class="o">=</span><span class="n">nfaults</span><span class="o">*</span><span class="n">nstep</span>
+    
+    <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;-- nfaults = &#39;</span><span class="p">,</span><span class="n">nfaults</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;-- number of time steps &#39;</span><span class="p">,</span> <span class="n">nstep</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;-- nparameters &#39;</span><span class="p">,</span><span class="n">nparameters</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;-- np_date &#39;</span><span class="p">,</span> <span class="n">np_dates</span><span class="p">)</span>
+    
+    <span class="c1"># START DATES SECTION</span>
+    
+    <span class="c1"># converts modeling dates to integer seconds</span>
+    <span class="n">np_dates_datetime</span> <span class="o">=</span> <span class="n">at</span><span class="o">.</span><span class="n">decyear2datetime</span><span class="p">(</span><span class="n">np_dates</span><span class="p">)</span> <span class="o">-</span> <span class="n">at</span><span class="o">.</span><span class="n">decyear2datetime</span><span class="p">(</span><span class="n">np_dates</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+    <span class="n">np_dates_s</span> <span class="o">=</span>  <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="nb">map</span><span class="p">(</span><span class="nb">int</span><span class="p">,[</span><span class="n">x</span><span class="o">.</span><span class="n">total_seconds</span><span class="p">()</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">np_dates_datetime</span><span class="p">])))</span>
+
+    <span class="n">np_step_duration_s</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">diff</span><span class="p">(</span><span class="n">np_dates_s</span><span class="p">)</span>
+    <span class="n">np_step_start_s</span> <span class="o">=</span> <span class="n">np_dates_s</span><span class="p">[</span><span class="mi">0</span><span class="p">:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> 
+    <span class="n">np_step_end_s</span>   <span class="o">=</span> <span class="n">np_dates_s</span><span class="p">[</span><span class="mi">1</span><span class="p">:]</span> 
+
+    <span class="n">nstep</span> <span class="o">=</span> <span class="n">np_step_duration_s</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+
+    <span class="k">if</span> <span class="n">verbose</span><span class="p">:</span>    
+        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;-- converted dates of modeling time converted from decimal years to integer seconds&#39;</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;-- original decimal years modeling dates&#39;</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="n">np_dates</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;-- modeling dates in seconds wrt reference modeling date&#39;</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="n">np_dates_s</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;-- modeling start dates in seconds wrt reference modeling date&#39;</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="n">np_step_start_s</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;-- modeling end   dates in seconds wrt reference modeling date&#39;</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="n">np_step_end_s</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;-- modeling duration in seconds for each modeling time step&#39;</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="n">np_step_duration_s</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;-- number of modeling time steps : &#39;</span><span class="p">,</span> <span class="n">nstep</span><span class="p">)</span>
+
+    <span class="c1"># shrink Gts to the period encompassed by np_dates</span>
+    
+    <span class="n">wlgts</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">l_end_date_ts</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">l_start_date_ts</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">gts</span> <span class="ow">in</span> <span class="n">lGts</span><span class="p">:</span>
+        
+        <span class="k">if</span> <span class="n">verbose</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;-- Extracting dates for site &#39;</span><span class="p">,</span><span class="n">gts</span><span class="o">.</span><span class="n">code</span><span class="p">)</span>
+        
+        <span class="n">new_gts</span> <span class="o">=</span> <span class="n">gts</span><span class="o">.</span><span class="n">extract_periods</span><span class="p">(</span> <span class="p">[</span><span class="n">np_dates</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">-</span><span class="n">date_tol</span><span class="o">/</span><span class="mf">365.25</span> <span class="p">,</span> <span class="n">np_dates</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">+</span> <span class="n">date_tol</span><span class="o">/</span><span class="mf">365.25</span><span class="p">]</span> <span class="p">,</span><span class="n">verbose</span> <span class="o">=</span> <span class="kc">False</span> <span class="p">)</span>
+
+
+        
+        <span class="c1"># time series has no data, skip</span>
+        <span class="k">if</span> <span class="n">new_gts</span><span class="o">.</span><span class="n">data</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;! WARNING: no data found at requested time for site &#39;</span><span class="p">,</span><span class="n">gts</span><span class="o">.</span><span class="n">code</span><span class="p">,</span><span class="n">gts</span><span class="o">.</span><span class="n">ifile</span><span class="p">)</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;! WARNING: site &#39;</span><span class="p">,</span><span class="n">gts</span><span class="o">.</span><span class="n">code</span><span class="p">,</span><span class="s1">&#39; will be skipped in the inversion&#39;</span><span class="p">)</span>
+            <span class="k">continue</span>
+        <span class="c1"># time series has only 1 data, skip</span>
+        <span class="k">elif</span> <span class="n">new_gts</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;! WARNING: only one date found at requested time for site &#39;</span><span class="p">,</span><span class="n">gts</span><span class="o">.</span><span class="n">code</span><span class="p">,</span><span class="n">gts</span><span class="o">.</span><span class="n">ifile</span><span class="p">)</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;! WARNING: site &#39;</span><span class="p">,</span><span class="n">gts</span><span class="o">.</span><span class="n">code</span><span class="p">,</span><span class="s1">&#39; will be skipped in the inversion&#39;</span><span class="p">)</span>
+            <span class="k">continue</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="c1"># set dN, dE, dU to 0.0 at the first date</span>
+            <span class="k">if</span> <span class="n">debug</span><span class="p">:</span>
+                <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;-- set dN, dE, dU to 0.0 at the first date &#39;</span><span class="p">,</span> <span class="n">new_gts</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">],</span> <span class="s2">&quot; = &quot;</span><span class="p">,</span> <span class="n">at</span><span class="o">.</span><span class="n">decyear2cal</span><span class="p">(</span><span class="n">new_gts</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">]),</span> <span class="s2">&quot; = &quot;</span><span class="p">,</span> <span class="n">at</span><span class="o">.</span><span class="n">decyear2dayno</span><span class="p">(</span><span class="n">new_gts</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">]))</span>
+            <span class="n">new_gts</span><span class="o">.</span><span class="n">data</span><span class="p">[:,</span><span class="mi">1</span><span class="p">:</span><span class="mi">4</span><span class="p">]</span> <span class="o">=</span> <span class="n">new_gts</span><span class="o">.</span><span class="n">data</span><span class="p">[:,</span><span class="mi">1</span><span class="p">:</span><span class="mi">4</span><span class="p">]</span> <span class="o">-</span> <span class="n">new_gts</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">:</span><span class="mi">4</span><span class="p">]</span>
+            <span class="n">wlgts</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">new_gts</span><span class="p">)</span>
+            <span class="c1"># record first and last date of time series</span>
+            <span class="n">l_end_date_ts</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">new_gts</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">])</span>
+            <span class="n">l_start_date_ts</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">new_gts</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">])</span>
+
+    <span class="c1"># set last date for modeling as min( np_dates[-1], max(l_end_date_ts) ) </span>
+
+    <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;-- first date in np_dates &#39;</span> <span class="p">,</span>    <span class="n">np_dates</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span><span class="n">at</span><span class="o">.</span><span class="n">decyear2cal</span><span class="p">(</span><span class="n">np_dates</span><span class="p">[</span><span class="mi">0</span><span class="p">]))</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;-- first date in time series &#39;</span> <span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">l_start_date_ts</span><span class="p">),</span> <span class="n">at</span><span class="o">.</span><span class="n">decyear2cal</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">min</span><span class="p">(</span><span class="n">l_start_date_ts</span><span class="p">)))</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;-- last  date in np_dates &#39;</span> <span class="p">,</span>    <span class="n">np_dates</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span><span class="n">at</span><span class="o">.</span><span class="n">decyear2cal</span><span class="p">(</span><span class="n">np_dates</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]))</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;-- last  date in time series &#39;</span> <span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">l_end_date_ts</span><span class="p">),</span> <span class="n">at</span><span class="o">.</span><span class="n">decyear2cal</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">l_end_date_ts</span><span class="p">)))</span>
+    
+    <span class="n">np_dates</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">l_end_date_ts</span><span class="p">)</span>
+    <span class="n">np_dates</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>  <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">min</span><span class="p">(</span><span class="n">l_start_date_ts</span><span class="p">)</span>
+    
+    <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;-- start date for modeling is now set to &#39;</span><span class="p">,</span> <span class="n">np_dates</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="s2">&quot; = &quot;</span><span class="p">,</span> <span class="n">at</span><span class="o">.</span><span class="n">decyear2cal</span><span class="p">(</span><span class="n">np_dates</span><span class="p">[</span><span class="mi">0</span><span class="p">]),</span> <span class="s2">&quot; = &quot;</span><span class="p">,</span> <span class="n">at</span><span class="o">.</span><span class="n">decyear2dayno</span><span class="p">(</span><span class="n">np_dates</span><span class="p">[</span><span class="mi">0</span><span class="p">]))</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;-- last  date for modeling is now set to &#39;</span><span class="p">,</span> <span class="n">np_dates</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span> <span class="s2">&quot; = &quot;</span><span class="p">,</span> <span class="n">at</span><span class="o">.</span><span class="n">decyear2cal</span><span class="p">(</span><span class="n">np_dates</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]),</span> <span class="s2">&quot; = &quot;</span><span class="p">,</span> <span class="n">at</span><span class="o">.</span><span class="n">decyear2dayno</span><span class="p">(</span><span class="n">np_dates</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]))</span>
+
+    <span class="c1"># END DATES SECTION</span>
+
+    <span class="c1"># INITIALIZE</span>
+    <span class="n">memory_usage</span> <span class="o">=</span> <span class="n">resource</span><span class="o">.</span><span class="n">getrusage</span><span class="p">(</span><span class="n">resource</span><span class="o">.</span><span class="n">RUSAGE_SELF</span><span class="p">)</span><span class="o">.</span><span class="n">ru_maxrss</span> <span class="o">/</span> <span class="mi">1024</span> <span class="o">/</span> <span class="mi">1024</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;-- memory usage before ATPB allocation: </span><span class="si">%.1lf</span><span class="s2"> &quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">memory_usage</span><span class="p">)</span> <span class="p">)</span>
+   
+    <span class="n">ATB</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">nfaults</span><span class="o">*</span><span class="n">nstep</span><span class="p">))</span>
+
+    <span class="n">memory_usage</span> <span class="o">=</span> <span class="n">resource</span><span class="o">.</span><span class="n">getrusage</span><span class="p">(</span><span class="n">resource</span><span class="o">.</span><span class="n">RUSAGE_SELF</span><span class="p">)</span><span class="o">.</span><span class="n">ru_maxrss</span> <span class="o">/</span> <span class="mi">1024</span> <span class="o">/</span> <span class="mi">1024</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;-- memory usage after ATPB allocation: </span><span class="si">%.1lf</span><span class="s2"> &quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">memory_usage</span><span class="p">)</span> <span class="p">)</span>
+
+
+    <span class="n">L_X</span> <span class="o">=</span> <span class="p">{}</span>
+<span class="c1">#    L_XT = {}</span>
+    <span class="n">L_ALPHA_T_ALPHA</span> <span class="o">=</span> <span class="p">{}</span>
+
+
+    
+    <span class="c1"># START LOOP ON TIME SERIES</span>
+    
+    <span class="k">for</span> <span class="n">gts</span> <span class="ow">in</span> <span class="n">wlgts</span><span class="p">:</span>
+
+        <span class="n">IATB</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">nfaults</span><span class="o">*</span><span class="n">nstep</span><span class="p">))</span>
+
+        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;-- building observation equations for site &#39;</span><span class="p">,</span><span class="n">gts</span><span class="o">.</span><span class="n">code</span><span class="p">)</span>
+
+        <span class="c1"># index of site for Green&#39;s function reading        </span>
+        <span class="n">site_number</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">argwhere</span><span class="p">(</span><span class="n">NAME_OBS</span><span class="o">==</span><span class="n">gts</span><span class="o">.</span><span class="n">code</span><span class="o">.</span><span class="n">upper</span><span class="p">())[</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">]</span> 
+
+        <span class="c1"># initiate G, should be a 1D numpy array of length nstep</span>
+        <span class="c1"># GREEN(i,j,k,l) is the prediction for dislocation j at site i component k for rake l</span>
+        <span class="c1"># k=0,1,2 = east, north, up</span>
+        <span class="c1"># l=0,1 : rake_principal &amp; rake_conjugate</span>
+        <span class="c1"># for the moment, we do not handle rake perpendicular component</span>
+
+        <span class="n">G</span>   <span class="o">=</span> <span class="p">{}</span>
+        <span class="n">GTG</span> <span class="o">=</span> <span class="p">{}</span>
+        
+        <span class="c1"># BUILD THE ELEMENT ARRAY </span>
+        <span class="n">X</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">nfaults</span><span class="p">,</span><span class="n">nfaults</span><span class="p">))</span>
+        <span class="n">XT</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">nfaults</span><span class="p">,</span><span class="mi">1</span><span class="p">))</span>
+        <span class="k">for</span> <span class="n">i_component</span> <span class="ow">in</span> <span class="n">lcomponents</span><span class="p">:</span>
+        
+            <span class="n">G</span><span class="p">[</span><span class="n">i_component</span><span class="p">]</span> <span class="o">=</span> <span class="n">GREEN</span><span class="p">[</span><span class="n">site_number</span><span class="p">,:,</span><span class="n">i_component</span><span class="p">,</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+
+            <span class="c1"># the square matrix having the Green&#39;s functions for the given site/component/all faults</span>
+            <span class="n">GTG</span><span class="p">[</span><span class="n">i_component</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">G</span><span class="p">[</span><span class="n">i_component</span><span class="p">]</span><span class="o">.</span><span class="n">T</span><span class="p">,</span><span class="n">G</span><span class="p">[</span><span class="n">i_component</span><span class="p">])</span>
+            <span class="n">X</span>  <span class="o">+=</span> <span class="n">GTG</span><span class="p">[</span><span class="n">i_component</span><span class="p">]</span>
+            <span class="n">XT</span> <span class="o">+=</span> <span class="n">G</span><span class="p">[</span><span class="n">i_component</span><span class="p">]</span><span class="o">.</span><span class="n">T</span>
+            
+        <span class="n">G</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span><span class="n">G</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">G</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span><span class="n">G</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> 
+        <span class="n">L_X</span><span class="p">[</span><span class="n">gts</span><span class="o">.</span><span class="n">code</span><span class="p">]</span> <span class="o">=</span> <span class="n">X</span>
+        
+        <span class="c1"># handle dates: all time series dates are converted to integer seconds since the modeling reference date</span>
+    
+        <span class="n">np_t_datetime</span> <span class="o">=</span> <span class="n">at</span><span class="o">.</span><span class="n">decyear2datetime</span><span class="p">(</span> <span class="n">gts</span><span class="o">.</span><span class="n">data</span><span class="p">[:,</span><span class="mi">0</span><span class="p">]</span> <span class="p">)</span> <span class="o">-</span> <span class="n">at</span><span class="o">.</span><span class="n">decyear2datetime</span><span class="p">(</span> <span class="n">np_dates</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="p">)</span>
+        <span class="n">np_t_s</span> <span class="o">=</span>  <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="nb">map</span><span class="p">(</span><span class="nb">int</span><span class="p">,[</span><span class="n">x</span><span class="o">.</span><span class="n">total_seconds</span><span class="p">()</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">np_t_datetime</span><span class="p">])))</span>
+
+        <span class="k">if</span> <span class="n">verbose</span><span class="p">:</span>    
+            <span class="k">if</span> <span class="n">debug</span><span class="p">:</span>
+                <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;-- Time series dates in decimal years converted to integer seconds elapsed since modeling reference date&#39;</span><span class="p">)</span>
+                <span class="nb">print</span><span class="p">(</span><span class="n">gts</span><span class="o">.</span><span class="n">data</span><span class="p">[:,</span><span class="mi">0</span><span class="p">])</span>
+                <span class="nb">print</span><span class="p">(</span><span class="n">np_dates_s</span><span class="p">)</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;-- start time for model &#39;</span><span class="p">,</span><span class="n">np_step_start_s</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;-- start time for observation &#39;</span><span class="p">,</span><span class="n">np_t_s</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;-- end   time for observation &#39;</span><span class="p">,</span><span class="n">np_t_s</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>
+
+    
+        <span class="c1"># alpha is the time step vector</span>
+        
+        <span class="n">alpha_tref</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">nstep</span><span class="p">)</span>
+
+        <span class="c1"># alpha_tref at start observation time</span>
+        <span class="c1"># this is required because some time series may start later than the reference modeling date</span>
+        
+        <span class="n">date_s</span> <span class="o">=</span> <span class="n">np_t_s</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">lindex</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span> <span class="p">(</span> <span class="p">(</span><span class="n">np_step_end_s</span> <span class="o">&gt;=</span> <span class="n">date_s</span> <span class="p">)</span> <span class="o">&amp;</span> <span class="p">(</span><span class="n">np_step_start_s</span> <span class="o">&lt;</span> <span class="n">date_s</span> <span class="p">)</span> <span class="p">)</span> <span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">lindex</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">size</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">index_ref</span> <span class="o">=</span> <span class="n">lindex</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">index_ref</span> <span class="o">=</span> <span class="mi">0</span> 
+    
+        <span class="n">alpha_tref</span><span class="p">[</span><span class="n">index_ref</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span> <span class="nb">float</span><span class="p">(</span><span class="n">date_s</span><span class="p">)</span> <span class="o">-</span> <span class="n">np_step_start_s</span><span class="p">[</span><span class="n">index_ref</span><span class="p">])</span> <span class="o">/</span> <span class="n">np_step_duration_s</span><span class="p">[</span><span class="n">index_ref</span><span class="p">]</span>
+        <span class="k">if</span> <span class="n">index_ref</span> <span class="o">&gt;</span><span class="mi">0</span><span class="p">:</span>
+            <span class="n">alpha_tref</span><span class="p">[:</span><span class="n">index_ref</span><span class="p">]</span> <span class="o">=</span> <span class="mf">1.</span>
+        
+        <span class="c1"># LOOP ON DATES OF THE TIME SERIES</span>
+        
+        <span class="n">ALPHA_T_ALPHA</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">nstep</span><span class="p">,</span><span class="n">nstep</span><span class="p">))</span>
+        
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">np_t_s</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">])[</span><span class="mi">1</span><span class="p">:]:</span>
+
+            <span class="n">ALPHA_T</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">nstep</span><span class="p">,</span><span class="mi">1</span><span class="p">))</span>
+            
+            <span class="n">date_s</span> <span class="o">=</span> <span class="n">np_t_s</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+<span class="c1">#            print &#39;-- &#39;,gts.code,&#39; observation at &#39;,gts.data[i,0],&#39; = &#39;,date_s,&#39; s since the reference modeling date &#39;,np_dates[0]</span>
+            <span class="k">if</span> <span class="n">debug</span><span class="p">:</span>
+                <span class="nb">print</span><span class="p">((</span><span class="s2">&quot;-- </span><span class="si">%s</span><span class="s2">  observation at </span><span class="si">%15.10lf</span><span class="s2">  = </span><span class="si">%010d</span><span class="s2"> s since the reference modeling date </span><span class="si">%15.10lf</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">gts</span><span class="o">.</span><span class="n">code</span><span class="p">,</span><span class="n">gts</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="n">i</span><span class="p">,</span><span class="mi">0</span><span class="p">],</span><span class="n">date_s</span><span class="p">,</span><span class="n">np_dates</span><span class="p">[</span><span class="mi">0</span><span class="p">])))</span>
+    
+            <span class="c1"># alpha for the current observation date</span>
+            <span class="n">alpha</span>      <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">nstep</span><span class="p">)</span>
+
+            <span class="n">index</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span> <span class="p">(</span> <span class="p">(</span><span class="n">np_step_end_s</span> <span class="o">&gt;=</span> <span class="n">date_s</span> <span class="p">)</span> <span class="o">&amp;</span> <span class="p">(</span><span class="n">np_step_start_s</span> <span class="o">&lt;</span> <span class="n">date_s</span> <span class="p">)</span> <span class="p">)</span> <span class="p">)[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
+            <span class="n">alpha</span><span class="p">[</span><span class="n">index</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span> <span class="nb">float</span><span class="p">(</span><span class="n">date_s</span><span class="p">)</span> <span class="o">-</span> <span class="n">np_step_start_s</span><span class="p">[</span><span class="n">index</span><span class="p">])</span> <span class="o">/</span> <span class="n">np_step_duration_s</span><span class="p">[</span><span class="n">index</span><span class="p">]</span>
+            <span class="k">if</span> <span class="n">index</span> <span class="o">&gt;</span><span class="mi">0</span><span class="p">:</span>
+                <span class="n">alpha</span><span class="p">[:</span><span class="n">index</span><span class="p">]</span> <span class="o">=</span> <span class="mf">1.</span>
+
+            <span class="c1"># correct alpha to account for possible late start of observation</span>
+            <span class="n">alpha</span> <span class="o">=</span> <span class="n">alpha</span> <span class="o">-</span> <span class="n">alpha_tref</span>
+
+            <span class="n">ALPHA_T_ALPHA</span> <span class="o">+=</span> <span class="n">np</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">alpha</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">T</span><span class="p">,</span><span class="n">alpha</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="o">-</span><span class="mi">1</span><span class="p">))</span>
+            <span class="n">ALPHA_T</span>       <span class="o">+=</span> <span class="n">alpha</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">T</span>
+            
+            <span class="c1"># deal with ATPB</span>
+            
+            <span class="k">for</span> <span class="n">i_component</span> <span class="ow">in</span> <span class="n">lcomponents</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">i_component</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span>
+                    <span class="n">IATB</span> <span class="o">+=</span> <span class="p">(</span><span class="n">ALPHA_T</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">)</span> <span class="o">*</span> <span class="n">G</span><span class="p">[</span><span class="n">i_component</span><span class="p">])</span><span class="o">.</span><span class="n">flatten</span><span class="p">()</span> <span class="o">*</span> <span class="n">gts</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="n">i</span><span class="p">,</span><span class="n">i_component</span><span class="o">+</span><span class="mi">1</span><span class="p">]</span><span class="o">*</span><span class="mf">1000.0</span> <span class="o">*</span> <span class="mf">1.</span><span class="o">/</span><span class="n">s_up</span><span class="o">**</span><span class="mi">2</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">IATB</span> <span class="o">+=</span> <span class="p">(</span><span class="n">ALPHA_T</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">)</span> <span class="o">*</span> <span class="n">G</span><span class="p">[</span><span class="n">i_component</span><span class="p">])</span><span class="o">.</span><span class="n">flatten</span><span class="p">()</span> <span class="o">*</span> <span class="n">gts</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="n">i</span><span class="p">,</span><span class="n">i_component</span><span class="o">+</span><span class="mi">1</span><span class="p">]</span><span class="o">*</span><span class="mf">1000.0</span>
+            
+                <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">isnan</span><span class="p">(</span><span class="n">IATB</span><span class="p">)</span><span class="o">.</span><span class="n">any</span><span class="p">():</span>
+                    <span class="kn">import</span> <span class="nn">sys</span>
+                    <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;-- IATB has Nan. Exiting.&#39;</span><span class="p">)</span>
+                    <span class="n">sys</span><span class="o">.</span><span class="n">exit</span><span class="p">()</span>
+            
+            <span class="c1"># end loop dates of the time series</span>
+        
+        <span class="n">L_ALPHA_T_ALPHA</span><span class="p">[</span><span class="n">gts</span><span class="o">.</span><span class="n">code</span><span class="p">]</span> <span class="o">=</span> <span class="n">ALPHA_T_ALPHA</span>
+        
+        <span class="c1"># fills ATPB</span>
+        
+        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;-- Filling ATPB RHS vector for site &#39;</span><span class="p">,</span><span class="n">gts</span><span class="o">.</span><span class="n">code</span><span class="p">)</span>
+
+        <span class="n">ATB</span> <span class="o">+=</span> <span class="n">IATB</span>
+        
+        <span class="c1"># end processing time series</span>
+
+    <span class="c1"># end loop dates in time series</span>
+
+    
+
+        <span class="c1"># COMBINE X and ALPHA_T_ALPHA</span>
+
+<span class="c1">#        @autojit        </span>
+    <span class="k">def</span> <span class="nf">fill_from_X_1</span><span class="p">(</span><span class="n">L_X</span><span class="p">,</span><span class="n">L_ALPHA_T_ALPHA</span><span class="p">,</span> <span class="n">nstep</span><span class="p">,</span><span class="n">nfaults</span><span class="p">):</span>
+
+        <span class="c1"># init</span>
+        <span class="n">memory_usage</span> <span class="o">=</span> <span class="n">resource</span><span class="o">.</span><span class="n">getrusage</span><span class="p">(</span><span class="n">resource</span><span class="o">.</span><span class="n">RUSAGE_SELF</span><span class="p">)</span><span class="o">.</span><span class="n">ru_maxrss</span> <span class="o">/</span> <span class="mi">1024</span> <span class="o">/</span> <span class="mi">1024</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;-- memory usage before ATPA allocation: </span><span class="si">%.1lf</span><span class="s2"> &quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">memory_usage</span><span class="p">)</span> <span class="p">)</span>
+        <span class="n">IATA</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">nstep</span><span class="o">*</span><span class="n">nfaults</span><span class="p">,</span><span class="n">nstep</span><span class="o">*</span><span class="n">nfaults</span><span class="p">))</span>
+        <span class="n">memory_usage</span> <span class="o">=</span> <span class="n">resource</span><span class="o">.</span><span class="n">getrusage</span><span class="p">(</span><span class="n">resource</span><span class="o">.</span><span class="n">RUSAGE_SELF</span><span class="p">)</span><span class="o">.</span><span class="n">ru_maxrss</span> <span class="o">/</span> <span class="mi">1024</span> <span class="o">/</span> <span class="mi">1024</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;-- memory usage after ATPA allocation: </span><span class="si">%.1lf</span><span class="s2"> &quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">memory_usage</span><span class="p">)</span> <span class="p">)</span>
+        
+        <span class="c1"># loop on time steps</span>
+        <span class="k">for</span> <span class="n">l</span> <span class="ow">in</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">nstep</span><span class="p">):</span>
+
+            <span class="nb">print</span><span class="p">((</span><span class="s2">&quot;-- filling time step # </span><span class="si">%04d</span><span class="s2">  over </span><span class="si">%04d</span><span class="s2"> time steps&quot;</span> <span class="o">%</span><span class="p">(</span><span class="n">l</span><span class="o">+</span><span class="mi">1</span><span class="p">,</span> <span class="n">nstep</span><span class="p">)</span> <span class="p">))</span>
+
+        <span class="c1"># diagonal blocks</span>
+            <span class="n">row_sindex</span> <span class="o">=</span> <span class="n">l</span> <span class="o">*</span> <span class="n">nfaults</span>
+            <span class="n">row_eindex</span> <span class="o">=</span> <span class="n">row_sindex</span> <span class="o">+</span> <span class="n">nfaults</span>
+            <span class="n">col_sindex</span> <span class="o">=</span> <span class="n">l</span> <span class="o">*</span> <span class="n">nfaults</span>
+            <span class="n">col_eindex</span> <span class="o">=</span> <span class="n">col_sindex</span> <span class="o">+</span> <span class="n">nfaults</span>
+            
+            <span class="n">XX</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">nfaults</span><span class="p">,</span><span class="n">nfaults</span><span class="p">))</span>
+            <span class="k">for</span> <span class="n">code</span><span class="p">,</span> <span class="n">X</span> <span class="ow">in</span> <span class="n">L_X</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+                <span class="n">XX</span> <span class="o">=</span> <span class="n">XX</span> <span class="o">+</span> <span class="n">X</span> <span class="o">*</span> <span class="n">L_ALPHA_T_ALPHA</span><span class="p">[</span><span class="n">code</span><span class="p">][</span><span class="n">l</span><span class="p">,</span><span class="n">l</span><span class="p">]</span>
+            <span class="n">IATA</span><span class="p">[</span><span class="n">row_sindex</span><span class="p">:</span><span class="n">row_eindex</span><span class="p">,</span> <span class="n">col_sindex</span><span class="p">:</span><span class="n">col_eindex</span><span class="p">]</span> <span class="o">=</span> <span class="n">XX</span>
+
+        <span class="c1"># off diagonal blocks</span>
+            <span class="k">for</span> <span class="n">m</span> <span class="ow">in</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">l</span><span class="o">+</span><span class="mi">1</span><span class="p">,</span><span class="n">nstep</span><span class="p">):</span>
+                <span class="n">XX</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">nfaults</span><span class="p">,</span><span class="n">nfaults</span><span class="p">))</span>
+                <span class="k">for</span> <span class="n">code</span><span class="p">,</span> <span class="n">X</span> <span class="ow">in</span> <span class="n">L_X</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+                    <span class="n">XX</span> <span class="o">=</span> <span class="n">XX</span><span class="o">+</span> <span class="n">X</span> <span class="o">*</span> <span class="n">L_ALPHA_T_ALPHA</span><span class="p">[</span><span class="n">code</span><span class="p">][</span><span class="n">l</span><span class="p">,</span><span class="n">m</span><span class="p">]</span> 
+                
+                <span class="n">row_sindex</span> <span class="o">=</span> <span class="n">l</span> <span class="o">*</span> <span class="n">nfaults</span>
+                <span class="n">row_eindex</span> <span class="o">=</span> <span class="n">row_sindex</span> <span class="o">+</span> <span class="n">nfaults</span>
+                <span class="n">col_sindex</span> <span class="o">=</span> <span class="n">m</span> <span class="o">*</span> <span class="n">nfaults</span>
+                <span class="n">col_eindex</span> <span class="o">=</span> <span class="n">col_sindex</span> <span class="o">+</span> <span class="n">nfaults</span>
+                
+                <span class="n">IATA</span><span class="p">[</span><span class="n">row_sindex</span><span class="p">:</span><span class="n">row_eindex</span><span class="p">,</span> <span class="n">col_sindex</span><span class="p">:</span><span class="n">col_eindex</span><span class="p">]</span> <span class="o">=</span> <span class="n">XX</span>
+                <span class="n">IATA</span><span class="p">[</span><span class="n">col_sindex</span><span class="p">:</span><span class="n">col_eindex</span><span class="p">,</span> <span class="n">row_sindex</span><span class="p">:</span><span class="n">row_eindex</span><span class="p">]</span> <span class="o">=</span> <span class="n">XX</span>
+                
+        <span class="k">return</span><span class="p">(</span><span class="n">IATA</span><span class="p">)</span>
+
+    
+    <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;-- Filling ATA with nstep =&#39;</span><span class="p">,</span><span class="n">nstep</span><span class="p">,</span> <span class="s1">&#39; x nfaults =&#39;</span><span class="p">,</span> <span class="n">nfaults</span><span class="p">,</span><span class="s1">&#39; == &#39;</span><span class="p">,</span> <span class="n">nstep</span><span class="o">*</span><span class="n">nfaults</span><span class="p">,</span> <span class="s1">&#39;parameters&#39;</span><span class="p">)</span>
+    <span class="n">ATA</span> <span class="o">=</span> <span class="n">fill_from_X_1</span><span class="p">(</span><span class="n">L_X</span><span class="p">,</span><span class="n">L_ALPHA_T_ALPHA</span><span class="p">,</span> <span class="n">nstep</span><span class="p">,</span><span class="n">nfaults</span><span class="p">)</span>
+
+    <span class="c1"># end loop time series</span>
+
+    <span class="k">return</span><span class="p">(</span><span class="n">ATA</span><span class="p">,</span><span class="n">ATB</span><span class="p">)</span></div>
+
+<span class="c1">#######################################################################################</span>
+<div class="viewcode-block" id="G_d"><a class="viewcode-back" href="../../../../pyeq.lib.forward_model.build1.html#pyeq.lib.forward_model.build1.G_d">[docs]</a><span class="k">def</span> <span class="nf">G_d</span><span class="p">(</span><span class="n">NEW_GREEN</span><span class="p">,</span><span class="n">NAME_OBS</span><span class="p">,</span><span class="n">UP</span><span class="p">,</span><span class="n">ts</span><span class="p">,</span><span class="n">np_dates</span><span class="p">,</span> <span class="n">s_up</span><span class="p">,</span> <span class="n">tol_date</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span> <span class="n">window</span><span class="o">=</span><span class="mf">0.1</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+<span class="c1">#######################################################################################</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Builds the model matrix G and observation vector d</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    
+    <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+    <span class="kn">import</span> <span class="nn">copy</span>
+    <span class="kn">from</span> <span class="nn">pyacs.lib</span> <span class="kn">import</span> <span class="n">astrotime</span> <span class="k">as</span> <span class="n">AT</span> 
+    
+    <span class="c1"># init</span>
+    
+    <span class="n">nfaults</span><span class="o">=</span><span class="n">NEW_GREEN</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+    <span class="n">nparameters</span><span class="o">=</span><span class="n">nfaults</span><span class="o">*</span><span class="p">(</span><span class="n">np_dates</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+
+    <span class="n">G</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">empty</span><span class="p">((</span><span class="mi">0</span><span class="p">,</span><span class="n">nparameters</span><span class="p">),</span><span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float32</span><span class="p">)</span>
+    <span class="n">d</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">empty</span><span class="p">((</span><span class="mi">0</span><span class="p">),</span><span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float32</span><span class="p">)</span>
+    <span class="n">diag_Cd</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">empty</span><span class="p">((</span><span class="mi">0</span><span class="p">),</span><span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float32</span><span class="p">)</span>
+
+    <span class="c1"># dictionary that records the index </span>
+    <span class="n">H_site_index_in_G</span><span class="o">=</span><span class="p">{}</span>
+    <span class="n">H_site_index_ldate</span><span class="o">=</span><span class="p">{}</span>
+
+    <span class="n">j</span> <span class="o">=</span> <span class="mi">0</span>
+
+    <span class="n">warning</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span>
+
+    <span class="c1"># loop on time series    </span>
+    <span class="k">for</span> <span class="n">gts</span> <span class="ow">in</span> <span class="n">ts</span><span class="o">.</span><span class="n">lGts</span><span class="p">():</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;-- Creating G and d for site &quot;</span><span class="p">,</span><span class="n">gts</span><span class="o">.</span><span class="n">code</span><span class="p">)</span>
+        
+        <span class="n">H_site_index_ldate</span><span class="p">[</span><span class="n">gts</span><span class="o">.</span><span class="n">code</span><span class="p">]</span><span class="o">=</span><span class="p">[]</span>
+    
+        <span class="c1"># find its number in the Green tensor</span>
+        <span class="k">if</span> <span class="n">UP</span><span class="p">:</span>
+            <span class="n">H_site_index_in_G</span><span class="p">[</span><span class="n">gts</span><span class="o">.</span><span class="n">code</span><span class="p">]</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">empty</span><span class="p">((</span><span class="mi">0</span><span class="p">,</span><span class="mi">3</span><span class="p">),</span><span class="n">dtype</span><span class="o">=</span><span class="nb">int</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">H_site_index_in_G</span><span class="p">[</span><span class="n">gts</span><span class="o">.</span><span class="n">code</span><span class="p">]</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">empty</span><span class="p">((</span><span class="mi">0</span><span class="p">,</span><span class="mi">2</span><span class="p">),</span><span class="n">dtype</span><span class="o">=</span><span class="nb">int</span><span class="p">)</span>
+            
+        <span class="n">site_number</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">argwhere</span><span class="p">(</span><span class="n">NAME_OBS</span><span class="o">==</span><span class="n">gts</span><span class="o">.</span><span class="n">code</span><span class="o">.</span><span class="n">upper</span><span class="p">())[</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">]</span> 
+        
+        <span class="c1"># find the reference date for this time series</span>
+        
+        <span class="n">date_ref_site</span><span class="o">=</span><span class="kc">None</span>
+        <span class="n">np_dates_site</span><span class="o">=</span><span class="n">copy</span><span class="o">.</span><span class="n">deepcopy</span><span class="p">(</span><span class="n">np_dates</span><span class="p">)</span>
+        
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">np_dates</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]):</span>
+            <span class="c1"># first test the date is possible</span>
+            <span class="n">test_date</span><span class="o">=</span><span class="n">np_dates</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+            <span class="p">(</span><span class="n">mday</span><span class="p">,</span><span class="n">month</span><span class="p">,</span><span class="n">ut</span><span class="p">)</span><span class="o">=</span><span class="n">AT</span><span class="o">.</span><span class="n">decyear2cal</span><span class="p">(</span><span class="n">test_date</span><span class="p">)</span>
+            <span class="p">(</span><span class="n">noday</span><span class="p">,</span><span class="n">ut</span><span class="p">)</span><span class="o">=</span><span class="n">AT</span><span class="o">.</span><span class="n">decyear2dayno</span><span class="p">(</span><span class="n">test_date</span><span class="p">)</span> 
+            <span class="k">if</span> <span class="n">verbose</span><span class="p">:</span>   
+                <span class="nb">print</span><span class="p">((</span><span class="s2">&quot;    -- testing date for reference   : #date in ts </span><span class="si">%04d</span><span class="s2"> </span><span class="si">%10.5lf</span><span class="s2"> +</span><span class="si">%4.1lf</span><span class="s2"> days </span><span class="si">%02d</span><span class="s2">-</span><span class="si">%02d</span><span class="s2">-</span><span class="si">%04d</span><span class="s2">-</span><span class="si">%.1lf</span><span class="s2"> </span><span class="si">%03d</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">i</span><span class="p">,</span><span class="n">test_date</span><span class="p">,(</span><span class="n">test_date</span><span class="o">-</span><span class="n">np_dates</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span><span class="o">*</span><span class="mf">365.25</span><span class="p">,</span><span class="n">mday</span><span class="p">,</span><span class="n">month</span><span class="p">,</span><span class="nb">int</span><span class="p">(</span><span class="n">test_date</span><span class="p">),</span><span class="n">ut</span><span class="p">,</span><span class="n">noday</span><span class="p">)))</span>
+            
+            <span class="k">if</span> <span class="n">gts</span><span class="o">.</span><span class="n">extract_periods</span><span class="p">([[</span><span class="n">test_date</span><span class="o">-</span><span class="n">window</span><span class="o">/</span><span class="mf">365.25</span><span class="p">,</span><span class="n">test_date</span><span class="o">+</span><span class="n">window</span><span class="o">/</span><span class="mf">365.25</span><span class="p">]])</span><span class="o">.</span><span class="n">data</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;!!! No data available at initial date &quot;</span><span class="p">,</span><span class="n">test_date</span><span class="p">,</span><span class="s2">&quot; window=&quot;</span><span class="p">,</span><span class="n">window</span><span class="p">,</span><span class="s2">&quot; days, for site &quot;</span><span class="p">,</span><span class="n">gts</span><span class="o">.</span><span class="n">code</span><span class="p">)</span>
+                <span class="n">np_dates_site</span><span class="o">=</span><span class="n">np_dates_site</span><span class="p">[</span><span class="mi">1</span><span class="p">:]</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">date_ref_site</span><span class="o">=</span><span class="n">test_date</span>
+                <span class="n">H_site_index_ldate</span><span class="p">[</span><span class="n">gts</span><span class="o">.</span><span class="n">code</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">date_ref_site</span><span class="p">)</span>
+    
+               
+            <span class="k">if</span> <span class="n">date_ref_site</span> <span class="o">!=</span> <span class="kc">None</span><span class="p">:</span><span class="k">break</span>
+        
+        <span class="k">if</span> <span class="n">date_ref_site</span> <span class="o">==</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;! WARNING: No usable dates found for time series &quot;</span><span class="p">,</span><span class="n">gts</span><span class="o">.</span><span class="n">code</span><span class="p">)</span>
+            <span class="n">warning</span><span class="o">+=</span><span class="p">(</span><span class="s2">&quot;! WARINNG No usable dates found for time series: </span><span class="si">%s</span><span class="s2"> </span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">gts</span><span class="o">.</span><span class="n">code</span><span class="p">)</span>
+        
+        <span class="k">else</span><span class="p">:</span>
+            <span class="p">(</span><span class="n">mday</span><span class="p">,</span><span class="n">month</span><span class="p">,</span><span class="n">ut</span><span class="p">)</span><span class="o">=</span><span class="n">AT</span><span class="o">.</span><span class="n">decyear2cal</span><span class="p">(</span><span class="n">date_ref_site</span><span class="p">)</span>
+            <span class="p">(</span><span class="n">noday</span><span class="p">,</span><span class="n">ut</span><span class="p">)</span><span class="o">=</span><span class="n">AT</span><span class="o">.</span><span class="n">decyear2dayno</span><span class="p">(</span><span class="n">date_ref_site</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">verbose</span><span class="p">:</span>    
+                <span class="nb">print</span><span class="p">((</span><span class="s2">&quot;    -- Reference date for site </span><span class="si">%s</span><span class="s2"> : #date in ts </span><span class="si">%04d</span><span class="s2"> date </span><span class="si">%10.5lf</span><span class="s2"> +</span><span class="si">%4.1lf</span><span class="s2"> days </span><span class="si">%02d</span><span class="s2">-</span><span class="si">%02d</span><span class="s2">-</span><span class="si">%04d</span><span class="s2">-</span><span class="si">%.1lf</span><span class="s2"> </span><span class="si">%03d</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">gts</span><span class="o">.</span><span class="n">code</span><span class="p">,</span><span class="n">i</span><span class="p">,</span><span class="n">test_date</span><span class="p">,(</span><span class="n">test_date</span><span class="o">-</span><span class="n">np_dates</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span><span class="o">*</span><span class="mf">365.25</span><span class="p">,</span><span class="n">mday</span><span class="p">,</span><span class="n">month</span><span class="p">,</span><span class="nb">int</span><span class="p">(</span><span class="n">test_date</span><span class="p">),</span><span class="n">ut</span><span class="p">,</span><span class="n">noday</span><span class="p">)))</span>
+            <span class="k">if</span> <span class="n">i</span><span class="o">==</span><span class="mi">0</span><span class="p">:</span>
+                <span class="n">warning</span><span class="o">+=</span><span class="p">(</span><span class="s2">&quot;--  Reference date for site </span><span class="si">%s</span><span class="s2"> : step# </span><span class="si">%04d</span><span class="s2"> date </span><span class="si">%10.5lf</span><span class="s2"> </span><span class="si">%02d</span><span class="s2">-</span><span class="si">%02d</span><span class="s2">-</span><span class="si">%04d</span><span class="s2">-</span><span class="si">%.1lf</span><span class="s2"> </span><span class="si">%03d</span><span class="s2"> +</span><span class="si">%4.1lf</span><span class="s2"> days since reference date </span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">gts</span><span class="o">.</span><span class="n">code</span><span class="p">,</span><span class="n">i</span><span class="p">,</span><span class="n">test_date</span><span class="p">,</span><span class="n">mday</span><span class="p">,</span><span class="n">month</span><span class="p">,</span><span class="nb">int</span><span class="p">(</span><span class="n">test_date</span><span class="p">),</span><span class="n">ut</span><span class="p">,</span><span class="n">noday</span><span class="p">,(</span><span class="n">test_date</span><span class="o">-</span><span class="n">np_dates</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span><span class="o">*</span><span class="mf">365.25</span><span class="p">))</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">warning</span><span class="o">+=</span><span class="p">(</span><span class="s2">&quot;! WARNING: Reference date for site </span><span class="si">%s</span><span class="s2"> : step# </span><span class="si">%04d</span><span class="s2"> date </span><span class="si">%10.5lf</span><span class="s2"> </span><span class="si">%02d</span><span class="s2">-</span><span class="si">%02d</span><span class="s2">-</span><span class="si">%04d</span><span class="s2">-</span><span class="si">%.1lf</span><span class="s2"> </span><span class="si">%03d</span><span class="s2"> +</span><span class="si">%4.1lf</span><span class="s2"> days since reference date </span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">gts</span><span class="o">.</span><span class="n">code</span><span class="p">,</span><span class="n">i</span><span class="p">,</span><span class="n">test_date</span><span class="p">,</span><span class="n">mday</span><span class="p">,</span><span class="n">month</span><span class="p">,</span><span class="nb">int</span><span class="p">(</span><span class="n">test_date</span><span class="p">),</span><span class="n">ut</span><span class="p">,</span><span class="n">noday</span><span class="p">,(</span><span class="n">test_date</span><span class="o">-</span><span class="n">np_dates</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span><span class="o">*</span><span class="mf">365.25</span><span class="p">))</span>
+            <span class="n">start_delta_m</span><span class="o">=</span><span class="n">i</span>
+            <span class="n">np_dates_site</span><span class="o">=</span><span class="n">np_dates_site</span><span class="p">[</span><span class="mi">1</span><span class="p">:]</span>
+            <span class="c1"># the 3 rows corresponding to the observation </span>
+            <span class="k">if</span> <span class="n">UP</span><span class="p">:</span>
+                <span class="n">g</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="mi">3</span><span class="p">,</span><span class="n">nparameters</span><span class="p">))</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">g</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="mi">2</span><span class="p">,</span><span class="n">nparameters</span><span class="p">))</span>
+    
+            <span class="c1"># BUILDS THE LINEAR SYSTEM</span>
+            <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">np_dates_site</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]):</span>
+                <span class="n">date</span><span class="o">=</span><span class="n">np_dates_site</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+                <span class="c1"># step count</span>
+                <span class="c1"># format dates</span>
+                <span class="p">(</span><span class="n">mday</span><span class="p">,</span><span class="n">month</span><span class="p">,</span><span class="n">ut</span><span class="p">)</span><span class="o">=</span><span class="n">AT</span><span class="o">.</span><span class="n">decyear2cal</span><span class="p">(</span><span class="n">date</span><span class="p">)</span>
+                <span class="p">(</span><span class="n">noday</span><span class="p">,</span><span class="n">ut</span><span class="p">)</span><span class="o">=</span><span class="n">AT</span><span class="o">.</span><span class="n">decyear2dayno</span><span class="p">(</span><span class="n">date</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">verbose</span><span class="p">:</span>    
+                    <span class="nb">print</span><span class="p">((</span><span class="s2">&quot;    -- testing date for site </span><span class="si">%s</span><span class="s2"> : inversion step </span><span class="si">%04d</span><span class="s2"> date </span><span class="si">%10.5lf</span><span class="s2"> +</span><span class="si">%4.1lf</span><span class="s2"> days </span><span class="si">%02d</span><span class="s2">-</span><span class="si">%02d</span><span class="s2">-</span><span class="si">%04d</span><span class="s2">-</span><span class="si">%.1lf</span><span class="s2"> </span><span class="si">%03d</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">gts</span><span class="o">.</span><span class="n">code</span><span class="p">,</span><span class="n">start_delta_m</span><span class="p">,</span><span class="n">date</span><span class="p">,(</span><span class="n">date</span><span class="o">-</span><span class="n">np_dates</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span><span class="o">*</span><span class="mf">365.25</span><span class="p">,</span><span class="n">mday</span><span class="p">,</span><span class="n">month</span><span class="p">,</span><span class="nb">int</span><span class="p">(</span><span class="n">date</span><span class="p">),</span><span class="n">ut</span><span class="p">,</span><span class="n">noday</span><span class="p">)))</span>
+                <span class="c1"># since observation is N,E,U, g should also also N,E,U g[0,] corresponds to north</span>
+                <span class="n">g</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="n">nfaults</span><span class="o">*</span><span class="n">start_delta_m</span><span class="p">:</span><span class="n">nfaults</span><span class="o">*</span><span class="p">(</span><span class="n">start_delta_m</span><span class="o">+</span><span class="mi">1</span><span class="p">)]</span><span class="o">=</span><span class="n">NEW_GREEN</span><span class="p">[</span><span class="n">site_number</span><span class="p">,:,</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">]</span>
+                <span class="n">g</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="n">nfaults</span><span class="o">*</span><span class="n">start_delta_m</span><span class="p">:</span><span class="n">nfaults</span><span class="o">*</span><span class="p">(</span><span class="n">start_delta_m</span><span class="o">+</span><span class="mi">1</span><span class="p">)]</span><span class="o">=</span><span class="n">NEW_GREEN</span><span class="p">[</span><span class="n">site_number</span><span class="p">,:,</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">]</span>
+                <span class="k">if</span> <span class="n">UP</span><span class="p">:</span><span class="n">g</span><span class="p">[</span><span class="mi">2</span><span class="p">,</span><span class="n">nfaults</span><span class="o">*</span><span class="n">start_delta_m</span><span class="p">:</span><span class="n">nfaults</span><span class="o">*</span><span class="p">(</span><span class="n">start_delta_m</span><span class="o">+</span><span class="mi">1</span><span class="p">)]</span><span class="o">=</span><span class="n">NEW_GREEN</span><span class="p">[</span><span class="n">site_number</span><span class="p">,:,</span><span class="mi">2</span><span class="p">,</span><span class="mi">0</span><span class="p">]</span>
+                
+                <span class="n">displacement</span><span class="o">=</span><span class="n">gts</span><span class="o">.</span><span class="n">displacement</span><span class="p">(</span><span class="n">sdate</span><span class="o">=</span><span class="n">date_ref_site</span><span class="p">,</span> <span class="n">edate</span><span class="o">=</span><span class="n">date</span><span class="p">,</span> <span class="n">window</span><span class="o">=</span><span class="n">window</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="s1">&#39;median&#39;</span><span class="p">,</span><span class="n">verbose</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+    
+                <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">displacement</span><span class="p">,</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">):</span>
+                        <span class="k">if</span> <span class="n">verbose</span><span class="p">:</span>
+                            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;    -- Adding observation for site &quot;</span><span class="p">,</span><span class="n">gts</span><span class="o">.</span><span class="n">code</span><span class="p">,</span><span class="s2">&quot; at date &quot;</span><span class="p">,</span><span class="n">date</span><span class="p">)</span>
+                        <span class="n">G</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">g</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+                        <span class="k">if</span> <span class="n">UP</span><span class="p">:</span>
+                            <span class="n">d</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">d</span><span class="p">,</span><span class="n">displacement</span><span class="p">[</span><span class="mi">0</span><span class="p">:</span><span class="mi">3</span><span class="p">]</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span><span class="mi">1</span><span class="p">)</span><span class="o">*</span><span class="mf">1.0E3</span><span class="p">)</span>
+                            <span class="c1"># rescale up uncertainty</span>
+                            <span class="n">displacement</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">=</span><span class="n">displacement</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">*</span> <span class="n">s_up</span>
+                            <span class="n">diag_Cd</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">diag_Cd</span><span class="p">,</span><span class="n">displacement</span><span class="p">[</span><span class="mi">3</span><span class="p">:]</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span><span class="mi">1</span><span class="p">)</span><span class="o">*</span><span class="mf">1.0E3</span><span class="p">)</span>
+                        <span class="k">else</span><span class="p">:</span>
+                            <span class="n">d</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">d</span><span class="p">,</span><span class="n">displacement</span><span class="p">[</span><span class="mi">0</span><span class="p">:</span><span class="mi">2</span><span class="p">]</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span><span class="mi">1</span><span class="p">)</span><span class="o">*</span><span class="mf">1.0E3</span><span class="p">)</span>
+                            <span class="n">diag_Cd</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">diag_Cd</span><span class="p">,</span><span class="n">displacement</span><span class="p">[</span><span class="mi">3</span><span class="p">:</span><span class="mi">5</span><span class="p">]</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span><span class="mi">1</span><span class="p">)</span><span class="o">*</span><span class="mf">1.0E3</span><span class="p">)</span>
+    
+    
+                        <span class="c1"># we need to record the lines corresponding to the site</span>
+                        <span class="k">if</span> <span class="n">UP</span><span class="p">:</span>
+                            <span class="n">H_site_index_in_G</span><span class="p">[</span><span class="n">gts</span><span class="o">.</span><span class="n">code</span><span class="p">]</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">H_site_index_in_G</span><span class="p">[</span><span class="n">gts</span><span class="o">.</span><span class="n">code</span><span class="p">],</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([[</span><span class="n">j</span><span class="p">,</span><span class="n">j</span><span class="o">+</span><span class="mi">1</span><span class="p">,</span><span class="n">j</span><span class="o">+</span><span class="mi">2</span><span class="p">]]),</span><span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+                        <span class="k">else</span><span class="p">:</span>
+                            <span class="n">H_site_index_in_G</span><span class="p">[</span><span class="n">gts</span><span class="o">.</span><span class="n">code</span><span class="p">]</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">H_site_index_in_G</span><span class="p">[</span><span class="n">gts</span><span class="o">.</span><span class="n">code</span><span class="p">],</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([[</span><span class="n">j</span><span class="p">,</span><span class="n">j</span><span class="o">+</span><span class="mi">1</span><span class="p">]]),</span><span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+                            
+                        <span class="k">if</span> <span class="n">UP</span><span class="p">:</span>
+                            <span class="n">j</span><span class="o">=</span><span class="n">j</span><span class="o">+</span><span class="mi">3</span>
+                        <span class="k">else</span><span class="p">:</span>
+                            <span class="n">j</span><span class="o">=</span><span class="n">j</span><span class="o">+</span><span class="mi">2</span>
+                        <span class="n">start_delta_m</span><span class="o">=</span><span class="n">start_delta_m</span><span class="o">+</span><span class="mi">1</span>
+                        
+                        <span class="n">H_site_index_ldate</span><span class="p">[</span><span class="n">gts</span><span class="o">.</span><span class="n">code</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">date</span><span class="p">)</span>
+    
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;! WARNING: No observation for site &quot;</span><span class="p">,</span><span class="n">gts</span><span class="o">.</span><span class="n">code</span><span class="p">,</span><span class="s2">&quot; at inversion step #&quot;</span><span class="p">,</span><span class="n">start_delta_m</span><span class="p">,</span><span class="s2">&quot; date &quot;</span><span class="p">,</span><span class="n">date</span><span class="p">)</span>
+                    
+                    <span class="p">(</span><span class="n">mday</span><span class="p">,</span><span class="n">month</span><span class="p">,</span><span class="n">ut</span><span class="p">)</span><span class="o">=</span><span class="n">AT</span><span class="o">.</span><span class="n">decyear2cal</span><span class="p">(</span><span class="n">date</span><span class="p">)</span>
+                    <span class="p">(</span><span class="n">noday</span><span class="p">,</span><span class="n">ut</span><span class="p">)</span><span class="o">=</span><span class="n">AT</span><span class="o">.</span><span class="n">decyear2dayno</span><span class="p">(</span><span class="n">date</span><span class="p">)</span>    
+                    <span class="n">warning</span><span class="o">+=</span><span class="p">(</span><span class="s2">&quot;! WARNING: No observation for site </span><span class="si">%s</span><span class="s2"> at inversion step #</span><span class="si">%d</span><span class="s2"> date </span><span class="si">%10.5lf</span><span class="s2"> +</span><span class="si">%4.1lf</span><span class="s2"> days </span><span class="si">%02d</span><span class="s2">-</span><span class="si">%02d</span><span class="s2">-</span><span class="si">%04d</span><span class="s2">-</span><span class="si">%.1lf</span><span class="s2"> </span><span class="si">%03d</span><span class="se">\n</span><span class="s2">&quot;</span>  <span class="o">%</span> <span class="p">(</span><span class="n">gts</span><span class="o">.</span><span class="n">code</span><span class="p">,</span><span class="n">start_delta_m</span><span class="p">,</span><span class="n">date</span><span class="p">,(</span><span class="n">date</span><span class="o">-</span><span class="n">np_dates</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span><span class="o">*</span><span class="mf">365.25</span><span class="p">,</span><span class="n">mday</span><span class="p">,</span><span class="n">month</span><span class="p">,</span><span class="nb">int</span><span class="p">(</span><span class="n">date</span><span class="p">),</span><span class="n">ut</span><span class="p">,</span><span class="n">noday</span><span class="p">))</span>
+                    <span class="n">start_delta_m</span><span class="o">=</span><span class="n">start_delta_m</span><span class="o">+</span><span class="mi">1</span>
+               
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;-- Number of time steps for site &quot;</span><span class="p">,</span><span class="n">gts</span><span class="o">.</span><span class="n">code</span><span class="p">,</span><span class="s2">&quot;:&quot;</span><span class="p">,</span><span class="nb">len</span><span class="p">(</span><span class="n">H_site_index_ldate</span><span class="p">[</span><span class="n">gts</span><span class="o">.</span><span class="n">code</span><span class="p">]))</span>
+    
+    <span class="k">for</span> <span class="n">code</span> <span class="ow">in</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">H_site_index_ldate</span><span class="o">.</span><span class="n">keys</span><span class="p">()):</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;-- Number of time steps for site &quot;</span><span class="p">,</span><span class="n">code</span><span class="p">,</span><span class="s2">&quot;:&quot;</span><span class="p">,</span><span class="nb">len</span><span class="p">(</span><span class="n">H_site_index_ldate</span><span class="p">[</span><span class="n">code</span><span class="p">]))</span>
+        <span class="n">warning</span><span class="o">+=</span><span class="p">(</span><span class="s2">&quot;-- Number of time steps for site </span><span class="si">%s</span><span class="s2"> : </span><span class="si">%d</span><span class="s2"> over </span><span class="si">%d</span><span class="s2"> requested by user</span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">code</span><span class="p">,</span><span class="nb">len</span><span class="p">(</span><span class="n">H_site_index_ldate</span><span class="p">[</span><span class="n">code</span><span class="p">]),</span><span class="n">np_dates</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">-</span><span class="mi">1</span><span class="p">))</span>
+    
+    
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;-- Number of observations &quot;</span><span class="p">,</span><span class="n">d</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+    <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">isnan</span><span class="p">(</span><span class="n">diag_Cd</span><span class="p">)</span><span class="o">.</span><span class="n">any</span><span class="p">():</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;!!! ERROR building Cd from time series (Nan)&quot;</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="n">diag_Cd</span><span class="p">)</span>
+        <span class="kn">import</span> <span class="nn">sys</span>
+        <span class="n">sys</span><span class="o">.</span><span class="n">exit</span><span class="p">()</span>
+    
+    <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">isnan</span><span class="p">(</span><span class="n">d</span><span class="p">)</span><span class="o">.</span><span class="n">any</span><span class="p">():</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;!!! ERROR building d from time series (Nan)&quot;</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="n">d</span><span class="p">)</span>
+        <span class="n">sys</span><span class="o">.</span><span class="n">exit</span><span class="p">()</span>
+    
+    <span class="k">return</span><span class="p">(</span><span class="n">G</span><span class="p">,</span><span class="n">d</span><span class="p">,</span><span class="n">diag_Cd</span><span class="p">)</span></div>
+
+<span class="c1"># #######################################################################################</span>
+<span class="c1"># def G_d_static(NEW_GREEN,NAME_OBS,UP,OBS,OBS_UP, np_dates , s_up, verbose=False):</span>
+<span class="c1"># #######################################################################################</span>
+<span class="c1">#     &quot;&quot;&quot;</span>
+<span class="c1">#     Builds the model matrix G and observation vector d for the static case</span>
+<span class="c1">#     &quot;&quot;&quot;</span>
+<span class="c1">#     </span>
+<span class="c1">#     import numpy as np</span>
+<span class="c1">#     import copy</span>
+<span class="c1">#     from pyacs.lib import astrotime as AT </span>
+<span class="c1">#     </span>
+<span class="c1">#     # init</span>
+<span class="c1">#     </span>
+<span class="c1">#     nfaults=NEW_GREEN.shape[1]</span>
+<span class="c1">#     nparameters=nfaults*(np_dates.shape[0]-1)</span>
+<span class="c1"># </span>
+<span class="c1">#     G=np.empty((0,nparameters),dtype=np.float32)</span>
+<span class="c1">#     d=np.empty((0),dtype=np.float32)</span>
+<span class="c1">#     diag_Cd=np.empty((0),dtype=np.float32)</span>
+<span class="c1"># </span>
+<span class="c1">#     # dictionary that records the index </span>
+<span class="c1">#     H_site_index_in_G={}</span>
+<span class="c1">#     H_site_index_ldate={}</span>
+<span class="c1"># </span>
+<span class="c1">#     j = 0</span>
+<span class="c1"># </span>
+<span class="c1">#     warning = &#39;&#39;</span>
+<span class="c1"># </span>
+<span class="c1">#     # loop on sites</span>
+<span class="c1">#     for i in np.arange(NAME_OBS.shape[0]):</span>
+<span class="c1">#         </span>
+<span class="c1">#         [lon,lat,ve,vn,sve,svn,sven] = OBS[i]</span>
+<span class="c1">#         </span>
+<span class="c1">#         if UP:</span>
+<span class="c1">#             [lon,lat,vu,svu] = OBS_UP[i]</span>
+<span class="c1">#             </span>
+<span class="c1">#         </span>
+<span class="c1">#         displacement = np.array(vn,)</span>
+<span class="c1">#         </span>
+<span class="c1">#         code = NAME_OBS[i]</span>
+<span class="c1">#         print &quot;-- Creating G and d for site &quot; , code</span>
+<span class="c1">#         </span>
+<span class="c1">#         H_site_index_ldate[code]=[]</span>
+<span class="c1">#     </span>
+<span class="c1">#         # find its number in the Green tensor</span>
+<span class="c1">#         if UP:</span>
+<span class="c1">#             H_site_index_in_G[code]=np.empty((0,3),dtype=int)</span>
+<span class="c1">#         else:</span>
+<span class="c1">#             H_site_index_in_G[code]=np.empty((0,2),dtype=int)</span>
+<span class="c1">#             </span>
+<span class="c1">#         site_number=np.argwhere(NAME_OBS==code.upper())[0,0] </span>
+<span class="c1">#         </span>
+<span class="c1">#         </span>
+<span class="c1">#         # the 3 rows corresponding to the observation </span>
+<span class="c1">#         if UP:</span>
+<span class="c1">#             g=np.zeros((3,nparameters))</span>
+<span class="c1">#         else:</span>
+<span class="c1">#             g=np.zeros((2,nparameters))</span>
+<span class="c1"># </span>
+<span class="c1">#         # BUILDS THE LINEAR SYSTEM</span>
+<span class="c1"># </span>
+<span class="c1">#         # since observation is N,E,U, g should also also N,E,U g[0,] corresponds to north</span>
+<span class="c1">#         g[0,0:nfaults]=NEW_GREEN[site_number,:,1,0]</span>
+<span class="c1">#         g[1,0:nfaults]=NEW_GREEN[site_number,:,0,0]</span>
+<span class="c1"># </span>
+<span class="c1">#         if UP:</span>
+<span class="c1">#             g[2,0:nfaults]=NEW_GREEN[site_number,:,2,0]</span>
+<span class="c1"># </span>
+<span class="c1">#         G = np.append(G, g, axis=0)</span>
+<span class="c1"># </span>
+<span class="c1">#         if UP:</span>
+<span class="c1">#             d=np.append(d,displacement[0:3].reshape(3,1)*1.0E3)</span>
+<span class="c1">#             # rescale up uncertainty</span>
+<span class="c1">#             displacement[-1]=displacement[-1] * s_up</span>
+<span class="c1">#             diag_Cd=np.append(diag_Cd,displacement[3:].reshape(3,1)*1.0E3)</span>
+<span class="c1">#         else:</span>
+<span class="c1">#             d=np.append(d,displacement[0:2].reshape(2,1)*1.0E3)</span>
+<span class="c1">#             diag_Cd=np.append(diag_Cd,displacement[3:5].reshape(2,1)*1.0E3)</span>
+<span class="c1"># </span>
+<span class="c1"># </span>
+<span class="c1">#             # we need to record the lines corresponding to the site</span>
+<span class="c1">#             if UP:</span>
+<span class="c1">#                 H_site_index_in_G[gts.code]=np.append(H_site_index_in_G[gts.code],np.array([[j,j+1,j+2]]),axis=0)</span>
+<span class="c1">#             else:</span>
+<span class="c1">#                 H_site_index_in_G[gts.code]=np.append(H_site_index_in_G[gts.code],np.array([[j,j+1]]),axis=0)</span>
+<span class="c1">#                 </span>
+<span class="c1">#             if UP:</span>
+<span class="c1">#                 j=j+3</span>
+<span class="c1">#             else:</span>
+<span class="c1">#                 j=j+2</span>
+<span class="c1">#             start_delta_m=start_delta_m+1</span>
+<span class="c1">#             </span>
+<span class="c1">#             H_site_index_ldate[gts.code].append(date)</span>
+<span class="c1"># </span>
+<span class="c1">#         else:</span>
+<span class="c1">#             print &quot;! WARNING: No observation for site &quot;,gts.code,&quot; at inversion step #&quot;,start_delta_m,&quot; date &quot;,date</span>
+<span class="c1">#             </span>
+<span class="c1">#             (mday,month,ut)=AT.decyear2cal(date)</span>
+<span class="c1">#             (noday,ut)=AT.decyear2dayno(date)    </span>
+<span class="c1">#             warning+=(&quot;! WARNING: No observation for site %s at inversion step #%d date %10.5lf +%4.1lf days %02d-%02d-%04d-%.1lf %03d\n&quot;  % (gts.code,start_delta_m,date,(date-np_dates[0])*365.25,mday,month,int(date),ut,noday))</span>
+<span class="c1">#             start_delta_m=start_delta_m+1</span>
+<span class="c1">#            </span>
+<span class="c1">#     print &quot;-- Number of time steps for site &quot;,gts.code,&quot;:&quot;,len(H_site_index_ldate[gts.code])</span>
+<span class="c1">#     </span>
+<span class="c1">#     for code in sorted(H_site_index_ldate.keys()):</span>
+<span class="c1">#         print &quot;-- Number of time steps for site &quot;,code,&quot;:&quot;,len(H_site_index_ldate[code])</span>
+<span class="c1">#         warning+=(&quot;-- Number of time steps for site %s : %d over %d requested by user\n&quot; % (code,len(H_site_index_ldate[code]),np_dates.shape[0]-1))</span>
+<span class="c1">#     </span>
+<span class="c1">#     </span>
+<span class="c1">#     print &quot;-- Number of observations &quot;,d.shape[0]</span>
+<span class="c1">#     if np.isnan(diag_Cd).any():</span>
+<span class="c1">#         print &quot;!!! ERROR building Cd from time series (Nan)&quot;</span>
+<span class="c1">#         print diag_Cd</span>
+<span class="c1">#         import sys</span>
+<span class="c1">#         sys.exit()</span>
+<span class="c1">#     </span>
+<span class="c1">#     if np.isnan(d).any():</span>
+<span class="c1">#         print &quot;!!! ERROR building d from time series (Nan)&quot;</span>
+<span class="c1">#         print d</span>
+<span class="c1">#         import sys</span>
+<span class="c1">#         sys.exit()</span>
+<span class="c1">#     </span>
+<span class="c1">#     return(G,d,diag_Cd)</span>
+
+</pre></div>
+
+           </div>
+           
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        
+        &copy; Copyright 2016, Jean-Mathieu Nocquet IRD/Geoazur
+
+    </p>
+  </div>
+    
+    
+    
+    Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

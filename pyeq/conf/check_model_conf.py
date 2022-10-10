@@ -15,10 +15,26 @@ def check_model_conf( model ):
     import pyeq.message.debug_message as DEBUG
 
     ###############################################################################
+    # REFERENCE FOR TIME SERIES
+    ###############################################################################
+
+    if 'ts_zero' not in model.__dict__:
+        WARNING("option 'ts_zero' not provided. Set to last_date.")
+        model.__dict__['ts_zero'] = 'last_date'
+    else:
+        VERBOSE("option 'ts_zero' provided: %s" % model.__dict__['ts_zero'])
+        if ('last_date' not in model.__dict__['ts_zero']) and ('median' not in model.__dict__['ts_zero']) \
+            and ('mean' not in model.__dict__['ts_zero']):
+            ERROR("option 'ts_zero' MUST be among 'last_date','median','mean'",exit=True)
+
+
+
+
+    ###############################################################################
     # BEHAVIOUR CONTROL (BOOLEAN OPTIONS)
     ###############################################################################
 
-    lboolean_opt = ['verbose','debug','no_opt','save','plot','tar','print_result']
+    lboolean_opt = ['verbose','debug','no_opt','save','plot','tar','print_result', 'norm_resolution','backward']
 
     for boolean_opt in lboolean_opt:
         if boolean_opt not in model.__dict__:
@@ -36,7 +52,7 @@ def check_model_conf( model ):
     # BEHAVIOUR CONTROL (None as default)
     ###############################################################################
 
-    lnone_opt = ['mpck']
+    lnone_opt = ['mpck','name']
 
     for none_opt in lnone_opt:
         if none_opt not in model.__dict__:
@@ -47,6 +63,15 @@ def check_model_conf( model ):
     ###############################################################################
     # GEOMETRY
     ###############################################################################
+
+    if 'geometry_type' not in model.__dict__:
+            WARNING("option geometry_type not provided. Set to TDE (Triangular Dislocation Element)")
+            WARNING("If you are using a triangular mesh, consider using TDV (Triangular Dislocation Vertice) which is faster")
+            model.geometry_type = 'TDE'
+    else:
+        model.geometry_type = model.geometry_type.upper()
+        if model.geometry_type not in ['RDE','TDE','TDV']:
+            ERROR(("Argument geometry_type must be in ['RDE','TDE','TDV']. User provided: %s" % str( model.geometry_type )), exit=True )
 
     lopt_geometry = ['geometry_range_lon','geometry_range_lat','geometry_range_depth','geometry_remove_idx']
     for opt_geometry in lopt_geometry:
@@ -92,14 +117,24 @@ def check_model_conf( model ):
         sys.exit()
 
     # EXCLUDE_GPS
-    if model.lexclude_gps is not None:
+    if 'lexclude_gps' not in model.__dict__:
+        model.lexclude_gps = []
+    else:
         if type( model.lexclude_gps ) != list:
             model.lexclude_gps = model.lexclude_gps.split()
-    
+
+    # UNWEIGHT_GPS
+    if 'lunweight_gps' not in model.__dict__:
+        model.lunweight_gps = []
+    else:
+        if type( model.lunweight_gps ) != list:
+            model.lunweight_gps = model.lunweight_gps.split()
+
+
     ###############################################################################
     # CONVERT TO FLOAT
     ###############################################################################
-    lopt_float = [ 's_up','s_h','dc','tau','rake_constraint','' ]
+    lopt_float = [ 's_up','s_h','dc','tau' ]
     
     for option in lopt_float:
         try:
@@ -112,7 +147,7 @@ def check_model_conf( model ):
     # OPTIONS THAT ARE FLOAT WITH ZERO TO BE IGNORED. SET TO ZERO IF NOT PROVIDED
     ###############################################################################
 
-    lzero = ['offset','interseismic','rake_constraint']
+    lzero = ['offset','interseismic']
     for option in lzero:
         try:
             model.__dict__[ option ] = float( model.__dict__[ option ] )
@@ -141,6 +176,45 @@ def check_model_conf( model ):
     
     for option in lopt_int:
         model.__dict__[ option ] = int( model.__dict__[ option ] )
+
+    ###############################################################################
+    # CROSS VALIDATION - ADDED 04/09/2022
+    ###############################################################################
+
+    if 'cross_validation' not in model.__dict__:
+            WARNING("option cross_validation not provided. Set to None")
+            model.cross_validation = None
+    else:
+        if model.cross_validation not in ['None', 'run','build']:
+            ERROR(("Argument cross_validation must be in ['None','run','build']. User provided: %s" % str( model.cross_validation )), exit=True )
+        if model.cross_validation == 'None':
+            model.cross_validation = None
+
+    ###############################################################################
+    # LAPLACIAN REGULARIZATION - ADDED 05/09/2022
+    ###############################################################################
+
+    if 'laplacian_regularization' in model.__dict__:
+        MESSAGE("conf damping parameters: %s mm/sqrt(day)" % model.sigma)
+        MESSAGE("conf slip rate spatial smoothing parameters: %s " % model.lambda_spatial_smoothing)
+        MESSAGE("conf slip rate temporal smoothing parameters: %s " % model.lambda_temporal_smoothing)
+        MESSAGE("conf cumulative slip spatial smoothing parameters: %s " % model.lambda_final_spatial_smoothing)
+        MESSAGE("conf cumulative slip temporal smoothing parameters: %s " % model.lambda_stf)
+        MESSAGE("Laplacian regularization constraints provided: %s" % model.laplacian_regularization)
+        [model.sigma,
+        model.lambda_spatial_smoothing,
+        model.lambda_temporal_smoothing,
+        model.lambda_final_spatial_smoothing,
+        model.lambda_stf] = [x for x in model.laplacian_regularization.split('/')]
+        MESSAGE("new damping parameters: %s mm/sqrt(day)" % model.sigma)
+        MESSAGE("new slip rate spatial smoothing parameters: %s " % model.lambda_spatial_smoothing)
+        MESSAGE("new slip rate temporal smoothing parameters: %s " % model.lambda_temporal_smoothing)
+        MESSAGE("new cumulative slip spatial smoothing parameters: %s " % model.lambda_final_spatial_smoothing)
+        MESSAGE("new cumulative slip temporal smoothing parameters: %s " % model.lambda_stf)
+
+    MESSAGE("regularization parameters just before before return: %s %s %s %s %s " % ( model.sigma, model.lambda_spatial_smoothing,
+                model.lambda_temporal_smoothing, model.lambda_final_spatial_smoothing, model.lambda_stf ))
+
 
     ###############################################################################
     # MANDATORY ARGUMENTS
@@ -172,5 +246,8 @@ def check_model_conf( model ):
     
     if mandatory_missing:
         ERROR("One mandatory option missing",exit=True)
+
+    MESSAGE("regularization parameters just before return: %s %s %s %s %s " % ( model.sigma, model.lambda_spatial_smoothing,
+                model.lambda_temporal_smoothing, model.lambda_final_spatial_smoothing, model.lambda_stf ))
 
     return model

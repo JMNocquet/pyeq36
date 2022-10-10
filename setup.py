@@ -2,6 +2,25 @@ from setuptools import setup
 
 ###############################################################################
 # VERSION HISTORY
+# 0.54.7 on 20220904 : K-fold cross-validation operational
+# 0.54.6 on 20220904 : start implementation of K-fold cross-validation approach for regularization parameters choice
+# 0.54.5 on 20220329 : implemented slip resolved on vertices. model.geometry_type = 'TDV added'
+#                    : added backward, ts_zero options
+# 0.54.4 on 20211229 : new mesh using jigsaw. added script pyeq_mesh_triangles_jigsawpy.py
+# 0.54.3 on 20210905 : change in setup.py.
+# 0.54.2 on 20210617 : change in plot_model_shp to avoid shapely warning for centroid in geographical coordinates
+# 0.54.1 on 20210602 : test to best choose sparse matrix choice in DLO regularization
+# 0.54.0 on 20210602 : removing temporal smoothing at start seems to provide mitigate results depending on the case.
+#                    : 0.54.0 puts back temporal smoothing at start.
+# 0.53.9 on 20210520 : modify temporal smoothing and stf smoothing for the first 2-days (post-seismic)
+# 0.53.8 on 20210519 : added stf smoothing
+# 0.53.7 on 20210509 : renormalized cumulated slip constraint by 1/nstep
+# 0.53.6 on 20210505 : renormalized cumulated slip constraint by 1/nstep**2
+# 0.53.5 on 20210430 : added spatial laplacian constraints on the cumulated slip
+# 0.53.4 on 20210426 : attempt to add resolution dependent laplacian constraints
+# 0.53.3 on 20210422 : bug corrected on Green tensor dimension in nikkhoo_tde
+# 0.53.2 on 20210409 : variable rake implemented + interpolation on it
+# 0.53.1 on 20210322 : adding rake info in info
 # 0.53.0 on 20210115 : first release after major refactoring - in test
 # 0.52.2 on 20210111 : refactor conf and message
 # 0.52.1 on 20210110 : new laplace regularization in pyeq.regularization.laplace in test
@@ -9,7 +28,7 @@ from setuptools import setup
 # 0.51.9 on 20201213 : refactoring initiated. green package, handle strain/stress calculation for meade tde.
 # 0.51.8 on 20201208 : add time variable lambda_spatial_smoothing
 # 0.51.7 on 20201117 : change in pyeq_plot_kinematics_shp and model.pck save
-# 0.51.6 on 20201115 : added L1 inversion through CVXOPT
+# 0.51.6 on 20201115 : added L1 inversion through CVXOPT - not operational
 # 0.51.5 on 20201112 : new discrete laplacian operator implemented
 # 0.51.4 on 20201104 : work on new laplacian_like regularization
 # 0.51.3 on 20201102 : added pyeq_insert_model_into_model.py
@@ -31,8 +50,8 @@ from sphinx.setup_command import BuildDoc
 cmdclass = {'build_sphinx': BuildDoc}
 
 name = 'pyeq'
-version = '0.53'
-release = '0.53.0'
+version = '0.54'
+release = '0.54.7'
 
 setup(name = name,
       version = release,
@@ -74,6 +93,7 @@ setup(name = name,
                 'pyeq.optimization',
                 'pyeq.optimization.nnls',
                 'pyeq.optimization.wrapper',
+                'pyeq.optimization.rake',
                 'pyeq.lib.objects',
                 'pyeq.obs_tensor',
 #                'pyeq.lib.okada_rde',
@@ -91,7 +111,8 @@ setup(name = name,
            'pyeq/scripts/pyeq_static_inversion.py',
            'pyeq/scripts/pyeq_insert_model_into_model.py',
            #                # PYEQ GEOMETRY AND GREEN'S FUNCTIONS
-                'pyeq/scripts/pyeq_parametrize_curve_surface_triangles.py',
+           'pyeq/scripts/pyeq_parametrize_curve_surface_triangles.py',
+           'pyeq/scripts/pyeq_mesh_triangles_jigsawpy.py',
            'pyeq/scripts/pyeq_make_rectangular_fault.py',
            'pyeq/scripts/pyeq_make_green.py',
            'pyeq/scripts/pyeq_model_to_disp.py',
@@ -102,19 +123,34 @@ setup(name = name,
                 'pyeq/scripts/pyeq_magnitude.py',
            'pyeq/scripts/pyeq_scaling_laws.py',
            'pyeq/scripts/pyeq_kinematic_model_to_disp_time_series.py',
+           # development version
+           'pyeq/scripts/pyaks.py',
+
        ],
-      install_requires=['ansicolors',
-                        'matplotlib>=3',
-                        'geopandas>=0.7.0',
-                        'pyacs>=0.62.0',
-                        'numpy>=1.17.2',
-                        'progress',
-                        'descartes' ,
-                        'str2bool',
-                        'termcolor'],
+      # change for cargese summer school 2021
+      install_requires=['pyacs>=0.65.5',
+                        'progress==1.5',
+                        'str2bool==1.1',
+                        'termcolor==1.1.0',
+                        'psutil==5.8.0',
+                        'tqdm==4.59.0',
+                        'netcdf4==1.5.7'],
           #'Polygon3',  \
 #                        'hdf5',  \
 #                        'netCDF4'],
+
+#       install_requires=['ansicolors',
+#                         'matplotlib>=3',
+#                         'geopandas>=0.7.0',
+#                         'pyacs>=0.62.0',
+#                         'numpy>=1.17.2',
+#                         'progress',
+#                         'descartes' ,
+#                         'str2bool',
+#                         'termcolor'],
+#           #'Polygon3',  \
+# #                        'hdf5',  \
+# #                        'netCDF4'],
       zip_safe=False,
 
       test_suite='nose.collector',

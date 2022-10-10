@@ -1,0 +1,775 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>pyeq.lib.okada.dc3d0 &mdash; pyeq 0.51.8 documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="../../../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../../../_static/pygments.css" type="text/css" />
+
+  
+  
+  
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="../../../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../../../../" src="../../../../_static/documentation_options.js"></script>
+        <script src="../../../../_static/jquery.js"></script>
+        <script src="../../../../_static/underscore.js"></script>
+        <script src="../../../../_static/doctools.js"></script>
+        <script src="../../../../_static/language_data.js"></script>
+    
+    <script type="text/javascript" src="../../../../_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../../../../index.html" class="icon icon-home" alt="Documentation Home"> pyeq
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                0.51.8
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../foreword.html">PYEQ: full time-dependent slip inversion</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../behaviour.html">Options controlling the overall behaviour</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../tutorial_static_inversion.html">Tutorial static inversion</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../dates.html">dates</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../roxane.html">Roxane’s notes on PYEQ</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../modules.html">for developpers</a></li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../../index.html">pyeq</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../../../index.html" class="icon icon-home"></a> &raquo;</li>
+        
+          <li><a href="../../../index.html">Module code</a> &raquo;</li>
+        
+      <li>pyeq.lib.okada.dc3d0</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>Source code for pyeq.lib.okada.dc3d0</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">This a a pure python direct translation from Okada&#39;s dc3d0 fortran original routine.</span>
+<span class="sd">ref: Okada (1992) [Bull. Seism. Soc. Am., 82, 1018-1040]</span>
+<span class="sd">http://www.bosai.go.jp/study/application/dc3d/DC3Dhtml_E.html</span>
+<span class="sd">http://www.bosai.go.jp/study/application/dc3d/DC3Dhtml_E.html</span>
+<span class="sd">http://www.bosai.go.jp/study/application/dc3d/download/DC3Dfortran.txt</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="c1"># global variables</span>
+
+<span class="n">f0</span> <span class="o">=</span> <span class="mf">0.</span>
+<span class="n">f1</span> <span class="o">=</span> <span class="mf">1.</span>
+<span class="n">f2</span> <span class="o">=</span> <span class="mf">2.</span>
+<span class="n">f3</span> <span class="o">=</span> <span class="mf">3.</span>
+<span class="n">f4</span> <span class="o">=</span> <span class="mf">4.</span>
+<span class="n">f5</span> <span class="o">=</span> <span class="mf">5.</span>
+<span class="n">f7</span> <span class="o">=</span> <span class="mf">7.</span>
+<span class="n">f8</span> <span class="o">=</span> <span class="mf">8.</span>
+<span class="n">f9</span> <span class="o">=</span> <span class="mf">9.</span>
+<span class="n">f10</span> <span class="o">=</span> <span class="mf">10.</span>
+<span class="n">f15</span> <span class="o">=</span> <span class="mf">15.</span>
+
+<span class="n">pi2</span> <span class="o">=</span> <span class="mf">6.283185307179586</span>                                     
+<span class="n">eps</span> <span class="o">=</span> <span class="mf">1.E-6</span>
+
+
+<span class="c1">###############################################################################</span>
+<div class="viewcode-block" id="dccon0"><a class="viewcode-back" href="../../../../pyeq.lib.okada.dc3d0.html#pyeq.lib.okada.dc3d0.dccon0">[docs]</a><span class="k">def</span>  <span class="nf">dccon0</span><span class="p">(</span><span class="n">alpha</span><span class="p">,</span> <span class="n">dip</span><span class="p">):</span>                                     
+<span class="c1">###############################################################################</span>
+    <span class="sd">&quot;&quot;&quot;                                                                     </span>
+<span class="sd">    c*******************************************************************    </span>
+<span class="sd">    c*****   calculate medium constants and fault-dip constants    *****    </span>
+<span class="sd">    c*******************************************************************    </span>
+<span class="sd">    c                                                                       </span>
+<span class="sd">    c***** input                                                            </span>
+<span class="sd">    c*****   alpha : medium constant  (lambda+myu)/(lambda+2*myu)           </span>
+<span class="sd">    c*****   dip   : dip-angle (degree)                                     </span>
+<span class="sd">    c### caution ### if cos(dip) is sufficiently small, it is set to zero   </span>
+<span class="sd">    &quot;&quot;&quot;</span>                                                                     
+    <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+    <span class="k">global</span> <span class="n">alp1</span><span class="p">,</span> <span class="n">alp2</span><span class="p">,</span> <span class="n">alp3</span><span class="p">,</span> <span class="n">alp4</span><span class="p">,</span> <span class="n">alp5</span><span class="p">,</span> <span class="n">sd</span><span class="p">,</span> <span class="n">cd</span><span class="p">,</span> <span class="n">sdsd</span><span class="p">,</span> <span class="n">cdcd</span><span class="p">,</span> <span class="n">sdcd</span><span class="p">,</span> <span class="n">s2d</span><span class="p">,</span> <span class="n">c2d</span>
+    
+<span class="c1">#      common /c0/alp1,alp2,alp3,alp4,alp5,sd,cd,sdsd,cdcd,sdcd,s2d,c2d  </span>
+<span class="c1">#      data f0,f1,f2,pi2/0.d0,1.d0,2.d0,6.283185307179586d0/             </span>
+<span class="c1">#      data eps/1.d-6/                                                   </span>
+
+    <span class="n">alp1</span> <span class="o">=</span> <span class="p">(</span><span class="n">f1</span> <span class="o">-</span> <span class="n">alpha</span><span class="p">)</span> <span class="o">/</span> <span class="n">f2</span>                                                
+    <span class="n">alp2</span> <span class="o">=</span> <span class="n">alpha</span> <span class="o">/</span> <span class="n">f2</span>                                                    
+    <span class="n">alp3</span> <span class="o">=</span> <span class="p">(</span><span class="n">f1</span> <span class="o">-</span> <span class="n">alpha</span><span class="p">)</span> <span class="o">/</span> <span class="n">alpha</span>                                             
+    <span class="n">alp4</span> <span class="o">=</span> <span class="n">f1</span> <span class="o">-</span> <span class="n">alpha</span>                                                    
+    <span class="n">alp5</span> <span class="o">=</span> <span class="n">alpha</span>                                                       
+
+    <span class="n">p18</span> <span class="o">=</span> <span class="n">pi2</span> <span class="o">/</span> <span class="mf">360.</span>                                                    
+    <span class="n">sd</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">dip</span> <span class="o">*</span> <span class="n">p18</span><span class="p">)</span>                                                  
+    <span class="n">cd</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">dip</span> <span class="o">*</span> <span class="n">p18</span><span class="p">)</span>                                                  
+
+    <span class="k">if</span> <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">cd</span><span class="p">)</span> <span class="o">&lt;=</span> <span class="n">eps</span><span class="p">)</span> <span class="p">:</span>                                          
+        <span class="n">cd</span> <span class="o">=</span> <span class="n">f0</span>                                                           
+        <span class="k">if</span> <span class="p">(</span><span class="n">sd</span> <span class="o">&gt;=</span> <span class="n">f0</span><span class="p">):</span> <span class="n">sd</span> <span class="o">=</span> <span class="n">f1</span>                                             
+        <span class="k">if</span> <span class="p">(</span><span class="n">sd</span> <span class="o">&lt;=</span> <span class="n">f0</span><span class="p">):</span> <span class="n">sd</span> <span class="o">=</span> <span class="o">-</span><span class="n">f1</span>                                             
+
+    <span class="n">sdsd</span> <span class="o">=</span> <span class="n">sd</span> <span class="o">*</span> <span class="n">sd</span>                                                        
+    <span class="n">cdcd</span> <span class="o">=</span> <span class="n">cd</span> <span class="o">*</span> <span class="n">cd</span>                                                        
+    <span class="n">sdcd</span> <span class="o">=</span> <span class="n">sd</span> <span class="o">*</span> <span class="n">cd</span>                                                        
+    <span class="n">s2d</span> <span class="o">=</span> <span class="n">f2</span> <span class="o">*</span> <span class="n">sdcd</span>                                                       
+    <span class="n">c2d</span> <span class="o">=</span> <span class="n">cdcd</span> <span class="o">-</span> <span class="n">sdsd</span>                                                     
+    
+    <span class="k">return</span> </div>
+
+<span class="c1">###############################################################################</span>
+<div class="viewcode-block" id="dccon1"><a class="viewcode-back" href="../../../../pyeq.lib.okada.dc3d0.html#pyeq.lib.okada.dc3d0.dccon1">[docs]</a><span class="k">def</span> <span class="nf">dccon1</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">d</span><span class="p">):</span>
+<span class="c1">###############################################################################</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    c********************************************************************** </span>
+<span class="sd">    c*****   calculate station geometry constants for point source    ***** </span>
+<span class="sd">    c********************************************************************** </span>
+<span class="sd">    c                                                                       </span>
+<span class="sd">    c***** input                                                            </span>
+<span class="sd">    c*****   x,y,d : station coordinates in fault system                    </span>
+<span class="sd">    c### caution ### if x,y,d are sufficiently small, they are set to zero  </span>
+<span class="sd">    </span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    
+    <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+    <span class="k">global</span> <span class="n">p</span><span class="p">,</span> <span class="n">q</span><span class="p">,</span> <span class="n">s</span><span class="p">,</span> <span class="n">t</span><span class="p">,</span> <span class="n">xy</span><span class="p">,</span> <span class="n">x2</span><span class="p">,</span> <span class="n">y2</span><span class="p">,</span> <span class="n">d2</span><span class="p">,</span> <span class="n">r</span><span class="p">,</span> <span class="n">r2</span><span class="p">,</span> <span class="n">r3</span><span class="p">,</span> <span class="n">r5</span><span class="p">,</span> <span class="n">qr</span><span class="p">,</span> <span class="n">qrx</span><span class="p">,</span> <span class="n">a3</span><span class="p">,</span> <span class="n">a5</span><span class="p">,</span> <span class="n">b3</span><span class="p">,</span> <span class="n">c3</span><span class="p">,</span> <span class="n">uy</span><span class="p">,</span> <span class="n">vy</span><span class="p">,</span> <span class="n">wy</span><span class="p">,</span> <span class="n">uz</span><span class="p">,</span> <span class="n">vz</span><span class="p">,</span> <span class="n">wz</span>
+                                                                     
+<span class="c1">#      common /c0/dummy(5),sd,cd,dumm(5)                                 </span>
+<span class="c1">#      common /c1/p,q,s,t,xy,x2,y2,d2,r,r2,r3,r5,qr,qrx,a3,a5,b3,c3,     </span>
+<span class="c1">#     *           uy,vy,wy,uz,vz,wz                                      </span>
+<span class="c1">#      data  f0,f1,f3,f5,eps/0.d0,1.d0,3.d0,5.d0,1.d-6/                  </span>
+
+    <span class="k">if</span> <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="o">&lt;</span> <span class="n">eps</span><span class="p">):</span> <span class="n">x</span> <span class="o">=</span> <span class="n">f0</span>                                           
+    <span class="k">if</span> <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">y</span><span class="p">)</span> <span class="o">&lt;</span> <span class="n">eps</span><span class="p">):</span> <span class="n">y</span> <span class="o">=</span> <span class="n">f0</span>                                           
+    <span class="k">if</span> <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">d</span><span class="p">)</span> <span class="o">&lt;</span> <span class="n">eps</span><span class="p">):</span> <span class="n">d</span> <span class="o">=</span> <span class="n">f0</span>                                           
+
+    <span class="n">p</span> <span class="o">=</span> <span class="n">y</span> <span class="o">*</span> <span class="n">cd</span> <span class="o">+</span> <span class="n">d</span> <span class="o">*</span> <span class="n">sd</span>                                                       
+    <span class="n">q</span> <span class="o">=</span> <span class="n">y</span> <span class="o">*</span> <span class="n">sd</span> <span class="o">-</span> <span class="n">d</span> <span class="o">*</span> <span class="n">cd</span>                                                       
+    <span class="n">s</span> <span class="o">=</span> <span class="n">p</span> <span class="o">*</span> <span class="n">sd</span> <span class="o">+</span> <span class="n">q</span> <span class="o">*</span> <span class="n">cd</span>                                                       
+    <span class="n">t</span> <span class="o">=</span> <span class="n">p</span> <span class="o">*</span> <span class="n">cd</span> <span class="o">-</span> <span class="n">q</span> <span class="o">*</span> <span class="n">sd</span>                                                       
+
+    <span class="n">xy</span> <span class="o">=</span> <span class="n">x</span> <span class="o">*</span> <span class="n">y</span>                                                            
+    <span class="n">x2</span> <span class="o">=</span> <span class="n">x</span> <span class="o">*</span> <span class="n">x</span>                                                            
+    <span class="n">y2</span> <span class="o">=</span> <span class="n">y</span> <span class="o">*</span> <span class="n">y</span>                                                            
+    <span class="n">d2</span> <span class="o">=</span> <span class="n">d</span> <span class="o">*</span> <span class="n">d</span>                                                            
+    <span class="n">r2</span> <span class="o">=</span> <span class="n">x2</span> <span class="o">+</span> <span class="n">y2</span> <span class="o">+</span> <span class="n">d2</span>                                                       
+    <span class="n">r</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">r2</span><span class="p">)</span>                                                      
+
+    <span class="k">if</span> <span class="p">(</span><span class="n">r</span> <span class="o">==</span> <span class="n">f0</span><span class="p">):</span> 
+        <span class="k">return</span>                                             
+
+    <span class="n">r3</span> <span class="o">=</span> <span class="n">r</span> <span class="o">*</span> <span class="n">r2</span>                                                          
+    <span class="n">r5</span> <span class="o">=</span> <span class="n">r3</span> <span class="o">*</span> <span class="n">r2</span>                                                          
+    <span class="n">_r7</span> <span class="o">=</span> <span class="n">r5</span> <span class="o">*</span> <span class="n">r2</span>                                                          
+
+    <span class="n">a3</span> <span class="o">=</span> <span class="n">f1</span> <span class="o">-</span> <span class="n">f3</span> <span class="o">*</span> <span class="n">x2</span> <span class="o">/</span> <span class="n">r2</span>                                                    
+    <span class="n">a5</span> <span class="o">=</span> <span class="n">f1</span> <span class="o">-</span> <span class="n">f5</span> <span class="o">*</span> <span class="n">x2</span> <span class="o">/</span> <span class="n">r2</span>                                                    
+    <span class="n">b3</span> <span class="o">=</span> <span class="n">f1</span> <span class="o">-</span> <span class="n">f3</span> <span class="o">*</span> <span class="n">y2</span> <span class="o">/</span> <span class="n">r2</span>                                                    
+    <span class="n">c3</span> <span class="o">=</span> <span class="n">f1</span> <span class="o">-</span> <span class="n">f3</span> <span class="o">*</span> <span class="n">d2</span> <span class="o">/</span> <span class="n">r2</span>                                                    
+    
+    <span class="n">qr</span> <span class="o">=</span> <span class="n">f3</span> <span class="o">*</span> <span class="n">q</span> <span class="o">/</span> <span class="n">r5</span>                                                        
+    <span class="n">qrx</span> <span class="o">=</span> <span class="n">f5</span> <span class="o">*</span> <span class="n">qr</span> <span class="o">*</span> <span class="n">x</span> <span class="o">/</span> <span class="n">r2</span>                                                    
+    
+    <span class="n">uy</span> <span class="o">=</span> <span class="n">sd</span> <span class="o">-</span> <span class="n">f5</span> <span class="o">*</span> <span class="n">y</span> <span class="o">*</span> <span class="n">q</span> <span class="o">/</span> <span class="n">r2</span>                                                   
+    <span class="n">uz</span> <span class="o">=</span> <span class="n">cd</span> <span class="o">+</span> <span class="n">f5</span> <span class="o">*</span> <span class="n">d</span> <span class="o">*</span> <span class="n">q</span> <span class="o">/</span> <span class="n">r2</span>                                                   
+    <span class="n">vy</span> <span class="o">=</span> <span class="n">s</span> <span class="o">-</span> <span class="n">f5</span> <span class="o">*</span> <span class="n">y</span> <span class="o">*</span> <span class="n">p</span> <span class="o">*</span> <span class="n">q</span> <span class="o">/</span> <span class="n">r2</span>                                                 
+    <span class="n">vz</span> <span class="o">=</span> <span class="n">t</span> <span class="o">+</span> <span class="n">f5</span> <span class="o">*</span> <span class="n">d</span> <span class="o">*</span> <span class="n">p</span> <span class="o">*</span> <span class="n">q</span> <span class="o">/</span> <span class="n">r2</span>                                                 
+    <span class="n">wy</span> <span class="o">=</span> <span class="n">uy</span> <span class="o">+</span> <span class="n">sd</span>                                                          
+    <span class="n">wz</span> <span class="o">=</span> <span class="n">uz</span> <span class="o">+</span> <span class="n">cd</span>                                                          
+
+    <span class="k">return</span>                                             </div>
+
+
+<span class="c1">###############################################################################</span>
+<div class="viewcode-block" id="ua0"><a class="viewcode-back" href="../../../../pyeq.lib.okada.dc3d0.html#pyeq.lib.okada.dc3d0.ua0">[docs]</a><span class="k">def</span> <span class="nf">ua0</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">d</span><span class="p">,</span> <span class="n">pot1</span><span class="p">,</span> <span class="n">pot2</span><span class="p">,</span> <span class="n">pot3</span><span class="p">,</span> <span class="n">pot4</span><span class="p">):</span>
+<span class="c1">###############################################################################</span>
+<span class="c1">#      common /c0/alp1,alp2,alp3,alp4,alp5,sd,cd,sdsd,cdcd,sdcd,s2d,c2d  </span>
+<span class="c1">#      common /c1/p,q,s,t,xy,x2,y2,d2,r,r2,r3,r5,qr,qrx,a3,a5,b3,c3,     </span>
+<span class="c1">#     *           uy,vy,wy,uz,vz,wz                                      </span>
+<span class="c1">#      data f0,f1,f3/0.d0,1.d0,3.d0/                                     </span>
+<span class="c1">#      data pi2/6.283185307179586d0/                                     </span>
+
+    <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+
+    <span class="n">du</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="mi">12</span><span class="p">)</span>
+    <span class="n">u</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="mi">12</span><span class="p">)</span>
+                                                            
+<span class="c1">#======================================                                 </span>
+<span class="c1">#=====  strike-slip contribution  =====                                 </span>
+<span class="c1">#======================================                                 </span>
+    <span class="k">if</span><span class="p">(</span><span class="n">pot1</span> <span class="o">!=</span> <span class="n">f0</span><span class="p">):</span>
+        
+        <span class="n">du</span><span class="p">[</span> <span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="n">alp1</span> <span class="o">*</span> <span class="n">q</span> <span class="o">/</span> <span class="n">r3</span> <span class="o">+</span> <span class="n">alp2</span> <span class="o">*</span> <span class="n">x2</span> <span class="o">*</span> <span class="n">qr</span>                                
+        <span class="n">du</span><span class="p">[</span> <span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">alp1</span> <span class="o">*</span> <span class="n">x</span> <span class="o">/</span> <span class="n">r3</span> <span class="o">*</span> <span class="n">sd</span> <span class="o">+</span> <span class="n">alp2</span> <span class="o">*</span> <span class="n">xy</span> <span class="o">*</span> <span class="n">qr</span>                                
+        <span class="n">du</span><span class="p">[</span> <span class="mi">2</span><span class="p">]</span> <span class="o">=</span> <span class="o">-</span><span class="n">alp1</span> <span class="o">*</span> <span class="n">x</span> <span class="o">/</span> <span class="n">r3</span> <span class="o">*</span> <span class="n">cd</span> <span class="o">+</span> <span class="n">alp2</span> <span class="o">*</span> <span class="n">x</span> <span class="o">*</span> <span class="n">d</span> <span class="o">*</span> <span class="n">qr</span>                               
+        <span class="n">du</span><span class="p">[</span> <span class="mi">3</span><span class="p">]</span> <span class="o">=</span> <span class="n">x</span> <span class="o">*</span> <span class="n">qr</span> <span class="o">*</span> <span class="p">(</span><span class="o">-</span><span class="n">alp1</span> <span class="o">+</span> <span class="n">alp2</span> <span class="o">*</span> <span class="p">(</span><span class="n">f1</span> <span class="o">+</span> <span class="n">a5</span><span class="p">))</span>                             
+        <span class="n">du</span><span class="p">[</span> <span class="mi">4</span><span class="p">]</span> <span class="o">=</span> <span class="n">alp1</span> <span class="o">*</span> <span class="n">a3</span> <span class="o">/</span> <span class="n">r3</span> <span class="o">*</span> <span class="n">sd</span> <span class="o">+</span> <span class="n">alp2</span> <span class="o">*</span> <span class="n">y</span> <span class="o">*</span> <span class="n">qr</span> <span class="o">*</span> <span class="n">a5</span>                             
+        <span class="n">du</span><span class="p">[</span> <span class="mi">5</span><span class="p">]</span> <span class="o">=</span> <span class="o">-</span><span class="n">alp1</span> <span class="o">*</span> <span class="n">a3</span> <span class="o">/</span> <span class="n">r3</span> <span class="o">*</span> <span class="n">cd</span> <span class="o">+</span> <span class="n">alp2</span> <span class="o">*</span> <span class="n">d</span> <span class="o">*</span> <span class="n">qr</span> <span class="o">*</span> <span class="n">a5</span>                             
+        <span class="n">du</span><span class="p">[</span> <span class="mi">6</span><span class="p">]</span> <span class="o">=</span> <span class="n">alp1</span> <span class="o">*</span> <span class="p">(</span><span class="n">sd</span> <span class="o">/</span> <span class="n">r3</span> <span class="o">-</span> <span class="n">y</span> <span class="o">*</span> <span class="n">qr</span><span class="p">)</span> <span class="o">+</span> <span class="n">alp2</span> <span class="o">*</span> <span class="n">f3</span> <span class="o">*</span> <span class="n">x2</span> <span class="o">/</span> <span class="n">r5</span> <span class="o">*</span> <span class="n">uy</span>                     
+        <span class="n">du</span><span class="p">[</span> <span class="mi">7</span><span class="p">]</span> <span class="o">=</span> <span class="n">f3</span> <span class="o">*</span> <span class="n">x</span> <span class="o">/</span> <span class="n">r5</span> <span class="o">*</span> <span class="p">(</span><span class="o">-</span><span class="n">alp1</span> <span class="o">*</span> <span class="n">y</span> <span class="o">*</span> <span class="n">sd</span> <span class="o">+</span> <span class="n">alp2</span> <span class="o">*</span> <span class="p">(</span><span class="n">y</span> <span class="o">*</span> <span class="n">uy</span> <span class="o">+</span> <span class="n">q</span><span class="p">))</span>                    
+        <span class="n">du</span><span class="p">[</span> <span class="mi">8</span><span class="p">]</span> <span class="o">=</span> <span class="n">f3</span> <span class="o">*</span> <span class="n">x</span> <span class="o">/</span> <span class="n">r5</span> <span class="o">*</span> <span class="p">(</span><span class="n">alp1</span> <span class="o">*</span> <span class="n">y</span> <span class="o">*</span> <span class="n">cd</span> <span class="o">+</span> <span class="n">alp2</span> <span class="o">*</span> <span class="n">d</span> <span class="o">*</span> <span class="n">uy</span><span class="p">)</span>                        
+        <span class="n">du</span><span class="p">[</span> <span class="mi">9</span><span class="p">]</span> <span class="o">=</span> <span class="n">alp1</span> <span class="o">*</span> <span class="p">(</span><span class="n">cd</span> <span class="o">/</span> <span class="n">r3</span> <span class="o">+</span> <span class="n">d</span> <span class="o">*</span> <span class="n">qr</span><span class="p">)</span> <span class="o">+</span> <span class="n">alp2</span> <span class="o">*</span> <span class="n">f3</span> <span class="o">*</span> <span class="n">x2</span> <span class="o">/</span> <span class="n">r5</span> <span class="o">*</span> <span class="n">uz</span>                     
+        <span class="n">du</span><span class="p">[</span><span class="mi">10</span><span class="p">]</span> <span class="o">=</span> <span class="n">f3</span> <span class="o">*</span> <span class="n">x</span> <span class="o">/</span> <span class="n">r5</span> <span class="o">*</span> <span class="p">(</span><span class="n">alp1</span> <span class="o">*</span> <span class="n">d</span> <span class="o">*</span> <span class="n">sd</span> <span class="o">+</span> <span class="n">alp2</span> <span class="o">*</span> <span class="n">y</span> <span class="o">*</span> <span class="n">uz</span><span class="p">)</span>                        
+        <span class="n">du</span><span class="p">[</span><span class="mi">11</span><span class="p">]</span> <span class="o">=</span> <span class="n">f3</span> <span class="o">*</span> <span class="n">x</span> <span class="o">/</span> <span class="n">r5</span> <span class="o">*</span> <span class="p">(</span><span class="o">-</span><span class="n">alp1</span> <span class="o">*</span> <span class="n">d</span> <span class="o">*</span> <span class="n">cd</span> <span class="o">+</span> <span class="n">alp2</span> <span class="o">*</span> <span class="p">(</span><span class="n">d</span> <span class="o">*</span> <span class="n">uz</span> <span class="o">-</span> <span class="n">q</span><span class="p">))</span>                    
+
+        <span class="n">u</span> <span class="o">=</span> <span class="n">u</span> <span class="o">+</span> <span class="n">pot1</span> <span class="o">/</span> <span class="n">pi2</span> <span class="o">*</span> <span class="n">du</span>
+
+<span class="c1">#===================================                                    </span>
+<span class="c1">#=====  dip-slip contribution  =====                                    </span>
+<span class="c1">#===================================                                    </span>
+
+    <span class="k">if</span><span class="p">(</span><span class="n">pot2</span> <span class="o">!=</span> <span class="n">f0</span><span class="p">):</span>
+
+        <span class="n">du</span><span class="p">[</span> <span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="n">alp2</span> <span class="o">*</span> <span class="n">x</span> <span class="o">*</span> <span class="n">p</span> <span class="o">*</span> <span class="n">qr</span>                                  
+        <span class="n">du</span><span class="p">[</span> <span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">alp1</span> <span class="o">*</span> <span class="n">s</span> <span class="o">/</span> <span class="n">r3</span> <span class="o">+</span> <span class="n">alp2</span> <span class="o">*</span> <span class="n">y</span> <span class="o">*</span> <span class="n">p</span> <span class="o">*</span> <span class="n">qr</span>                                       
+        <span class="n">du</span><span class="p">[</span> <span class="mi">2</span><span class="p">]</span> <span class="o">=</span> <span class="o">-</span><span class="n">alp1</span> <span class="o">*</span> <span class="n">t</span> <span class="o">/</span> <span class="n">r3</span> <span class="o">+</span> <span class="n">alp2</span> <span class="o">*</span> <span class="n">d</span> <span class="o">*</span> <span class="n">p</span> <span class="o">*</span> <span class="n">qr</span>                                          
+        <span class="n">du</span><span class="p">[</span> <span class="mi">3</span><span class="p">]</span> <span class="o">=</span> <span class="n">alp2</span> <span class="o">*</span> <span class="n">p</span> <span class="o">*</span> <span class="n">qr</span> <span class="o">*</span> <span class="n">a5</span>                              
+        <span class="n">du</span><span class="p">[</span> <span class="mi">4</span><span class="p">]</span> <span class="o">=</span> <span class="o">-</span><span class="n">alp1</span> <span class="o">*</span> <span class="n">f3</span> <span class="o">*</span> <span class="n">x</span> <span class="o">*</span> <span class="n">s</span> <span class="o">/</span> <span class="n">r5</span> <span class="o">-</span> <span class="n">alp2</span> <span class="o">*</span> <span class="n">y</span> <span class="o">*</span> <span class="n">p</span> <span class="o">*</span> <span class="n">qrx</span>                                   
+        <span class="n">du</span><span class="p">[</span> <span class="mi">5</span><span class="p">]</span> <span class="o">=</span> <span class="n">alp1</span> <span class="o">*</span> <span class="n">f3</span> <span class="o">*</span> <span class="n">x</span> <span class="o">*</span> <span class="n">t</span> <span class="o">/</span> <span class="n">r5</span> <span class="o">-</span> <span class="n">alp2</span> <span class="o">*</span> <span class="n">d</span> <span class="o">*</span> <span class="n">p</span> <span class="o">*</span> <span class="n">qrx</span>                                    
+        <span class="n">du</span><span class="p">[</span> <span class="mi">6</span><span class="p">]</span> <span class="o">=</span> <span class="n">alp2</span> <span class="o">*</span> <span class="n">f3</span> <span class="o">*</span> <span class="n">x</span> <span class="o">/</span> <span class="n">r5</span> <span class="o">*</span> <span class="n">vy</span>                           
+        <span class="n">du</span><span class="p">[</span> <span class="mi">7</span><span class="p">]</span> <span class="o">=</span> <span class="n">alp1</span> <span class="o">*</span> <span class="p">(</span><span class="n">s2d</span> <span class="o">/</span> <span class="n">r3</span> <span class="o">-</span> <span class="n">f3</span> <span class="o">*</span> <span class="n">y</span> <span class="o">*</span> <span class="n">s</span> <span class="o">/</span> <span class="n">r5</span><span class="p">)</span> <span class="o">+</span> <span class="n">alp2</span> <span class="o">*</span> <span class="p">(</span><span class="n">f3</span> <span class="o">*</span> <span class="n">y</span> <span class="o">/</span> <span class="n">r5</span> <span class="o">*</span> <span class="n">vy</span> <span class="o">+</span> <span class="n">p</span> <span class="o">*</span> <span class="n">qr</span><span class="p">)</span>                   
+        <span class="n">du</span><span class="p">[</span> <span class="mi">8</span><span class="p">]</span> <span class="o">=</span> <span class="o">-</span><span class="n">alp1</span> <span class="o">*</span> <span class="p">(</span><span class="n">c2d</span> <span class="o">/</span> <span class="n">r3</span> <span class="o">-</span> <span class="n">f3</span> <span class="o">*</span> <span class="n">y</span> <span class="o">*</span> <span class="n">t</span> <span class="o">/</span> <span class="n">r5</span><span class="p">)</span> <span class="o">+</span> <span class="n">alp2</span> <span class="o">*</span> <span class="n">f3</span> <span class="o">*</span> <span class="n">d</span> <span class="o">/</span> <span class="n">r5</span> <span class="o">*</span> <span class="n">vy</span>                       
+        <span class="n">du</span><span class="p">[</span> <span class="mi">9</span><span class="p">]</span> <span class="o">=</span> <span class="n">alp2</span> <span class="o">*</span> <span class="n">f3</span> <span class="o">*</span> <span class="n">x</span> <span class="o">/</span> <span class="n">r5</span> <span class="o">*</span> <span class="n">vz</span>                           
+        <span class="n">du</span><span class="p">[</span><span class="mi">10</span><span class="p">]</span> <span class="o">=</span> <span class="n">alp1</span> <span class="o">*</span> <span class="p">(</span><span class="n">c2d</span> <span class="o">/</span> <span class="n">r3</span> <span class="o">+</span> <span class="n">f3</span> <span class="o">*</span> <span class="n">d</span> <span class="o">*</span> <span class="n">s</span> <span class="o">/</span> <span class="n">r5</span><span class="p">)</span> <span class="o">+</span> <span class="n">alp2</span> <span class="o">*</span> <span class="n">f3</span> <span class="o">*</span> <span class="n">y</span> <span class="o">/</span> <span class="n">r5</span> <span class="o">*</span> <span class="n">vz</span>                       
+        <span class="n">du</span><span class="p">[</span><span class="mi">11</span><span class="p">]</span> <span class="o">=</span> <span class="n">alp1</span> <span class="o">*</span> <span class="p">(</span><span class="n">s2d</span> <span class="o">/</span> <span class="n">r3</span> <span class="o">-</span> <span class="n">f3</span> <span class="o">*</span> <span class="n">d</span> <span class="o">*</span> <span class="n">t</span> <span class="o">/</span> <span class="n">r5</span><span class="p">)</span> <span class="o">+</span> <span class="n">alp2</span> <span class="o">*</span> <span class="p">(</span><span class="n">f3</span> <span class="o">*</span> <span class="n">d</span> <span class="o">/</span> <span class="n">r5</span> <span class="o">*</span> <span class="n">vz</span> <span class="o">-</span> <span class="n">p</span> <span class="o">*</span> <span class="n">qr</span><span class="p">)</span>                   
+
+        <span class="n">u</span> <span class="o">=</span> <span class="n">u</span> <span class="o">+</span> <span class="n">pot2</span> <span class="o">/</span> <span class="n">pi2</span> <span class="o">*</span> <span class="n">du</span>
+
+<span class="c1">#========================================                               </span>
+<span class="c1">#=====  tensile-fault contribution  =====                               </span>
+<span class="c1">#========================================                               </span>
+    <span class="k">if</span> <span class="p">(</span><span class="n">pot3</span> <span class="o">!=</span> <span class="n">f0</span><span class="p">):</span>
+          
+        <span class="n">du</span><span class="p">[</span> <span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="n">alp1</span> <span class="o">*</span> <span class="n">x</span> <span class="o">/</span> <span class="n">r3</span> <span class="o">-</span> <span class="n">alp2</span> <span class="o">*</span> <span class="n">x</span> <span class="o">*</span> <span class="n">q</span> <span class="o">*</span> <span class="n">qr</span>                              
+        <span class="n">du</span><span class="p">[</span> <span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">alp1</span> <span class="o">*</span> <span class="n">t</span> <span class="o">/</span> <span class="n">r3</span> <span class="o">-</span> <span class="n">alp2</span> <span class="o">*</span> <span class="n">y</span> <span class="o">*</span> <span class="n">q</span> <span class="o">*</span> <span class="n">qr</span>                                   
+        <span class="n">du</span><span class="p">[</span> <span class="mi">2</span><span class="p">]</span> <span class="o">=</span> <span class="n">alp1</span> <span class="o">*</span> <span class="n">s</span> <span class="o">/</span> <span class="n">r3</span> <span class="o">-</span> <span class="n">alp2</span> <span class="o">*</span> <span class="n">d</span> <span class="o">*</span> <span class="n">q</span> <span class="o">*</span> <span class="n">qr</span>                                      
+        <span class="n">du</span><span class="p">[</span> <span class="mi">3</span><span class="p">]</span> <span class="o">=</span> <span class="n">alp1</span> <span class="o">*</span> <span class="n">a3</span> <span class="o">/</span> <span class="n">r3</span> <span class="o">-</span> <span class="n">alp2</span> <span class="o">*</span> <span class="n">q</span> <span class="o">*</span> <span class="n">qr</span> <span class="o">*</span> <span class="n">a5</span>                          
+        <span class="n">du</span><span class="p">[</span> <span class="mi">4</span><span class="p">]</span> <span class="o">=</span> <span class="o">-</span><span class="n">alp1</span> <span class="o">*</span> <span class="n">f3</span> <span class="o">*</span> <span class="n">x</span> <span class="o">*</span> <span class="n">t</span> <span class="o">/</span> <span class="n">r5</span> <span class="o">+</span> <span class="n">alp2</span> <span class="o">*</span> <span class="n">y</span> <span class="o">*</span> <span class="n">q</span> <span class="o">*</span> <span class="n">qrx</span>                               
+        <span class="n">du</span><span class="p">[</span> <span class="mi">5</span><span class="p">]</span> <span class="o">=</span> <span class="o">-</span><span class="n">alp1</span> <span class="o">*</span> <span class="n">f3</span> <span class="o">*</span> <span class="n">x</span> <span class="o">*</span> <span class="n">s</span> <span class="o">/</span> <span class="n">r5</span> <span class="o">+</span> <span class="n">alp2</span> <span class="o">*</span> <span class="n">d</span> <span class="o">*</span> <span class="n">q</span> <span class="o">*</span> <span class="n">qrx</span>                                
+        <span class="n">du</span><span class="p">[</span> <span class="mi">6</span><span class="p">]</span> <span class="o">=</span> <span class="o">-</span><span class="n">alp1</span> <span class="o">*</span> <span class="n">f3</span> <span class="o">*</span> <span class="n">xy</span> <span class="o">/</span> <span class="n">r5</span> <span class="o">-</span> <span class="n">alp2</span> <span class="o">*</span> <span class="n">x</span> <span class="o">*</span> <span class="n">qr</span> <span class="o">*</span> <span class="n">wy</span>                          
+        <span class="n">du</span><span class="p">[</span> <span class="mi">7</span><span class="p">]</span> <span class="o">=</span> <span class="n">alp1</span> <span class="o">*</span> <span class="p">(</span><span class="n">c2d</span> <span class="o">/</span> <span class="n">r3</span> <span class="o">-</span> <span class="n">f3</span> <span class="o">*</span> <span class="n">y</span> <span class="o">*</span> <span class="n">t</span> <span class="o">/</span> <span class="n">r5</span><span class="p">)</span> <span class="o">-</span> <span class="n">alp2</span> <span class="o">*</span> <span class="p">(</span><span class="n">y</span> <span class="o">*</span> <span class="n">wy</span> <span class="o">+</span> <span class="n">q</span><span class="p">)</span> <span class="o">*</span> <span class="n">qr</span>                     
+        <span class="n">du</span><span class="p">[</span> <span class="mi">8</span><span class="p">]</span> <span class="o">=</span> <span class="n">alp1</span> <span class="o">*</span> <span class="p">(</span><span class="n">s2d</span> <span class="o">/</span> <span class="n">r3</span> <span class="o">-</span> <span class="n">f3</span> <span class="o">*</span> <span class="n">y</span> <span class="o">*</span> <span class="n">s</span> <span class="o">/</span> <span class="n">r5</span><span class="p">)</span> <span class="o">-</span> <span class="n">alp2</span> <span class="o">*</span> <span class="n">d</span> <span class="o">*</span> <span class="n">qr</span> <span class="o">*</span> <span class="n">wy</span>                      
+        <span class="n">du</span><span class="p">[</span> <span class="mi">9</span><span class="p">]</span> <span class="o">=</span> <span class="n">alp1</span> <span class="o">*</span> <span class="n">f3</span> <span class="o">*</span> <span class="n">x</span> <span class="o">*</span> <span class="n">d</span> <span class="o">/</span> <span class="n">r5</span> <span class="o">-</span> <span class="n">alp2</span> <span class="o">*</span> <span class="n">x</span> <span class="o">*</span> <span class="n">qr</span> <span class="o">*</span> <span class="n">wz</span>                          
+        <span class="n">du</span><span class="p">[</span><span class="mi">10</span><span class="p">]</span> <span class="o">=</span> <span class="o">-</span><span class="n">alp1</span> <span class="o">*</span> <span class="p">(</span><span class="n">s2d</span> <span class="o">/</span> <span class="n">r3</span> <span class="o">-</span> <span class="n">f3</span> <span class="o">*</span> <span class="n">d</span> <span class="o">*</span> <span class="n">t</span> <span class="o">/</span> <span class="n">r5</span><span class="p">)</span> <span class="o">-</span> <span class="n">alp2</span> <span class="o">*</span> <span class="n">y</span> <span class="o">*</span> <span class="n">qr</span> <span class="o">*</span> <span class="n">wz</span>                      
+        <span class="n">du</span><span class="p">[</span><span class="mi">11</span><span class="p">]</span> <span class="o">=</span> <span class="n">alp1</span> <span class="o">*</span> <span class="p">(</span><span class="n">c2d</span> <span class="o">/</span> <span class="n">r3</span> <span class="o">+</span> <span class="n">f3</span> <span class="o">*</span> <span class="n">d</span> <span class="o">*</span> <span class="n">s</span> <span class="o">/</span> <span class="n">r5</span><span class="p">)</span> <span class="o">-</span> <span class="n">alp2</span> <span class="o">*</span> <span class="p">(</span><span class="n">d</span> <span class="o">*</span> <span class="n">wz</span> <span class="o">-</span> <span class="n">q</span><span class="p">)</span> <span class="o">*</span> <span class="n">qr</span>                     
+
+        <span class="n">u</span> <span class="o">=</span> <span class="n">u</span> <span class="o">+</span> <span class="n">pot3</span> <span class="o">/</span> <span class="n">pi2</span> <span class="o">*</span> <span class="n">du</span>
+
+<span class="c1">#=========================================                              </span>
+<span class="c1">#=====  inflate source contribution  =====                              </span>
+<span class="c1">#=========================================                              </span>
+    <span class="k">if</span> <span class="p">(</span><span class="n">pot4</span> <span class="o">!=</span> <span class="n">f0</span><span class="p">):</span>
+        <span class="n">du</span><span class="p">[</span> <span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="o">-</span><span class="n">alp1</span> <span class="o">*</span> <span class="n">x</span> <span class="o">/</span> <span class="n">r3</span>              
+        <span class="n">du</span><span class="p">[</span> <span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="o">-</span><span class="n">alp1</span> <span class="o">*</span> <span class="n">y</span> <span class="o">/</span> <span class="n">r3</span>                      
+        <span class="n">du</span><span class="p">[</span> <span class="mi">2</span><span class="p">]</span> <span class="o">=</span> <span class="o">-</span><span class="n">alp1</span> <span class="o">*</span> <span class="n">d</span> <span class="o">/</span> <span class="n">r3</span>                         
+        <span class="n">du</span><span class="p">[</span> <span class="mi">3</span><span class="p">]</span> <span class="o">=</span> <span class="o">-</span><span class="n">alp1</span> <span class="o">*</span> <span class="n">a3</span> <span class="o">/</span> <span class="n">r3</span>                  
+        <span class="n">du</span><span class="p">[</span> <span class="mi">4</span><span class="p">]</span> <span class="o">=</span> <span class="n">alp1</span> <span class="o">*</span> <span class="n">f3</span> <span class="o">*</span> <span class="n">xy</span> <span class="o">/</span> <span class="n">r5</span>                    
+        <span class="n">du</span><span class="p">[</span> <span class="mi">5</span><span class="p">]</span> <span class="o">=</span> <span class="n">alp1</span> <span class="o">*</span> <span class="n">f3</span> <span class="o">*</span> <span class="n">x</span> <span class="o">*</span> <span class="n">d</span> <span class="o">/</span> <span class="n">r5</span>                    
+        <span class="n">du</span><span class="p">[</span> <span class="mi">6</span><span class="p">]</span> <span class="o">=</span> <span class="n">du</span><span class="p">[</span><span class="mi">5</span><span class="p">]</span>                                
+        <span class="n">du</span><span class="p">[</span> <span class="mi">7</span><span class="p">]</span> <span class="o">=</span> <span class="o">-</span><span class="n">alp1</span> <span class="o">*</span> <span class="n">b3</span> <span class="o">/</span> <span class="n">r3</span>                          
+        <span class="n">du</span><span class="p">[</span> <span class="mi">8</span><span class="p">]</span> <span class="o">=</span> <span class="n">alp1</span> <span class="o">*</span> <span class="n">f3</span> <span class="o">*</span> <span class="n">y</span> <span class="o">*</span> <span class="n">d</span> <span class="o">/</span> <span class="n">r5</span>                   
+        <span class="n">du</span><span class="p">[</span> <span class="mi">9</span><span class="p">]</span> <span class="o">=</span> <span class="o">-</span><span class="n">du</span><span class="p">[</span><span class="mi">6</span><span class="p">]</span>                                
+        <span class="n">du</span><span class="p">[</span><span class="mi">10</span><span class="p">]</span> <span class="o">=</span> <span class="o">-</span><span class="n">du</span><span class="p">[</span><span class="mi">9</span><span class="p">]</span>                            
+        <span class="n">du</span><span class="p">[</span><span class="mi">11</span><span class="p">]</span> <span class="o">=</span> <span class="n">alp1</span> <span class="o">*</span> <span class="n">c3</span> <span class="o">/</span> <span class="n">r3</span>                          
+
+        <span class="n">u</span> <span class="o">=</span> <span class="n">u</span> <span class="o">+</span> <span class="n">pot4</span> <span class="o">/</span> <span class="n">pi2</span> <span class="o">*</span> <span class="n">du</span>
+
+    <span class="k">return</span> <span class="n">u</span> </div>
+
+
+<span class="c1">###############################################################################</span>
+<div class="viewcode-block" id="ub0"><a class="viewcode-back" href="../../../../pyeq.lib.okada.dc3d0.html#pyeq.lib.okada.dc3d0.ub0">[docs]</a><span class="k">def</span> <span class="nf">ub0</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">d</span><span class="p">,</span> <span class="n">z</span><span class="p">,</span> <span class="n">pot1</span><span class="p">,</span> <span class="n">pot2</span><span class="p">,</span> <span class="n">pot3</span><span class="p">,</span> <span class="n">pot4</span><span class="p">):</span>                    
+<span class="c1">###############################################################################</span>
+    <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+
+    <span class="n">u</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="mi">12</span><span class="p">)</span>
+    <span class="n">du</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="mi">12</span><span class="p">)</span>
+
+<span class="c1">#       common /c0/alp1,alp2,alp3,alp4,alp5,sd,cd,sdsd,cdcd,sdcd,s2d,c2d  </span>
+<span class="c1">#       common /c1/p,q,s,t,xy,x2,y2,d2,r,r2,r3,r5,qr,qrx,a3,a5,b3,c3,     </span>
+<span class="c1">#      *           uy,vy,wy,uz,vz,wz                                      </span>
+<span class="c1">#       data f0,f1,f2,f3,f4,f5,f8,f9                                      </span>
+<span class="c1">#      *        /0.d0,1.d0,2.d0,3.d0,4.d0,5.d0,8.d0,9.d0/                 </span>
+<span class="c1">#       data pi2/6.283185307179586d0/                                     </span>
+
+    <span class="n">c</span> <span class="o">=</span> <span class="n">d</span> <span class="o">+</span> <span class="n">z</span>                                                             
+    <span class="n">rd</span> <span class="o">=</span> <span class="n">r</span> <span class="o">+</span> <span class="n">d</span>                                                            
+    <span class="n">d12</span> <span class="o">=</span> <span class="n">f1</span> <span class="o">/</span> <span class="p">(</span><span class="n">r</span> <span class="o">*</span> <span class="n">rd</span> <span class="o">*</span> <span class="n">rd</span><span class="p">)</span>                                                  
+    <span class="n">d32</span> <span class="o">=</span> <span class="n">d12</span> <span class="o">*</span> <span class="p">(</span><span class="n">f2</span> <span class="o">*</span> <span class="n">r</span> <span class="o">+</span> <span class="n">d</span><span class="p">)</span> <span class="o">/</span> <span class="n">r2</span>                                               
+    <span class="n">d33</span> <span class="o">=</span> <span class="n">d12</span> <span class="o">*</span> <span class="p">(</span><span class="n">f3</span> <span class="o">*</span> <span class="n">r</span> <span class="o">+</span> <span class="n">d</span><span class="p">)</span> <span class="o">/</span> <span class="p">(</span><span class="n">r2</span> <span class="o">*</span> <span class="n">rd</span><span class="p">)</span>                                          
+    <span class="n">d53</span> <span class="o">=</span> <span class="n">d12</span> <span class="o">*</span> <span class="p">(</span><span class="n">f8</span> <span class="o">*</span> <span class="n">r2</span> <span class="o">+</span> <span class="n">f9</span> <span class="o">*</span> <span class="n">r</span> <span class="o">*</span> <span class="n">d</span> <span class="o">+</span> <span class="n">f3</span> <span class="o">*</span> <span class="n">d2</span><span class="p">)</span> <span class="o">/</span> <span class="p">(</span><span class="n">r2</span> <span class="o">*</span> <span class="n">r2</span> <span class="o">*</span> <span class="n">rd</span><span class="p">)</span>                           
+    <span class="n">d54</span> <span class="o">=</span> <span class="n">d12</span> <span class="o">*</span> <span class="p">(</span><span class="n">f5</span> <span class="o">*</span> <span class="n">r2</span> <span class="o">+</span> <span class="n">f4</span> <span class="o">*</span> <span class="n">r</span> <span class="o">*</span> <span class="n">d</span> <span class="o">+</span> <span class="n">d2</span><span class="p">)</span> <span class="o">/</span> <span class="n">r3</span> <span class="o">*</span> <span class="n">d12</span>
+
+    <span class="n">fi1</span> <span class="o">=</span> <span class="n">y</span> <span class="o">*</span> <span class="p">(</span><span class="n">d12</span> <span class="o">-</span> <span class="n">x2</span> <span class="o">*</span> <span class="n">d33</span><span class="p">)</span>                                               
+    <span class="n">fi2</span> <span class="o">=</span> <span class="n">x</span> <span class="o">*</span> <span class="p">(</span><span class="n">d12</span> <span class="o">-</span> <span class="n">y2</span> <span class="o">*</span> <span class="n">d33</span><span class="p">)</span>                                               
+    <span class="n">fi3</span> <span class="o">=</span> <span class="n">x</span> <span class="o">/</span> <span class="n">r3</span> <span class="o">-</span> <span class="n">fi2</span>                                                     
+    <span class="n">fi4</span> <span class="o">=</span> <span class="o">-</span><span class="n">xy</span> <span class="o">*</span> <span class="n">d32</span>                                                       
+    <span class="n">fi5</span> <span class="o">=</span> <span class="n">f1</span> <span class="o">/</span> <span class="p">(</span><span class="n">r</span> <span class="o">*</span> <span class="n">rd</span><span class="p">)</span> <span class="o">-</span> <span class="n">x2</span> <span class="o">*</span> <span class="n">d32</span>                                             
+    <span class="n">fj1</span> <span class="o">=</span> <span class="o">-</span><span class="n">f3</span> <span class="o">*</span> <span class="n">xy</span> <span class="o">*</span> <span class="p">(</span><span class="n">d33</span> <span class="o">-</span> <span class="n">x2</span> <span class="o">*</span> <span class="n">d54</span><span class="p">)</span>                                           
+    <span class="n">fj2</span> <span class="o">=</span> <span class="n">f1</span> <span class="o">/</span> <span class="n">r3</span> <span class="o">-</span> <span class="n">f3</span> <span class="o">*</span> <span class="n">d12</span> <span class="o">+</span> <span class="n">f3</span> <span class="o">*</span> <span class="n">x2</span> <span class="o">*</span> <span class="n">y2</span> <span class="o">*</span> <span class="n">d54</span>                                    
+    <span class="n">fj3</span> <span class="o">=</span> <span class="n">a3</span> <span class="o">/</span> <span class="n">r3</span> <span class="o">-</span> <span class="n">fj2</span>                                                    
+    <span class="n">fj4</span> <span class="o">=</span> <span class="o">-</span><span class="n">f3</span> <span class="o">*</span> <span class="n">xy</span> <span class="o">/</span> <span class="n">r5</span> <span class="o">-</span> <span class="n">fj1</span>                                                 
+    <span class="n">fk1</span> <span class="o">=</span> <span class="o">-</span><span class="n">y</span> <span class="o">*</span> <span class="p">(</span><span class="n">d32</span> <span class="o">-</span> <span class="n">x2</span> <span class="o">*</span> <span class="n">d53</span><span class="p">)</span>                                               
+    <span class="n">fk2</span> <span class="o">=</span> <span class="o">-</span><span class="n">x</span> <span class="o">*</span> <span class="p">(</span><span class="n">d32</span> <span class="o">-</span> <span class="n">y2</span> <span class="o">*</span> <span class="n">d53</span><span class="p">)</span>                                               
+    <span class="n">fk3</span> <span class="o">=</span> <span class="o">-</span><span class="n">f3</span> <span class="o">*</span> <span class="n">x</span> <span class="o">*</span> <span class="n">d</span> <span class="o">/</span> <span class="n">r5</span> <span class="o">-</span> <span class="n">fk2</span>
+
+    <span class="n">u</span> <span class="o">=</span> <span class="n">f0</span>
+
+<span class="c1">#======================================                                 </span>
+<span class="c1">#=====  strike-slip contribution  =====                                 </span>
+<span class="c1">#======================================                                 </span>
+    <span class="k">if</span><span class="p">(</span><span class="n">pot1</span> <span class="o">!=</span> <span class="mf">0.</span><span class="p">):</span>
+        <span class="n">du</span><span class="p">[</span> <span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="o">-</span><span class="n">x2</span> <span class="o">*</span> <span class="n">qr</span> <span class="o">-</span> <span class="n">alp3</span> <span class="o">*</span> <span class="n">fi1</span> <span class="o">*</span> <span class="n">sd</span>                  
+        <span class="n">du</span><span class="p">[</span> <span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="o">-</span><span class="n">xy</span> <span class="o">*</span> <span class="n">qr</span> <span class="o">-</span> <span class="n">alp3</span> <span class="o">*</span> <span class="n">fi2</span> <span class="o">*</span> <span class="n">sd</span>                          
+        <span class="n">du</span><span class="p">[</span> <span class="mi">2</span><span class="p">]</span> <span class="o">=</span> <span class="o">-</span><span class="n">c</span> <span class="o">*</span> <span class="n">x</span> <span class="o">*</span> <span class="n">qr</span> <span class="o">-</span> <span class="n">alp3</span> <span class="o">*</span> <span class="n">fi4</span> <span class="o">*</span> <span class="n">sd</span>                             
+        <span class="n">du</span><span class="p">[</span> <span class="mi">3</span><span class="p">]</span> <span class="o">=</span> <span class="o">-</span><span class="n">x</span> <span class="o">*</span> <span class="n">qr</span> <span class="o">*</span> <span class="p">(</span><span class="n">f1</span> <span class="o">+</span> <span class="n">a5</span><span class="p">)</span> <span class="o">-</span> <span class="n">alp3</span> <span class="o">*</span> <span class="n">fj1</span> <span class="o">*</span> <span class="n">sd</span>                 
+        <span class="n">du</span><span class="p">[</span> <span class="mi">4</span><span class="p">]</span> <span class="o">=</span> <span class="o">-</span><span class="n">y</span> <span class="o">*</span> <span class="n">qr</span> <span class="o">*</span> <span class="n">a5</span> <span class="o">-</span> <span class="n">alp3</span> <span class="o">*</span> <span class="n">fj2</span> <span class="o">*</span> <span class="n">sd</span>                      
+        <span class="n">du</span><span class="p">[</span> <span class="mi">5</span><span class="p">]</span> <span class="o">=</span> <span class="o">-</span><span class="n">c</span> <span class="o">*</span> <span class="n">qr</span> <span class="o">*</span> <span class="n">a5</span> <span class="o">-</span> <span class="n">alp3</span> <span class="o">*</span> <span class="n">fk1</span> <span class="o">*</span> <span class="n">sd</span>                       
+        <span class="n">du</span><span class="p">[</span> <span class="mi">6</span><span class="p">]</span> <span class="o">=</span> <span class="o">-</span><span class="n">f3</span> <span class="o">*</span> <span class="n">x2</span> <span class="o">/</span> <span class="n">r5</span> <span class="o">*</span> <span class="n">uy</span> <span class="o">-</span> <span class="n">alp3</span> <span class="o">*</span> <span class="n">fj2</span> <span class="o">*</span> <span class="n">sd</span>                      
+        <span class="n">du</span><span class="p">[</span> <span class="mi">7</span><span class="p">]</span> <span class="o">=</span> <span class="o">-</span><span class="n">f3</span> <span class="o">*</span> <span class="n">xy</span> <span class="o">/</span> <span class="n">r5</span> <span class="o">*</span> <span class="n">uy</span> <span class="o">-</span> <span class="n">x</span> <span class="o">*</span> <span class="n">qr</span> <span class="o">-</span> <span class="n">alp3</span> <span class="o">*</span> <span class="n">fj4</span> <span class="o">*</span> <span class="n">sd</span>                     
+        <span class="n">du</span><span class="p">[</span> <span class="mi">8</span><span class="p">]</span> <span class="o">=</span> <span class="o">-</span><span class="n">f3</span> <span class="o">*</span> <span class="n">c</span> <span class="o">*</span> <span class="n">x</span> <span class="o">/</span> <span class="n">r5</span> <span class="o">*</span> <span class="n">uy</span> <span class="o">-</span> <span class="n">alp3</span> <span class="o">*</span> <span class="n">fk2</span> <span class="o">*</span> <span class="n">sd</span>                  
+        <span class="n">du</span><span class="p">[</span> <span class="mi">9</span><span class="p">]</span> <span class="o">=</span> <span class="o">-</span><span class="n">f3</span> <span class="o">*</span> <span class="n">x2</span> <span class="o">/</span> <span class="n">r5</span> <span class="o">*</span> <span class="n">uz</span> <span class="o">+</span> <span class="n">alp3</span> <span class="o">*</span> <span class="n">fk1</span> <span class="o">*</span> <span class="n">sd</span>                          
+        <span class="n">du</span><span class="p">[</span><span class="mi">10</span><span class="p">]</span> <span class="o">=</span> <span class="o">-</span><span class="n">f3</span> <span class="o">*</span> <span class="n">xy</span> <span class="o">/</span> <span class="n">r5</span> <span class="o">*</span> <span class="n">uz</span> <span class="o">+</span> <span class="n">alp3</span> <span class="o">*</span> <span class="n">fk2</span> <span class="o">*</span> <span class="n">sd</span>                      
+        <span class="n">du</span><span class="p">[</span><span class="mi">11</span><span class="p">]</span> <span class="o">=</span> <span class="n">f3</span> <span class="o">*</span> <span class="n">x</span> <span class="o">/</span> <span class="n">r5</span> <span class="o">*</span> <span class="p">(</span><span class="o">-</span><span class="n">c</span> <span class="o">*</span> <span class="n">uz</span> <span class="o">+</span> <span class="n">alp3</span> <span class="o">*</span> <span class="n">y</span> <span class="o">*</span> <span class="n">sd</span><span class="p">)</span>                        
+
+        <span class="n">u</span> <span class="o">=</span> <span class="n">u</span> <span class="o">+</span> <span class="n">pot1</span> <span class="o">/</span> <span class="n">pi2</span> <span class="o">*</span> <span class="n">du</span>                                        
+
+<span class="c1">#===================================                                    </span>
+<span class="c1">#=====  dip-slip contribution  =====                                    </span>
+<span class="c1">#===================================                                    </span>
+    <span class="k">if</span><span class="p">(</span><span class="n">pot2</span> <span class="o">!=</span> <span class="mf">0.</span><span class="p">):</span>
+        <span class="n">du</span><span class="p">[</span> <span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="o">-</span><span class="n">x</span> <span class="o">*</span> <span class="n">p</span> <span class="o">*</span> <span class="n">qr</span> <span class="o">+</span> <span class="n">alp3</span> <span class="o">*</span> <span class="n">fi3</span> <span class="o">*</span> <span class="n">sdcd</span>              
+        <span class="n">du</span><span class="p">[</span> <span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="o">-</span><span class="n">y</span> <span class="o">*</span> <span class="n">p</span> <span class="o">*</span> <span class="n">qr</span> <span class="o">+</span> <span class="n">alp3</span> <span class="o">*</span> <span class="n">fi1</span> <span class="o">*</span> <span class="n">sdcd</span>                      
+        <span class="n">du</span><span class="p">[</span> <span class="mi">2</span><span class="p">]</span> <span class="o">=</span> <span class="o">-</span><span class="n">c</span> <span class="o">*</span> <span class="n">p</span> <span class="o">*</span> <span class="n">qr</span> <span class="o">+</span> <span class="n">alp3</span> <span class="o">*</span> <span class="n">fi5</span> <span class="o">*</span> <span class="n">sdcd</span>                         
+        <span class="n">du</span><span class="p">[</span> <span class="mi">3</span><span class="p">]</span> <span class="o">=</span> <span class="o">-</span><span class="n">p</span> <span class="o">*</span> <span class="n">qr</span> <span class="o">*</span> <span class="n">a5</span> <span class="o">+</span> <span class="n">alp3</span> <span class="o">*</span> <span class="n">fj3</span> <span class="o">*</span> <span class="n">sdcd</span>                  
+        <span class="n">du</span><span class="p">[</span> <span class="mi">4</span><span class="p">]</span> <span class="o">=</span> <span class="n">y</span> <span class="o">*</span> <span class="n">p</span> <span class="o">*</span> <span class="n">qrx</span> <span class="o">+</span> <span class="n">alp3</span> <span class="o">*</span> <span class="n">fj1</span> <span class="o">*</span> <span class="n">sdcd</span>                       
+        <span class="n">du</span><span class="p">[</span> <span class="mi">5</span><span class="p">]</span> <span class="o">=</span> <span class="n">c</span> <span class="o">*</span> <span class="n">p</span> <span class="o">*</span> <span class="n">qrx</span> <span class="o">+</span> <span class="n">alp3</span> <span class="o">*</span> <span class="n">fk3</span> <span class="o">*</span> <span class="n">sdcd</span>                        
+        <span class="n">du</span><span class="p">[</span> <span class="mi">6</span><span class="p">]</span> <span class="o">=</span> <span class="o">-</span><span class="n">f3</span> <span class="o">*</span> <span class="n">x</span> <span class="o">/</span> <span class="n">r5</span> <span class="o">*</span> <span class="n">vy</span> <span class="o">+</span> <span class="n">alp3</span> <span class="o">*</span> <span class="n">fj1</span> <span class="o">*</span> <span class="n">sdcd</span>                   
+        <span class="n">du</span><span class="p">[</span> <span class="mi">7</span><span class="p">]</span> <span class="o">=</span> <span class="o">-</span><span class="n">f3</span> <span class="o">*</span> <span class="n">y</span> <span class="o">/</span> <span class="n">r5</span> <span class="o">*</span> <span class="n">vy</span> <span class="o">-</span> <span class="n">p</span> <span class="o">*</span> <span class="n">qr</span> <span class="o">+</span> <span class="n">alp3</span> <span class="o">*</span> <span class="n">fj2</span> <span class="o">*</span> <span class="n">sdcd</span>                  
+        <span class="n">du</span><span class="p">[</span> <span class="mi">8</span><span class="p">]</span> <span class="o">=</span> <span class="o">-</span><span class="n">f3</span> <span class="o">*</span> <span class="n">c</span> <span class="o">/</span> <span class="n">r5</span> <span class="o">*</span> <span class="n">vy</span> <span class="o">+</span> <span class="n">alp3</span> <span class="o">*</span> <span class="n">fk1</span> <span class="o">*</span> <span class="n">sdcd</span>               
+        <span class="n">du</span><span class="p">[</span> <span class="mi">9</span><span class="p">]</span> <span class="o">=</span> <span class="o">-</span><span class="n">f3</span> <span class="o">*</span> <span class="n">x</span> <span class="o">/</span> <span class="n">r5</span> <span class="o">*</span> <span class="n">vz</span> <span class="o">-</span> <span class="n">alp3</span> <span class="o">*</span> <span class="n">fk3</span> <span class="o">*</span> <span class="n">sdcd</span>                        
+        <span class="n">du</span><span class="p">[</span><span class="mi">10</span><span class="p">]</span> <span class="o">=</span> <span class="o">-</span><span class="n">f3</span> <span class="o">*</span> <span class="n">y</span> <span class="o">/</span> <span class="n">r5</span> <span class="o">*</span> <span class="n">vz</span> <span class="o">-</span> <span class="n">alp3</span> <span class="o">*</span> <span class="n">fk1</span> <span class="o">*</span> <span class="n">sdcd</span>                    
+        <span class="n">du</span><span class="p">[</span><span class="mi">11</span><span class="p">]</span> <span class="o">=</span> <span class="o">-</span><span class="n">f3</span> <span class="o">*</span> <span class="n">c</span> <span class="o">/</span> <span class="n">r5</span> <span class="o">*</span> <span class="n">vz</span> <span class="o">+</span> <span class="n">alp3</span> <span class="o">*</span> <span class="n">a3</span> <span class="o">/</span> <span class="n">r3</span> <span class="o">*</span> <span class="n">sdcd</span>                     
+
+        <span class="n">u</span> <span class="o">=</span> <span class="n">u</span> <span class="o">+</span> <span class="n">pot2</span> <span class="o">/</span> <span class="n">pi2</span> <span class="o">*</span> <span class="n">du</span>                                        
+
+<span class="c1">#========================================                               </span>
+<span class="c1">#=====  tensile-fault contribution  =====                               </span>
+<span class="c1">#========================================                               </span>
+    <span class="k">if</span><span class="p">(</span><span class="n">pot3</span> <span class="o">!=</span> <span class="mf">0.</span><span class="p">):</span>
+        <span class="n">du</span><span class="p">[</span> <span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="n">x</span> <span class="o">*</span> <span class="n">q</span> <span class="o">*</span> <span class="n">qr</span> <span class="o">-</span> <span class="n">alp3</span> <span class="o">*</span> <span class="n">fi3</span> <span class="o">*</span> <span class="n">sdsd</span>          
+        <span class="n">du</span><span class="p">[</span> <span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">y</span> <span class="o">*</span> <span class="n">q</span> <span class="o">*</span> <span class="n">qr</span> <span class="o">-</span> <span class="n">alp3</span> <span class="o">*</span> <span class="n">fi1</span> <span class="o">*</span> <span class="n">sdsd</span>                  
+        <span class="n">du</span><span class="p">[</span> <span class="mi">2</span><span class="p">]</span> <span class="o">=</span> <span class="n">c</span> <span class="o">*</span> <span class="n">q</span> <span class="o">*</span> <span class="n">qr</span> <span class="o">-</span> <span class="n">alp3</span> <span class="o">*</span> <span class="n">fi5</span> <span class="o">*</span> <span class="n">sdsd</span>                     
+        <span class="n">du</span><span class="p">[</span> <span class="mi">3</span><span class="p">]</span> <span class="o">=</span> <span class="n">q</span> <span class="o">*</span> <span class="n">qr</span> <span class="o">*</span> <span class="n">a5</span> <span class="o">-</span> <span class="n">alp3</span> <span class="o">*</span> <span class="n">fj3</span> <span class="o">*</span> <span class="n">sdsd</span>              
+        <span class="n">du</span><span class="p">[</span> <span class="mi">4</span><span class="p">]</span> <span class="o">=</span> <span class="o">-</span><span class="n">y</span> <span class="o">*</span> <span class="n">q</span> <span class="o">*</span> <span class="n">qrx</span> <span class="o">-</span> <span class="n">alp3</span> <span class="o">*</span> <span class="n">fj1</span> <span class="o">*</span> <span class="n">sdsd</span>                   
+        <span class="n">du</span><span class="p">[</span> <span class="mi">5</span><span class="p">]</span> <span class="o">=</span> <span class="o">-</span><span class="n">c</span> <span class="o">*</span> <span class="n">q</span> <span class="o">*</span> <span class="n">qrx</span> <span class="o">-</span> <span class="n">alp3</span> <span class="o">*</span> <span class="n">fk3</span> <span class="o">*</span> <span class="n">sdsd</span>                    
+        <span class="n">du</span><span class="p">[</span> <span class="mi">6</span><span class="p">]</span> <span class="o">=</span> <span class="n">x</span> <span class="o">*</span> <span class="n">qr</span> <span class="o">*</span> <span class="n">wy</span> <span class="o">-</span> <span class="n">alp3</span> <span class="o">*</span> <span class="n">fj1</span> <span class="o">*</span> <span class="n">sdsd</span>                   
+        <span class="n">du</span><span class="p">[</span> <span class="mi">7</span><span class="p">]</span> <span class="o">=</span> <span class="n">qr</span> <span class="o">*</span> <span class="p">(</span><span class="n">y</span> <span class="o">*</span> <span class="n">wy</span> <span class="o">+</span> <span class="n">q</span><span class="p">)</span> <span class="o">-</span> <span class="n">alp3</span> <span class="o">*</span> <span class="n">fj2</span> <span class="o">*</span> <span class="n">sdsd</span>                  
+        <span class="n">du</span><span class="p">[</span> <span class="mi">8</span><span class="p">]</span> <span class="o">=</span> <span class="n">c</span> <span class="o">*</span> <span class="n">qr</span> <span class="o">*</span> <span class="n">wy</span> <span class="o">-</span> <span class="n">alp3</span> <span class="o">*</span> <span class="n">fk1</span> <span class="o">*</span> <span class="n">sdsd</span>               
+        <span class="n">du</span><span class="p">[</span> <span class="mi">9</span><span class="p">]</span> <span class="o">=</span> <span class="n">x</span> <span class="o">*</span> <span class="n">qr</span> <span class="o">*</span> <span class="n">wz</span> <span class="o">+</span> <span class="n">alp3</span> <span class="o">*</span> <span class="n">fk3</span> <span class="o">*</span> <span class="n">sdsd</span>                       
+        <span class="n">du</span><span class="p">[</span><span class="mi">10</span><span class="p">]</span> <span class="o">=</span> <span class="n">y</span> <span class="o">*</span> <span class="n">qr</span> <span class="o">*</span> <span class="n">wz</span> <span class="o">+</span> <span class="n">alp3</span> <span class="o">*</span> <span class="n">fk1</span> <span class="o">*</span> <span class="n">sdsd</span>                   
+        <span class="n">du</span><span class="p">[</span><span class="mi">11</span><span class="p">]</span> <span class="o">=</span> <span class="n">c</span> <span class="o">*</span> <span class="n">qr</span> <span class="o">*</span> <span class="n">wz</span> <span class="o">-</span> <span class="n">alp3</span> <span class="o">*</span> <span class="n">a3</span> <span class="o">/</span> <span class="n">r3</span> <span class="o">*</span> <span class="n">sdsd</span>                    
+
+        <span class="n">u</span> <span class="o">=</span> <span class="n">u</span> <span class="o">+</span> <span class="n">pot3</span> <span class="o">/</span> <span class="n">pi2</span> <span class="o">*</span> <span class="n">du</span>
+
+<span class="c1">#=========================================                              </span>
+<span class="c1">#=====  inflate source contribution  =====                              </span>
+<span class="c1">#=========================================                              </span>
+    <span class="k">if</span> <span class="p">(</span><span class="n">pot4</span> <span class="o">!=</span> <span class="mf">0.</span><span class="p">):</span>
+        <span class="n">du</span><span class="p">[</span> <span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="n">alp3</span> <span class="o">*</span> <span class="n">x</span> <span class="o">/</span> <span class="n">r3</span>       
+        <span class="n">du</span><span class="p">[</span> <span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">alp3</span> <span class="o">*</span> <span class="n">y</span> <span class="o">/</span> <span class="n">r3</span>               
+        <span class="n">du</span><span class="p">[</span> <span class="mi">2</span><span class="p">]</span> <span class="o">=</span> <span class="n">alp3</span> <span class="o">*</span> <span class="n">d</span> <span class="o">/</span> <span class="n">r3</span>                  
+        <span class="n">du</span><span class="p">[</span> <span class="mi">3</span><span class="p">]</span> <span class="o">=</span> <span class="n">alp3</span> <span class="o">*</span> <span class="n">a3</span> <span class="o">/</span> <span class="n">r3</span>           
+        <span class="n">du</span><span class="p">[</span> <span class="mi">4</span><span class="p">]</span> <span class="o">=</span> <span class="o">-</span><span class="n">alp3</span> <span class="o">*</span> <span class="n">f3</span> <span class="o">*</span> <span class="n">xy</span> <span class="o">/</span> <span class="n">r5</span>             
+        <span class="n">du</span><span class="p">[</span> <span class="mi">5</span><span class="p">]</span> <span class="o">=</span> <span class="o">-</span><span class="n">alp3</span> <span class="o">*</span> <span class="n">f3</span> <span class="o">*</span> <span class="n">x</span> <span class="o">*</span> <span class="n">d</span> <span class="o">/</span> <span class="n">r5</span>             
+        <span class="n">du</span><span class="p">[</span> <span class="mi">6</span><span class="p">]</span> <span class="o">=</span> <span class="n">du</span><span class="p">[</span><span class="mi">5</span><span class="p">]</span>                         
+        <span class="n">du</span><span class="p">[</span> <span class="mi">7</span><span class="p">]</span> <span class="o">=</span> <span class="n">alp3</span> <span class="o">*</span> <span class="n">b3</span> <span class="o">/</span> <span class="n">r3</span>                   
+        <span class="n">du</span><span class="p">[</span> <span class="mi">8</span><span class="p">]</span> <span class="o">=</span> <span class="o">-</span><span class="n">alp3</span> <span class="o">*</span> <span class="n">f3</span> <span class="o">*</span> <span class="n">y</span> <span class="o">*</span> <span class="n">d</span> <span class="o">/</span> <span class="n">r5</span>            
+        <span class="n">du</span><span class="p">[</span> <span class="mi">9</span><span class="p">]</span> <span class="o">=</span> <span class="o">-</span><span class="n">du</span><span class="p">[</span><span class="mi">6</span><span class="p">]</span>                         
+        <span class="n">du</span><span class="p">[</span><span class="mi">10</span><span class="p">]</span> <span class="o">=</span> <span class="o">-</span><span class="n">du</span><span class="p">[</span><span class="mi">9</span><span class="p">]</span>                     
+        <span class="n">du</span><span class="p">[</span><span class="mi">11</span><span class="p">]</span> <span class="o">=</span> <span class="o">-</span><span class="n">alp3</span> <span class="o">*</span> <span class="n">c3</span> <span class="o">/</span> <span class="n">r3</span>                   
+        
+        <span class="n">u</span> <span class="o">=</span> <span class="n">u</span> <span class="o">+</span> <span class="n">pot4</span> <span class="o">/</span> <span class="n">pi2</span> <span class="o">*</span> <span class="n">du</span>
+
+    <span class="k">return</span><span class="p">(</span><span class="n">u</span><span class="p">)</span></div>
+
+
+<span class="c1">###############################################################################</span>
+<div class="viewcode-block" id="uc0"><a class="viewcode-back" href="../../../../pyeq.lib.okada.dc3d0.html#pyeq.lib.okada.dc3d0.uc0">[docs]</a><span class="k">def</span> <span class="nf">uc0</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">d</span><span class="p">,</span> <span class="n">z</span><span class="p">,</span> <span class="n">pot1</span><span class="p">,</span> <span class="n">pot2</span><span class="p">,</span> <span class="n">pot3</span><span class="p">,</span> <span class="n">pot4</span><span class="p">):</span>                    
+<span class="c1">###############################################################################</span>
+
+    <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+
+    <span class="n">u</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="mi">12</span><span class="p">)</span>
+    <span class="n">du</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="mi">12</span><span class="p">)</span>
+                                                                     
+<span class="c1">#       common /c0/alp1,alp2,alp3,alp4,alp5,sd,cd,sdsd,cdcd,sdcd,s2d,c2d  </span>
+<span class="c1">#       common /c1/p,q,s,t,xy,x2,y2,d2,r,r2,r3,r5,qr,qrx,a3,a5,b3,c3,um(6)</span>
+<span class="c1">#       data f0,f1,f2,f3,f5,f7,f10,f15                                    </span>
+<span class="c1">#      *        /0.d0,1.d0,2.d0,3.d0,5.d0,7.d0,10.d0,15.d0/               </span>
+<span class="c1">#       data pi2/6.283185307179586d0/                                     </span>
+
+    <span class="n">c</span> <span class="o">=</span> <span class="n">d</span> <span class="o">+</span> <span class="n">z</span>                                                             
+    <span class="n">q2</span> <span class="o">=</span> <span class="n">q</span> <span class="o">*</span> <span class="n">q</span>                                                            
+    <span class="n">r7</span> <span class="o">=</span> <span class="n">r5</span> <span class="o">*</span> <span class="n">r2</span>                                                          
+    <span class="n">a7</span> <span class="o">=</span> <span class="n">f1</span> <span class="o">-</span> <span class="n">f7</span> <span class="o">*</span> <span class="n">x2</span> <span class="o">/</span> <span class="n">r2</span>                                                    
+    <span class="n">b5</span> <span class="o">=</span> <span class="n">f1</span> <span class="o">-</span> <span class="n">f5</span> <span class="o">*</span> <span class="n">y2</span> <span class="o">/</span> <span class="n">r2</span>                                                    
+    <span class="n">b7</span> <span class="o">=</span> <span class="n">f1</span> <span class="o">-</span> <span class="n">f7</span> <span class="o">*</span> <span class="n">y2</span> <span class="o">/</span> <span class="n">r2</span>                                                    
+    <span class="n">c5</span> <span class="o">=</span> <span class="n">f1</span> <span class="o">-</span> <span class="n">f5</span> <span class="o">*</span> <span class="n">d2</span> <span class="o">/</span> <span class="n">r2</span>                                                    
+    <span class="n">c7</span> <span class="o">=</span> <span class="n">f1</span> <span class="o">-</span> <span class="n">f7</span> <span class="o">*</span> <span class="n">d2</span> <span class="o">/</span> <span class="n">r2</span>                                                    
+    <span class="n">d7</span> <span class="o">=</span> <span class="n">f2</span> <span class="o">-</span> <span class="n">f7</span> <span class="o">*</span> <span class="n">q2</span> <span class="o">/</span> <span class="n">r2</span>                                                    
+    <span class="n">qr5</span> <span class="o">=</span> <span class="n">f5</span> <span class="o">*</span> <span class="n">q</span> <span class="o">/</span> <span class="n">r2</span>                                                       
+    <span class="n">qr7</span> <span class="o">=</span> <span class="n">f7</span> <span class="o">*</span> <span class="n">q</span> <span class="o">/</span> <span class="n">r2</span>                                                       
+    <span class="n">dr5</span> <span class="o">=</span> <span class="n">f5</span> <span class="o">*</span> <span class="n">d</span> <span class="o">/</span> <span class="n">r2</span>                                                       
+
+<span class="c1">#======================================                                 </span>
+<span class="c1">#=====  strike-slip contribution  =====                                 </span>
+<span class="c1">#======================================                                 </span>
+    <span class="k">if</span> <span class="p">(</span><span class="n">pot1</span> <span class="o">!=</span> <span class="mf">0.</span><span class="p">):</span>
+        <span class="n">du</span><span class="p">[</span> <span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="o">-</span><span class="n">alp4</span> <span class="o">*</span> <span class="n">a3</span> <span class="o">/</span> <span class="n">r3</span> <span class="o">*</span> <span class="n">cd</span> <span class="o">+</span> <span class="n">alp5</span> <span class="o">*</span> <span class="n">c</span> <span class="o">*</span> <span class="n">qr</span> <span class="o">*</span> <span class="n">a5</span>                           
+        <span class="n">du</span><span class="p">[</span> <span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">f3</span> <span class="o">*</span> <span class="n">x</span> <span class="o">/</span> <span class="n">r5</span> <span class="o">*</span> <span class="p">(</span><span class="n">alp4</span> <span class="o">*</span> <span class="n">y</span> <span class="o">*</span> <span class="n">cd</span> <span class="o">+</span> <span class="n">alp5</span> <span class="o">*</span> <span class="n">c</span> <span class="o">*</span> <span class="p">(</span><span class="n">sd</span> <span class="o">-</span> <span class="n">y</span> <span class="o">*</span> <span class="n">qr5</span><span class="p">))</span>                      
+        <span class="n">du</span><span class="p">[</span> <span class="mi">2</span><span class="p">]</span> <span class="o">=</span> <span class="n">f3</span> <span class="o">*</span> <span class="n">x</span> <span class="o">/</span> <span class="n">r5</span> <span class="o">*</span> <span class="p">(</span><span class="o">-</span><span class="n">alp4</span> <span class="o">*</span> <span class="n">y</span> <span class="o">*</span> <span class="n">sd</span> <span class="o">+</span> <span class="n">alp5</span> <span class="o">*</span> <span class="n">c</span> <span class="o">*</span> <span class="p">(</span><span class="n">cd</span> <span class="o">+</span> <span class="n">d</span> <span class="o">*</span> <span class="n">qr5</span><span class="p">))</span>                         
+        <span class="n">du</span><span class="p">[</span> <span class="mi">3</span><span class="p">]</span> <span class="o">=</span> <span class="n">alp4</span> <span class="o">*</span> <span class="n">f3</span> <span class="o">*</span> <span class="n">x</span> <span class="o">/</span> <span class="n">r5</span> <span class="o">*</span> <span class="p">(</span><span class="n">f2</span> <span class="o">+</span> <span class="n">a5</span><span class="p">)</span> <span class="o">*</span> <span class="n">cd</span> <span class="o">-</span> <span class="n">alp5</span> <span class="o">*</span> <span class="n">c</span> <span class="o">*</span> <span class="n">qrx</span> <span class="o">*</span> <span class="p">(</span><span class="n">f2</span> <span class="o">+</span> <span class="n">a7</span><span class="p">)</span>              
+        <span class="n">du</span><span class="p">[</span> <span class="mi">4</span><span class="p">]</span> <span class="o">=</span> <span class="n">f3</span> <span class="o">/</span> <span class="n">r5</span> <span class="o">*</span> <span class="p">(</span><span class="n">alp4</span> <span class="o">*</span> <span class="n">y</span> <span class="o">*</span> <span class="n">a5</span> <span class="o">*</span> <span class="n">cd</span> <span class="o">+</span> <span class="n">alp5</span> <span class="o">*</span> <span class="n">c</span> <span class="o">*</span> <span class="p">(</span><span class="n">a5</span> <span class="o">*</span> <span class="n">sd</span> <span class="o">-</span> <span class="n">y</span> <span class="o">*</span> <span class="n">qr5</span> <span class="o">*</span> <span class="n">a7</span><span class="p">))</span>                 
+        <span class="n">du</span><span class="p">[</span> <span class="mi">5</span><span class="p">]</span> <span class="o">=</span> <span class="n">f3</span> <span class="o">/</span> <span class="n">r5</span> <span class="o">*</span> <span class="p">(</span><span class="o">-</span><span class="n">alp4</span> <span class="o">*</span> <span class="n">y</span> <span class="o">*</span> <span class="n">a5</span> <span class="o">*</span> <span class="n">sd</span> <span class="o">+</span> <span class="n">alp5</span> <span class="o">*</span> <span class="n">c</span> <span class="o">*</span> <span class="p">(</span><span class="n">a5</span> <span class="o">*</span> <span class="n">cd</span> <span class="o">+</span> <span class="n">d</span> <span class="o">*</span> <span class="n">qr5</span> <span class="o">*</span> <span class="n">a7</span><span class="p">))</span>                  
+        <span class="n">du</span><span class="p">[</span> <span class="mi">6</span><span class="p">]</span> <span class="o">=</span> <span class="n">du</span><span class="p">[</span><span class="mi">4</span><span class="p">]</span> <span class="o">/</span> <span class="n">r5</span> <span class="o">*</span> <span class="p">(</span><span class="n">alp4</span> <span class="o">*</span> <span class="n">b5</span> <span class="o">*</span> <span class="n">cd</span> <span class="o">-</span> <span class="n">alp5</span> <span class="o">*</span> <span class="n">f5</span> <span class="o">*</span> <span class="n">c</span> <span class="o">/</span> <span class="n">r2</span> <span class="o">*</span> <span class="p">(</span><span class="n">f2</span> <span class="o">*</span> <span class="n">y</span> <span class="o">*</span> <span class="n">sd</span> <span class="o">+</span> <span class="n">q</span> <span class="o">*</span> <span class="n">b7</span><span class="p">))</span>                
+        <span class="n">du</span><span class="p">[</span> <span class="mi">8</span><span class="p">]</span> <span class="o">=</span> <span class="n">f3</span> <span class="o">*</span> <span class="n">x</span> <span class="o">/</span> <span class="n">r5</span> <span class="o">*</span> <span class="p">(</span><span class="o">-</span><span class="n">alp4</span> <span class="o">*</span> <span class="n">b5</span> <span class="o">*</span> <span class="n">sd</span> <span class="o">+</span> <span class="n">alp5</span> <span class="o">*</span> <span class="n">f5</span> <span class="o">*</span> <span class="n">c</span> <span class="o">/</span> <span class="n">r2</span> <span class="o">*</span> <span class="p">(</span><span class="n">d</span> <span class="o">*</span> <span class="n">b7</span> <span class="o">*</span> <span class="n">sd</span> <span class="o">-</span> <span class="n">y</span> <span class="o">*</span> <span class="n">c7</span> <span class="o">*</span> <span class="n">cd</span><span class="p">))</span>          
+        <span class="n">du</span><span class="p">[</span> <span class="mi">9</span><span class="p">]</span> <span class="o">=</span> <span class="n">f3</span> <span class="o">/</span> <span class="n">r5</span> <span class="o">*</span> <span class="p">(</span><span class="o">-</span><span class="n">alp4</span> <span class="o">*</span> <span class="n">d</span> <span class="o">*</span> <span class="n">a5</span> <span class="o">*</span> <span class="n">cd</span> <span class="o">+</span> <span class="n">alp5</span> <span class="o">*</span> <span class="n">c</span> <span class="o">*</span> <span class="p">(</span><span class="n">a5</span> <span class="o">*</span> <span class="n">cd</span> <span class="o">+</span> <span class="n">d</span> <span class="o">*</span> <span class="n">qr5</span> <span class="o">*</span> <span class="n">a7</span><span class="p">))</span>                  
+        <span class="n">du</span><span class="p">[</span><span class="mi">10</span><span class="p">]</span> <span class="o">=</span> <span class="n">f15</span> <span class="o">*</span> <span class="n">x</span> <span class="o">/</span> <span class="n">r7</span> <span class="o">*</span> <span class="p">(</span><span class="n">alp4</span> <span class="o">*</span> <span class="n">y</span> <span class="o">*</span> <span class="n">d</span> <span class="o">*</span> <span class="n">cd</span> <span class="o">+</span> <span class="n">alp5</span> <span class="o">*</span> <span class="n">c</span> <span class="o">*</span> <span class="p">(</span><span class="n">d</span> <span class="o">*</span> <span class="n">b7</span> <span class="o">*</span> <span class="n">sd</span> <span class="o">-</span> <span class="n">y</span> <span class="o">*</span> <span class="n">c7</span> <span class="o">*</span> <span class="n">cd</span><span class="p">))</span>             
+        <span class="n">du</span><span class="p">[</span><span class="mi">11</span><span class="p">]</span> <span class="o">=</span> <span class="n">f15</span> <span class="o">*</span> <span class="n">x</span> <span class="o">/</span> <span class="n">r7</span> <span class="o">*</span> <span class="p">(</span><span class="o">-</span><span class="n">alp4</span> <span class="o">*</span> <span class="n">y</span> <span class="o">*</span> <span class="n">d</span> <span class="o">*</span> <span class="n">sd</span> <span class="o">+</span> <span class="n">alp5</span> <span class="o">*</span> <span class="n">c</span> <span class="o">*</span> <span class="p">(</span><span class="n">f2</span> <span class="o">*</span> <span class="n">d</span> <span class="o">*</span> <span class="n">cd</span> <span class="o">-</span> <span class="n">q</span> <span class="o">*</span> <span class="n">c7</span><span class="p">))</span>                   
+
+        <span class="n">u</span> <span class="o">=</span> <span class="n">u</span> <span class="o">+</span> <span class="n">pot1</span> <span class="o">/</span> <span class="n">pi2</span> <span class="o">*</span> <span class="n">du</span>
+               
+<span class="c1">#===================================                                    </span>
+<span class="c1">#=====  dip-slip contribution  =====                                    </span>
+<span class="c1">#===================================                                    </span>
+    <span class="k">if</span> <span class="p">(</span><span class="n">pot2</span> <span class="o">!=</span> <span class="mf">0.</span><span class="p">):</span>
+        <span class="n">du</span><span class="p">[</span> <span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="n">alp4</span> <span class="o">*</span> <span class="n">f3</span> <span class="o">*</span> <span class="n">x</span> <span class="o">*</span> <span class="n">t</span> <span class="o">/</span> <span class="n">r5</span> <span class="o">-</span> <span class="n">alp5</span> <span class="o">*</span> <span class="n">c</span> <span class="o">*</span> <span class="n">p</span> <span class="o">*</span> <span class="n">qrx</span>                   
+        <span class="n">du</span><span class="p">[</span> <span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="o">-</span><span class="n">alp4</span> <span class="o">/</span> <span class="n">r3</span> <span class="o">*</span> <span class="p">(</span><span class="n">c2d</span> <span class="o">-</span> <span class="n">f3</span> <span class="o">*</span> <span class="n">y</span> <span class="o">*</span> <span class="n">t</span> <span class="o">/</span> <span class="n">r2</span><span class="p">)</span> <span class="o">+</span> <span class="n">alp5</span> <span class="o">*</span> <span class="n">f3</span> <span class="o">*</span> <span class="n">c</span> <span class="o">/</span> <span class="n">r5</span> <span class="o">*</span> <span class="p">(</span><span class="n">s</span> <span class="o">-</span> <span class="n">y</span> <span class="o">*</span> <span class="n">p</span> <span class="o">*</span> <span class="n">qr5</span><span class="p">)</span>         
+        <span class="n">du</span><span class="p">[</span> <span class="mi">2</span><span class="p">]</span> <span class="o">=</span> <span class="o">-</span><span class="n">alp4</span> <span class="o">*</span> <span class="n">a3</span> <span class="o">/</span> <span class="n">r3</span> <span class="o">*</span> <span class="n">sdcd</span> <span class="o">+</span> <span class="n">alp5</span> <span class="o">*</span> <span class="n">f3</span> <span class="o">*</span> <span class="n">c</span> <span class="o">/</span> <span class="n">r5</span> <span class="o">*</span> <span class="p">(</span><span class="n">t</span> <span class="o">+</span> <span class="n">d</span> <span class="o">*</span> <span class="n">p</span> <span class="o">*</span> <span class="n">qr5</span><span class="p">)</span>            
+        <span class="n">du</span><span class="p">[</span> <span class="mi">3</span><span class="p">]</span> <span class="o">=</span> <span class="n">alp4</span> <span class="o">*</span> <span class="n">f3</span> <span class="o">*</span> <span class="n">t</span> <span class="o">/</span> <span class="n">r5</span> <span class="o">*</span> <span class="n">a5</span> <span class="o">-</span> <span class="n">alp5</span> <span class="o">*</span> <span class="n">f5</span> <span class="o">*</span> <span class="n">c</span> <span class="o">*</span> <span class="n">p</span> <span class="o">*</span> <span class="n">qr</span> <span class="o">/</span> <span class="n">r2</span> <span class="o">*</span> <span class="n">a7</span>      
+        <span class="n">du</span><span class="p">[</span> <span class="mi">4</span><span class="p">]</span> <span class="o">=</span> <span class="n">f3</span> <span class="o">*</span> <span class="n">x</span> <span class="o">/</span> <span class="n">r5</span> <span class="o">*</span> <span class="p">(</span><span class="n">alp4</span> <span class="o">*</span> <span class="p">(</span><span class="n">c2d</span> <span class="o">-</span> <span class="n">f5</span> <span class="o">*</span> <span class="n">y</span> <span class="o">*</span> <span class="n">t</span> <span class="o">/</span> <span class="n">r2</span><span class="p">)</span> <span class="o">-</span> <span class="n">alp5</span> <span class="o">*</span> <span class="n">f5</span> <span class="o">*</span> <span class="n">c</span> <span class="o">/</span> <span class="n">r2</span> <span class="o">*</span> <span class="p">(</span><span class="n">s</span> <span class="o">-</span> <span class="n">y</span> <span class="o">*</span> <span class="n">p</span> <span class="o">*</span> <span class="n">qr7</span><span class="p">))</span>     
+        <span class="n">du</span><span class="p">[</span> <span class="mi">5</span><span class="p">]</span> <span class="o">=</span> <span class="n">f3</span> <span class="o">*</span> <span class="n">x</span> <span class="o">/</span> <span class="n">r5</span> <span class="o">*</span> <span class="p">(</span><span class="n">alp4</span> <span class="o">*</span> <span class="p">(</span><span class="n">f2</span> <span class="o">+</span> <span class="n">a5</span><span class="p">)</span> <span class="o">*</span> <span class="n">sdcd</span> <span class="o">-</span> <span class="n">alp5</span> <span class="o">*</span> <span class="n">f5</span> <span class="o">*</span> <span class="n">c</span> <span class="o">/</span> <span class="n">r2</span> <span class="o">*</span> <span class="p">(</span><span class="n">t</span> <span class="o">+</span> <span class="n">d</span> <span class="o">*</span> <span class="n">p</span> <span class="o">*</span> <span class="n">qr7</span><span class="p">))</span>      
+        <span class="n">du</span><span class="p">[</span> <span class="mi">6</span><span class="p">]</span> <span class="o">=</span> <span class="n">du</span><span class="p">[</span><span class="mi">5</span><span class="p">]</span>                                                           
+        <span class="n">du</span><span class="p">[</span> <span class="mi">7</span><span class="p">]</span> <span class="o">=</span> <span class="n">f3</span> <span class="o">/</span> <span class="n">r5</span> <span class="o">*</span> <span class="p">(</span><span class="n">alp4</span> <span class="o">*</span> <span class="p">(</span><span class="n">f2</span> <span class="o">*</span> <span class="n">y</span> <span class="o">*</span> <span class="n">c2d</span> <span class="o">+</span> <span class="n">t</span> <span class="o">*</span> <span class="n">b5</span><span class="p">)</span> <span class="o">+</span> <span class="n">alp5</span> <span class="o">*</span> <span class="n">c</span> <span class="o">*</span> <span class="p">(</span><span class="n">s2d</span> <span class="o">-</span> <span class="n">f10</span> <span class="o">*</span> <span class="n">y</span> <span class="o">*</span> <span class="n">s</span> <span class="o">/</span> <span class="n">r2</span> <span class="o">-</span> <span class="n">p</span> <span class="o">*</span> <span class="n">qr5</span> <span class="o">*</span> <span class="n">b7</span><span class="p">))</span>        
+        <span class="n">du</span><span class="p">[</span> <span class="mi">8</span><span class="p">]</span> <span class="o">=</span> <span class="n">f3</span> <span class="o">/</span> <span class="n">r5</span> <span class="o">*</span> <span class="p">(</span><span class="n">alp4</span> <span class="o">*</span> <span class="n">y</span> <span class="o">*</span> <span class="n">a5</span> <span class="o">*</span> <span class="n">sdcd</span> <span class="o">-</span> <span class="n">alp5</span> <span class="o">*</span> <span class="n">c</span> <span class="o">*</span> <span class="p">((</span><span class="n">f3</span> <span class="o">+</span> <span class="n">a5</span><span class="p">)</span> <span class="o">*</span> <span class="n">c2d</span> <span class="o">+</span> <span class="n">y</span> <span class="o">*</span> <span class="n">p</span> <span class="o">*</span> <span class="n">dr5</span> <span class="o">*</span> <span class="n">qr7</span><span class="p">))</span>     
+        <span class="n">du</span><span class="p">[</span> <span class="mi">9</span><span class="p">]</span> <span class="o">=</span> <span class="n">f3</span> <span class="o">*</span> <span class="n">x</span> <span class="o">/</span> <span class="n">r5</span> <span class="o">*</span> <span class="p">(</span><span class="o">-</span><span class="n">alp4</span> <span class="o">*</span> <span class="p">(</span><span class="n">s2d</span> <span class="o">-</span> <span class="n">t</span> <span class="o">*</span> <span class="n">dr5</span><span class="p">)</span> <span class="o">-</span> <span class="n">alp5</span> <span class="o">*</span> <span class="n">f5</span> <span class="o">*</span> <span class="n">c</span> <span class="o">/</span> <span class="n">r2</span> <span class="o">*</span> <span class="p">(</span><span class="n">t</span> <span class="o">+</span> <span class="n">d</span> <span class="o">*</span> <span class="n">p</span> <span class="o">*</span> <span class="n">qr7</span><span class="p">))</span>           
+        <span class="n">du</span><span class="p">[</span><span class="mi">10</span><span class="p">]</span> <span class="o">=</span> <span class="n">f3</span> <span class="o">/</span> <span class="n">r5</span> <span class="o">*</span> <span class="p">(</span><span class="o">-</span><span class="n">alp4</span> <span class="o">*</span> <span class="p">(</span><span class="n">d</span> <span class="o">*</span> <span class="n">b5</span> <span class="o">*</span> <span class="n">c2d</span> <span class="o">+</span> <span class="n">y</span> <span class="o">*</span> <span class="n">c5</span> <span class="o">*</span> <span class="n">s2d</span><span class="p">)</span> <span class="o">-</span> <span class="n">alp5</span> <span class="o">*</span> <span class="n">c</span> <span class="o">*</span> <span class="p">((</span><span class="n">f3</span> <span class="o">+</span> <span class="n">a5</span><span class="p">)</span> <span class="o">*</span> <span class="n">c2d</span> <span class="o">+</span> <span class="n">y</span> <span class="o">*</span> <span class="n">p</span> <span class="o">*</span> <span class="n">dr5</span> <span class="o">*</span> <span class="n">qr7</span><span class="p">))</span>    
+        <span class="n">du</span><span class="p">[</span><span class="mi">11</span><span class="p">]</span> <span class="o">=</span> <span class="n">f3</span> <span class="o">/</span> <span class="n">r5</span> <span class="o">*</span> <span class="p">(</span><span class="o">-</span><span class="n">alp4</span> <span class="o">*</span> <span class="n">d</span> <span class="o">*</span> <span class="n">a5</span> <span class="o">*</span> <span class="n">sdcd</span> <span class="o">-</span> <span class="n">alp5</span> <span class="o">*</span> <span class="n">c</span> <span class="o">*</span> <span class="p">(</span><span class="n">s2d</span> <span class="o">-</span> <span class="n">f10</span> <span class="o">*</span> <span class="n">d</span> <span class="o">*</span> <span class="n">t</span> <span class="o">/</span> <span class="n">r2</span> <span class="o">+</span> <span class="n">p</span> <span class="o">*</span> <span class="n">qr5</span> <span class="o">*</span> <span class="n">c7</span><span class="p">))</span>       
+
+        <span class="n">u</span> <span class="o">=</span> <span class="n">u</span> <span class="o">+</span> <span class="n">pot2</span> <span class="o">/</span> <span class="n">pi2</span> <span class="o">*</span> <span class="n">du</span>
+
+<span class="c1">#========================================                               </span>
+<span class="c1">#=====  tensile-fault contribution  =====                               </span>
+<span class="c1">#========================================                               </span>
+    <span class="k">if</span><span class="p">(</span><span class="n">pot3</span> <span class="o">!=</span> <span class="mf">0.</span><span class="p">):</span>
+        <span class="n">du</span><span class="p">[</span> <span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="n">f3</span> <span class="o">*</span> <span class="n">x</span> <span class="o">/</span> <span class="n">r5</span> <span class="o">*</span> <span class="p">(</span><span class="o">-</span><span class="n">alp4</span> <span class="o">*</span> <span class="n">s</span> <span class="o">+</span> <span class="n">alp5</span> <span class="o">*</span> <span class="p">(</span><span class="n">c</span> <span class="o">*</span> <span class="n">q</span> <span class="o">*</span> <span class="n">qr5</span> <span class="o">-</span> <span class="n">z</span><span class="p">))</span>                     
+        <span class="n">du</span><span class="p">[</span> <span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">alp4</span> <span class="o">/</span> <span class="n">r3</span> <span class="o">*</span> <span class="p">(</span><span class="n">s2d</span> <span class="o">-</span> <span class="n">f3</span> <span class="o">*</span> <span class="n">y</span> <span class="o">*</span> <span class="n">s</span> <span class="o">/</span> <span class="n">r2</span><span class="p">)</span> <span class="o">+</span> <span class="n">alp5</span> <span class="o">*</span> <span class="n">f3</span> <span class="o">/</span> <span class="n">r5</span> <span class="o">*</span> <span class="p">(</span><span class="n">c</span> <span class="o">*</span> <span class="p">(</span><span class="n">t</span> <span class="o">-</span> <span class="n">y</span> <span class="o">+</span> <span class="n">y</span> <span class="o">*</span> <span class="n">q</span> <span class="o">*</span> <span class="n">qr5</span><span class="p">)</span> <span class="o">-</span> <span class="n">y</span> <span class="o">*</span> <span class="n">z</span><span class="p">)</span>
+        <span class="n">du</span><span class="p">[</span> <span class="mi">2</span><span class="p">]</span> <span class="o">=</span> <span class="o">-</span><span class="n">alp4</span> <span class="o">/</span> <span class="n">r3</span> <span class="o">*</span> <span class="p">(</span><span class="n">f1</span> <span class="o">-</span> <span class="n">a3</span> <span class="o">*</span> <span class="n">sdsd</span><span class="p">)</span> <span class="o">-</span> <span class="n">alp5</span> <span class="o">*</span> <span class="n">f3</span> <span class="o">/</span> <span class="n">r5</span> <span class="o">*</span> <span class="p">(</span><span class="n">c</span> <span class="o">*</span> <span class="p">(</span><span class="n">s</span> <span class="o">-</span> <span class="n">d</span> <span class="o">+</span> <span class="n">d</span> <span class="o">*</span> <span class="n">q</span> <span class="o">*</span> <span class="n">qr5</span><span class="p">)</span> <span class="o">-</span> <span class="n">d</span> <span class="o">*</span> <span class="n">z</span><span class="p">)</span>
+        <span class="n">du</span><span class="p">[</span> <span class="mi">3</span><span class="p">]</span> <span class="o">=</span> <span class="o">-</span><span class="n">alp4</span> <span class="o">*</span> <span class="n">f3</span> <span class="o">*</span> <span class="n">s</span> <span class="o">/</span> <span class="n">r5</span> <span class="o">*</span> <span class="n">a5</span> <span class="o">+</span> <span class="n">alp5</span> <span class="o">*</span> <span class="p">(</span><span class="n">c</span> <span class="o">*</span> <span class="n">qr</span> <span class="o">*</span> <span class="n">qr5</span> <span class="o">*</span> <span class="n">a7</span> <span class="o">-</span> <span class="n">f3</span> <span class="o">*</span> <span class="n">z</span> <span class="o">/</span> <span class="n">r5</span> <span class="o">*</span> <span class="n">a5</span><span class="p">)</span>          
+        <span class="n">du</span><span class="p">[</span> <span class="mi">4</span><span class="p">]</span> <span class="o">=</span> <span class="n">f3</span> <span class="o">*</span> <span class="n">x</span> <span class="o">/</span> <span class="n">r5</span> <span class="o">*</span> <span class="p">(</span><span class="o">-</span><span class="n">alp4</span> <span class="o">*</span> <span class="p">(</span><span class="n">s2d</span> <span class="o">-</span> <span class="n">f5</span> <span class="o">*</span> <span class="n">y</span> <span class="o">*</span> <span class="n">s</span> <span class="o">/</span> <span class="n">r2</span><span class="p">)</span> <span class="o">-</span> <span class="n">alp5</span> <span class="o">*</span> <span class="n">f5</span> <span class="o">/</span> <span class="n">r2</span> <span class="o">*</span> <span class="p">(</span><span class="n">c</span> <span class="o">*</span> <span class="p">(</span><span class="n">t</span> <span class="o">-</span> <span class="n">y</span> <span class="o">+</span> <span class="n">y</span> <span class="o">*</span> <span class="n">q</span> <span class="o">*</span> <span class="n">qr7</span><span class="p">)</span> <span class="o">-</span> <span class="n">y</span> <span class="o">*</span> <span class="n">z</span><span class="p">))</span> 
+        <span class="n">du</span><span class="p">[</span> <span class="mi">5</span><span class="p">]</span> <span class="o">=</span> <span class="n">f3</span> <span class="o">*</span> <span class="n">x</span> <span class="o">/</span> <span class="n">r5</span> <span class="o">*</span> <span class="p">(</span><span class="n">alp4</span> <span class="o">*</span> <span class="p">(</span><span class="n">f1</span> <span class="o">-</span> <span class="p">(</span><span class="n">f2</span> <span class="o">+</span> <span class="n">a5</span><span class="p">)</span> <span class="o">*</span> <span class="n">sdsd</span><span class="p">)</span> <span class="o">+</span> <span class="n">alp5</span> <span class="o">*</span> <span class="n">f5</span> <span class="o">/</span> <span class="n">r2</span> <span class="o">*</span> <span class="p">(</span><span class="n">c</span> <span class="o">*</span> <span class="p">(</span><span class="n">s</span> <span class="o">-</span> <span class="n">d</span> <span class="o">+</span> <span class="n">d</span> <span class="o">*</span> <span class="n">q</span> <span class="o">*</span> <span class="n">qr7</span><span class="p">)</span> <span class="o">-</span> <span class="n">d</span> <span class="o">*</span> <span class="n">z</span><span class="p">))</span> 
+        <span class="n">du</span><span class="p">[</span> <span class="mi">6</span><span class="p">]</span> <span class="o">=</span> <span class="n">du</span><span class="p">[</span><span class="mi">5</span><span class="p">]</span>                                                   
+        <span class="n">du</span><span class="p">[</span> <span class="mi">7</span><span class="p">]</span> <span class="o">=</span> <span class="n">f3</span> <span class="o">/</span> <span class="n">r5</span> <span class="o">*</span> <span class="p">(</span><span class="o">-</span><span class="n">alp4</span> <span class="o">*</span> <span class="p">(</span><span class="n">f2</span> <span class="o">*</span> <span class="n">y</span> <span class="o">*</span> <span class="n">s2d</span> <span class="o">+</span> <span class="n">s</span> <span class="o">*</span> <span class="n">b5</span><span class="p">)</span> <span class="o">-</span> <span class="n">alp5</span> <span class="o">*</span> <span class="p">(</span><span class="n">c</span> <span class="o">*</span> <span class="p">(</span><span class="n">f2</span> <span class="o">*</span> <span class="n">sdsd</span> <span class="o">+</span> <span class="n">f10</span> <span class="o">*</span> <span class="n">y</span> <span class="o">*</span> <span class="p">(</span><span class="n">t</span> <span class="o">-</span> <span class="n">y</span><span class="p">)</span> <span class="o">/</span> <span class="n">r2</span> <span class="o">-</span> <span class="n">q</span> <span class="o">*</span> <span class="n">qr5</span> <span class="o">*</span> <span class="n">b7</span><span class="p">)</span> <span class="o">+</span> <span class="n">z</span> <span class="o">*</span> <span class="n">b5</span><span class="p">))</span>   
+        <span class="n">du</span><span class="p">[</span> <span class="mi">8</span><span class="p">]</span> <span class="o">=</span> <span class="n">f3</span> <span class="o">/</span> <span class="n">r5</span> <span class="o">*</span> <span class="p">(</span><span class="n">alp4</span> <span class="o">*</span> <span class="n">y</span> <span class="o">*</span> <span class="p">(</span><span class="n">f1</span> <span class="o">-</span> <span class="n">a5</span> <span class="o">*</span> <span class="n">sdsd</span><span class="p">)</span> <span class="o">+</span> <span class="n">alp5</span> <span class="o">*</span> <span class="p">(</span><span class="n">c</span> <span class="o">*</span> <span class="p">(</span><span class="n">f3</span> <span class="o">+</span> <span class="n">a5</span><span class="p">)</span> <span class="o">*</span> <span class="n">s2d</span> <span class="o">-</span> <span class="n">y</span> <span class="o">*</span> <span class="n">dr5</span> <span class="o">*</span> <span class="p">(</span><span class="n">c</span> <span class="o">*</span> <span class="n">d7</span> <span class="o">+</span> <span class="n">z</span><span class="p">)))</span>             
+        <span class="n">du</span><span class="p">[</span> <span class="mi">9</span><span class="p">]</span> <span class="o">=</span> <span class="n">f3</span> <span class="o">*</span> <span class="n">x</span> <span class="o">/</span> <span class="n">r5</span> <span class="o">*</span> <span class="p">(</span><span class="o">-</span><span class="n">alp4</span> <span class="o">*</span> <span class="p">(</span><span class="n">c2d</span> <span class="o">+</span> <span class="n">s</span> <span class="o">*</span> <span class="n">dr5</span><span class="p">)</span> <span class="o">+</span> <span class="n">alp5</span> <span class="o">*</span> <span class="p">(</span><span class="n">f5</span> <span class="o">*</span> <span class="n">c</span> <span class="o">/</span> <span class="n">r2</span> <span class="o">*</span> <span class="p">(</span><span class="n">s</span> <span class="o">-</span> <span class="n">d</span> <span class="o">+</span> <span class="n">d</span> <span class="o">*</span> <span class="n">q</span> <span class="o">*</span> <span class="n">qr7</span><span class="p">)</span> <span class="o">-</span> <span class="n">f1</span> <span class="o">-</span> <span class="n">z</span> <span class="o">*</span> <span class="n">dr5</span><span class="p">))</span>            
+        <span class="n">du</span><span class="p">[</span><span class="mi">10</span><span class="p">]</span> <span class="o">=</span> <span class="n">f3</span> <span class="o">/</span> <span class="n">r5</span> <span class="o">*</span> <span class="p">(</span><span class="n">alp4</span> <span class="o">*</span> <span class="p">(</span><span class="n">d</span> <span class="o">*</span> <span class="n">b5</span> <span class="o">*</span> <span class="n">s2d</span> <span class="o">-</span> <span class="n">y</span> <span class="o">*</span> <span class="n">c5</span> <span class="o">*</span> <span class="n">c2d</span><span class="p">)</span> <span class="o">+</span> <span class="n">alp5</span> <span class="o">*</span> <span class="p">(</span><span class="n">c</span> <span class="o">*</span> <span class="p">((</span><span class="n">f3</span> <span class="o">+</span> <span class="n">a5</span><span class="p">)</span> <span class="o">*</span> <span class="n">s2d</span> <span class="o">-</span> <span class="n">y</span> <span class="o">*</span> <span class="n">dr5</span> <span class="o">*</span> <span class="n">d7</span><span class="p">)</span> <span class="o">-</span> <span class="n">y</span> <span class="o">*</span> <span class="p">(</span><span class="n">f1</span> <span class="o">+</span> <span class="n">z</span> <span class="o">*</span> <span class="n">dr5</span><span class="p">)))</span>        
+        <span class="n">du</span><span class="p">[</span><span class="mi">11</span><span class="p">]</span> <span class="o">=</span> <span class="n">f3</span> <span class="o">/</span> <span class="n">r5</span> <span class="o">*</span> <span class="p">(</span><span class="o">-</span><span class="n">alp4</span> <span class="o">*</span> <span class="n">d</span> <span class="o">*</span> <span class="p">(</span><span class="n">f1</span> <span class="o">-</span> <span class="n">a5</span> <span class="o">*</span> <span class="n">sdsd</span><span class="p">)</span> <span class="o">-</span> <span class="n">alp5</span> <span class="o">*</span> <span class="p">(</span><span class="n">c</span> <span class="o">*</span> <span class="p">(</span><span class="n">c2d</span> <span class="o">+</span> <span class="n">f10</span> <span class="o">*</span> <span class="n">d</span> <span class="o">*</span> <span class="p">(</span><span class="n">s</span> <span class="o">-</span> <span class="n">d</span><span class="p">)</span> <span class="o">/</span> <span class="n">r2</span> <span class="o">-</span> <span class="n">q</span> <span class="o">*</span> <span class="n">qr5</span> <span class="o">*</span> <span class="n">c7</span><span class="p">)</span> <span class="o">+</span> <span class="n">z</span> <span class="o">*</span> <span class="p">(</span><span class="n">f1</span> <span class="o">+</span> <span class="n">c5</span><span class="p">)))</span> 
+
+        <span class="n">u</span> <span class="o">=</span> <span class="n">u</span> <span class="o">+</span> <span class="n">pot3</span> <span class="o">/</span> <span class="n">pi2</span> <span class="o">*</span> <span class="n">du</span>
+
+<span class="c1">#=========================================                              </span>
+<span class="c1">#=====  inflate source contribution  =====                              </span>
+<span class="c1">#=========================================                              </span>
+    <span class="k">if</span> <span class="p">(</span><span class="n">pot4</span> <span class="o">!=</span> <span class="mf">0.</span><span class="p">):</span>
+        <span class="n">du</span><span class="p">[</span> <span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="n">alp4</span> <span class="o">*</span> <span class="n">f3</span> <span class="o">*</span> <span class="n">x</span> <span class="o">*</span> <span class="n">d</span> <span class="o">/</span> <span class="n">r5</span>                
+        <span class="n">du</span><span class="p">[</span> <span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">alp4</span> <span class="o">*</span> <span class="n">f3</span> <span class="o">*</span> <span class="n">y</span> <span class="o">*</span> <span class="n">d</span> <span class="o">/</span> <span class="n">r5</span>                
+        <span class="n">du</span><span class="p">[</span> <span class="mi">2</span><span class="p">]</span> <span class="o">=</span> <span class="n">alp4</span> <span class="o">*</span> <span class="n">c3</span> <span class="o">/</span> <span class="n">r3</span>                    
+        <span class="n">du</span><span class="p">[</span> <span class="mi">3</span><span class="p">]</span> <span class="o">=</span> <span class="n">alp4</span> <span class="o">*</span> <span class="n">f3</span> <span class="o">*</span> <span class="n">d</span> <span class="o">/</span> <span class="n">r5</span> <span class="o">*</span> <span class="n">a5</span>               
+        <span class="n">du</span><span class="p">[</span> <span class="mi">4</span><span class="p">]</span> <span class="o">=</span> <span class="o">-</span><span class="n">alp4</span> <span class="o">*</span> <span class="n">f15</span> <span class="o">*</span> <span class="n">xy</span> <span class="o">*</span> <span class="n">d</span> <span class="o">/</span> <span class="n">r7</span>              
+        <span class="n">du</span><span class="p">[</span> <span class="mi">5</span><span class="p">]</span> <span class="o">=</span> <span class="o">-</span><span class="n">alp4</span> <span class="o">*</span> <span class="n">f3</span> <span class="o">*</span> <span class="n">x</span> <span class="o">/</span> <span class="n">r5</span> <span class="o">*</span> <span class="n">c5</span>               
+        <span class="n">du</span><span class="p">[</span> <span class="mi">6</span><span class="p">]</span> <span class="o">=</span> <span class="n">du</span><span class="p">[</span><span class="mi">5</span><span class="p">]</span>                         
+        <span class="n">du</span><span class="p">[</span> <span class="mi">7</span><span class="p">]</span> <span class="o">=</span> <span class="n">alp4</span> <span class="o">*</span> <span class="n">f3</span> <span class="o">*</span> <span class="n">d</span> <span class="o">/</span> <span class="n">r5</span> <span class="o">*</span> <span class="n">b5</span>               
+        <span class="n">du</span><span class="p">[</span> <span class="mi">8</span><span class="p">]</span> <span class="o">=</span> <span class="o">-</span><span class="n">alp4</span> <span class="o">*</span> <span class="n">f3</span> <span class="o">*</span> <span class="n">y</span> <span class="o">/</span> <span class="n">r5</span> <span class="o">*</span> <span class="n">c5</span>               
+        <span class="n">du</span><span class="p">[</span> <span class="mi">9</span><span class="p">]</span> <span class="o">=</span> <span class="n">du</span><span class="p">[</span><span class="mi">6</span><span class="p">]</span>                         
+        <span class="n">du</span><span class="p">[</span><span class="mi">10</span><span class="p">]</span> <span class="o">=</span> <span class="n">du</span><span class="p">[</span><span class="mi">9</span><span class="p">]</span>                         
+        <span class="n">du</span><span class="p">[</span><span class="mi">11</span><span class="p">]</span> <span class="o">=</span> <span class="n">alp4</span> <span class="o">*</span> <span class="n">f3</span> <span class="o">*</span> <span class="n">d</span> <span class="o">/</span> <span class="n">r5</span> <span class="o">*</span> <span class="p">(</span><span class="n">f2</span> <span class="o">+</span> <span class="n">c5</span><span class="p">)</span>           
+
+        <span class="n">u</span> <span class="o">=</span> <span class="n">u</span> <span class="o">+</span> <span class="n">pot4</span> <span class="o">/</span> <span class="n">pi2</span> <span class="o">*</span> <span class="n">du</span>
+        
+    <span class="k">return</span><span class="p">(</span><span class="n">u</span><span class="p">)</span></div>
+
+
+<span class="c1">###############################################################################</span>
+<div class="viewcode-block" id="dc3d0"><a class="viewcode-back" href="../../../../pyeq.lib.okada.dc3d0.html#pyeq.lib.okada.dc3d0.dc3d0">[docs]</a><span class="k">def</span> <span class="nf">dc3d0</span><span class="p">(</span><span class="n">alpha</span><span class="p">,</span> \
+<span class="c1">###############################################################################</span>
+          <span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">z</span><span class="p">,</span> \
+          <span class="n">depth</span><span class="p">,</span> \
+          <span class="n">dip</span><span class="p">,</span> \
+          <span class="n">pot1</span><span class="p">,</span> <span class="n">pot2</span><span class="p">,</span> <span class="n">pot3</span><span class="p">,</span> <span class="n">pot4</span><span class="p">,</span> \
+          <span class="p">):</span>
+
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        displacement and strain at depth                         </span>
+<span class="sd">        due to buried point source in a semiinfinite medium      </span>
+<span class="sd">                             coded by  y.okada ... sep.1991      </span>
+<span class="sd">                             revised   y.okada ... nov.1991      </span>
+
+<span class="sd">     input                                                            </span>
+<span class="sd">       alpha : medium constant  (lambda+myu)/(lambda+2*myu)           </span>
+<span class="sd">       x,y,z : coordinate of observing point                          </span>
+<span class="sd">       depth : source depth                                           </span>
+<span class="sd">       dip   : dip-angle (degree)                                     </span>
+<span class="sd">       pot1-pot4 : strike-, dip-, tensile- and inflate-potency        </span>
+<span class="sd">           potency=(  moment of double-couple  )/myu     for pot1,2   </span>
+<span class="sd">           potency=(intensity of isotropic part)/lambda  for pot3     </span>
+<span class="sd">           potency=(intensity of linear dipole )/myu     for pot4     </span>
+<span class="sd">     output                                                           </span>
+<span class="sd">       ux, uy, uz  : displacement ( unit=(unit of potency) /          </span>
+<span class="sd">                   :                     (unit of x,y,z,depth)**2  )  </span>
+<span class="sd">       uxx,uyx,uzx : x-derivative ( unit= unit of potency) /          </span>
+<span class="sd">       uxy,uyy,uzy : y-derivative        (unit of x,y,z,depth)**3  )  </span>
+<span class="sd">       uxz,uyz,uzz : z-derivative                                     </span>
+<span class="sd">       iret        : return code  ( =0....normal,   =1....singular )  </span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">global</span> <span class="n">p</span><span class="p">,</span> <span class="n">q</span><span class="p">,</span> <span class="n">s</span><span class="p">,</span> <span class="n">t</span><span class="p">,</span> <span class="n">xy</span><span class="p">,</span> <span class="n">x2</span><span class="p">,</span> <span class="n">y2</span><span class="p">,</span> <span class="n">d2</span><span class="p">,</span> <span class="n">r</span><span class="p">,</span> <span class="n">r2</span><span class="p">,</span> <span class="n">r3</span><span class="p">,</span> <span class="n">r5</span><span class="p">,</span> <span class="n">qr</span><span class="p">,</span> <span class="n">qrx</span><span class="p">,</span> <span class="n">a3</span><span class="p">,</span> <span class="n">a5</span><span class="p">,</span> <span class="n">b3</span><span class="p">,</span> <span class="n">c3</span><span class="p">,</span> <span class="n">uy</span><span class="p">,</span> <span class="n">vy</span><span class="p">,</span> <span class="n">wy</span><span class="p">,</span> <span class="n">uz</span><span class="p">,</span> <span class="n">vz</span><span class="p">,</span> <span class="n">wz</span>
+  
+    <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+                                                              
+<span class="c1">#      common /c1/dummy(8),r,dumm(15)                                    </span>
+<span class="c1">#      dimension  u(12),dua(12),dub(12),duc(12)                          </span>
+
+    <span class="k">if</span><span class="p">(</span><span class="n">z</span> <span class="o">&lt;</span> <span class="mf">0.</span><span class="p">):</span> <span class="nb">print</span><span class="p">(</span><span class="s2">&quot; positive z was given in sub-dc3d0&quot;</span><span class="p">)</span>
+    
+    <span class="n">u</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="mi">12</span><span class="p">)</span> <span class="o">+</span> <span class="n">f0</span>
+    <span class="n">dua</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="mi">12</span><span class="p">)</span> <span class="o">+</span> <span class="n">f0</span>
+    <span class="n">dub</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="mi">12</span><span class="p">)</span> <span class="o">+</span> <span class="n">f0</span>
+    <span class="n">duc</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="mi">12</span><span class="p">)</span> <span class="o">+</span> <span class="n">f0</span>
+
+    <span class="n">aalpha</span> <span class="o">=</span> <span class="n">alpha</span>                                                      
+    <span class="n">ddip</span> <span class="o">=</span> <span class="n">dip</span>                                                          
+    
+    <span class="n">dccon0</span><span class="p">(</span><span class="n">aalpha</span><span class="p">,</span> <span class="n">ddip</span><span class="p">)</span>                                          
+
+<span class="c1">#======================================                                 </span>
+<span class="c1">#=====  real-source contribution  =====                                 </span>
+<span class="c1">#======================================                                 </span>
+    <span class="n">xx</span> <span class="o">=</span> <span class="n">x</span>                                                              
+    <span class="n">yy</span> <span class="o">=</span> <span class="n">y</span>                                                              
+    <span class="n">zz</span> <span class="o">=</span> <span class="n">z</span>                                                              
+    <span class="n">dd</span> <span class="o">=</span> <span class="n">depth</span> <span class="o">+</span> <span class="n">z</span>                                                        
+    
+    <span class="n">dccon1</span><span class="p">(</span><span class="n">xx</span><span class="p">,</span> <span class="n">yy</span><span class="p">,</span> <span class="n">dd</span><span class="p">)</span>                                             
+    
+    <span class="k">if</span> <span class="p">(</span><span class="n">r</span> <span class="o">==</span> <span class="n">f0</span><span class="p">):</span>
+<span class="c1">#=======================================                                </span>
+<span class="c1">#=====  in case of singular (r=0)  =====                                </span>
+<span class="c1">#=======================================                                </span>
+        <span class="n">ux</span> <span class="o">=</span> <span class="n">f0</span>                                                             
+        <span class="n">uy</span> <span class="o">=</span> <span class="n">f0</span>                                                             
+        <span class="n">uz</span> <span class="o">=</span> <span class="n">f0</span>                                                             
+        <span class="n">uxx</span> <span class="o">=</span> <span class="n">f0</span>                                                            
+        <span class="n">uyx</span> <span class="o">=</span> <span class="n">f0</span>                                                            
+        <span class="n">uzx</span> <span class="o">=</span> <span class="n">f0</span>                                                            
+        <span class="n">uxy</span> <span class="o">=</span> <span class="n">f0</span>                                                            
+        <span class="n">uyy</span> <span class="o">=</span> <span class="n">f0</span>                                                            
+        <span class="n">uzy</span> <span class="o">=</span> <span class="n">f0</span>                                                            
+        <span class="n">uxz</span> <span class="o">=</span> <span class="n">f0</span>                                                            
+        <span class="n">uyz</span> <span class="o">=</span> <span class="n">f0</span>                                                            
+        <span class="n">uzz</span> <span class="o">=</span> <span class="n">f0</span>                                                            
+        <span class="n">iret</span> <span class="o">=</span> <span class="mi">1</span>   
+                                                                 
+        <span class="k">return</span><span class="p">(</span><span class="n">ux</span><span class="p">,</span> <span class="n">uy</span><span class="p">,</span> <span class="n">uz</span><span class="p">,</span> <span class="n">uxx</span><span class="p">,</span> <span class="n">uyx</span><span class="p">,</span> <span class="n">uzx</span><span class="p">,</span> <span class="n">uxy</span><span class="p">,</span> <span class="n">uyy</span><span class="p">,</span> <span class="n">uzy</span><span class="p">,</span> <span class="n">uxz</span><span class="p">,</span> <span class="n">uyz</span><span class="p">,</span> <span class="n">uzz</span><span class="p">)</span>                                                            
+
+<span class="c1">#=======================================                                </span>
+<span class="c1">#=====  case not singular (r != 0)  ====                                </span>
+<span class="c1">#=======================================                                </span>
+
+<span class="c1">#======================================</span>
+<span class="c1">#=====  real-source contribution  =====</span>
+<span class="c1">#======================================</span>
+
+    <span class="n">pp1</span> <span class="o">=</span> <span class="n">pot1</span>                                                          
+    <span class="n">pp2</span> <span class="o">=</span> <span class="n">pot2</span>                                                          
+    <span class="n">pp3</span> <span class="o">=</span> <span class="n">pot3</span>                                                          
+    <span class="n">pp4</span> <span class="o">=</span> <span class="n">pot4</span>                                                          
+    
+    <span class="n">dua</span> <span class="o">=</span> <span class="n">ua0</span><span class="p">(</span><span class="n">xx</span><span class="p">,</span> <span class="n">yy</span><span class="p">,</span> <span class="n">dd</span><span class="p">,</span> <span class="n">pp1</span><span class="p">,</span> <span class="n">pp2</span><span class="p">,</span> <span class="n">pp3</span><span class="p">,</span> <span class="n">pp4</span><span class="p">)</span>                            
+
+    <span class="n">u</span><span class="p">[:</span><span class="mi">9</span><span class="p">]</span> <span class="o">=</span> <span class="n">u</span><span class="p">[:</span><span class="mi">9</span><span class="p">]</span> <span class="o">-</span> <span class="n">dua</span><span class="p">[:</span><span class="mi">9</span><span class="p">]</span> 
+    <span class="n">u</span><span class="p">[</span><span class="mi">9</span><span class="p">:]</span> <span class="o">=</span> <span class="n">u</span><span class="p">[</span><span class="mi">9</span><span class="p">:]</span> <span class="o">+</span> <span class="n">dua</span><span class="p">[</span><span class="mi">9</span><span class="p">:]</span> 
+
+<span class="c1">#=======================================                                </span>
+<span class="c1">#=====  image-source contribution  =====                                </span>
+<span class="c1">#=======================================                                </span>
+
+    <span class="n">dd</span> <span class="o">=</span> <span class="n">depth</span> <span class="o">-</span> <span class="n">z</span>                                                        
+    <span class="n">dccon1</span><span class="p">(</span><span class="n">xx</span><span class="p">,</span> <span class="n">yy</span><span class="p">,</span> <span class="n">dd</span><span class="p">)</span>                                             
+    <span class="n">dua</span> <span class="o">=</span> <span class="n">ua0</span><span class="p">(</span><span class="n">xx</span><span class="p">,</span> <span class="n">yy</span><span class="p">,</span> <span class="n">dd</span><span class="p">,</span> <span class="n">pp1</span><span class="p">,</span> <span class="n">pp2</span><span class="p">,</span> <span class="n">pp3</span><span class="p">,</span> <span class="n">pp4</span><span class="p">)</span>                            
+    <span class="n">dub</span> <span class="o">=</span> <span class="n">ub0</span><span class="p">(</span><span class="n">xx</span><span class="p">,</span> <span class="n">yy</span><span class="p">,</span> <span class="n">dd</span><span class="p">,</span> <span class="n">zz</span><span class="p">,</span> <span class="n">pp1</span><span class="p">,</span> <span class="n">pp2</span><span class="p">,</span> <span class="n">pp3</span><span class="p">,</span> <span class="n">pp4</span><span class="p">)</span>                         
+    <span class="n">duc</span> <span class="o">=</span> <span class="n">uc0</span><span class="p">(</span><span class="n">xx</span><span class="p">,</span> <span class="n">yy</span><span class="p">,</span> <span class="n">dd</span><span class="p">,</span> <span class="n">zz</span><span class="p">,</span> <span class="n">pp1</span><span class="p">,</span> <span class="n">pp2</span><span class="p">,</span> <span class="n">pp3</span><span class="p">,</span> <span class="n">pp4</span><span class="p">)</span>                         
+
+
+    <span class="n">du</span> <span class="o">=</span> <span class="n">dua</span> <span class="o">+</span> <span class="n">dub</span> <span class="o">+</span> <span class="n">zz</span> <span class="o">*</span> <span class="n">duc</span>                                      
+    <span class="n">du</span><span class="p">[</span><span class="mi">9</span><span class="p">:]</span> <span class="o">=</span> <span class="n">du</span><span class="p">[</span><span class="mi">9</span><span class="p">:]</span> <span class="o">+</span> <span class="n">duc</span><span class="p">[</span><span class="mi">0</span><span class="p">:</span><span class="mi">3</span><span class="p">]</span>
+    <span class="n">u</span> <span class="o">=</span> <span class="n">u</span> <span class="o">+</span> <span class="n">du</span>
+
+    <span class="k">return</span> <span class="n">u</span></div>
+
+</pre></div>
+
+           </div>
+           
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        
+        &copy; Copyright 2016, Jean-Mathieu Nocquet IRD/Geoazur
+
+    </p>
+  </div>
+    
+    
+    
+    Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

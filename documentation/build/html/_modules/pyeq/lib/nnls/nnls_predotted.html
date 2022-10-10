@@ -1,0 +1,279 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>pyeq.lib.nnls.nnls_predotted &mdash; pyeq 0.51.8 documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="../../../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../../../_static/pygments.css" type="text/css" />
+
+  
+  
+  
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="../../../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../../../../" src="../../../../_static/documentation_options.js"></script>
+        <script src="../../../../_static/jquery.js"></script>
+        <script src="../../../../_static/underscore.js"></script>
+        <script src="../../../../_static/doctools.js"></script>
+        <script src="../../../../_static/language_data.js"></script>
+    
+    <script type="text/javascript" src="../../../../_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../../../../index.html" class="icon icon-home" alt="Documentation Home"> pyeq
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                0.51.8
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../foreword.html">PYEQ: full time-dependent slip inversion</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../behaviour.html">Options controlling the overall behaviour</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../tutorial_static_inversion.html">Tutorial static inversion</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../dates.html">dates</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../roxane.html">Roxane’s notes on PYEQ</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../modules.html">for developpers</a></li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../../index.html">pyeq</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../../../index.html" class="icon icon-home"></a> &raquo;</li>
+        
+          <li><a href="../../../index.html">Module code</a> &raquo;</li>
+        
+      <li>pyeq.lib.nnls.nnls_predotted</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>Source code for pyeq.lib.nnls.nnls_predotted</h1><div class="highlight"><pre>
+<div class="viewcode-block" id="nnls_predotted"><a class="viewcode-back" href="../../../../pyeq.lib.nnls.nnls_predotted.html#pyeq.lib.nnls.nnls_predotted.nnls_predotted">[docs]</a><span></span><span class="k">def</span> <span class="nf">nnls_predotted</span><span class="p">(</span><span class="n">A_dot_A</span><span class="p">,</span> <span class="n">A_dot_b</span><span class="p">,</span> <span class="n">tol</span><span class="o">=</span><span class="mf">1e-8</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Solve ``argmin_x || Ax - b ||_2`` for ``x&gt;=0``. This version may be superior to the FORTRAN implementation when ``A`` has more rows than</span>
+<span class="sd">    columns, and especially when ``A`` is sparse.</span>
+<span class="sd">    Note that the arguments and return values differ from the FORTRAN implementation; in particular, this implementation does not expect the actual</span>
+<span class="sd">    design matrix ``A`` nor the RHS vector ``b``, but rather ``A.T.dot(A)`` and ``A.T.dot(b)``. These are smaller than the original ``A`` and ``b``</span>
+<span class="sd">    iff ``A`` has more rows than columns.</span>
+<span class="sd">    This function also does not return the residual. The squared residual ``|| Ax-b ||^2`` may be calculated efficiently as:</span>
+<span class="sd">        ``b.dot(b) + x.dot(A_dot_A.dot(x) - 2*A_dot_b)``</span>
+<span class="sd">    where ``x`` is the output of this function</span>
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    A_dot_A : ndarray</span>
+<span class="sd">        Square matrix corresponding to ``A.T.dot(A)``, where ``A`` is as shown above.</span>
+<span class="sd">    A_dot_b : ndarray</span>
+<span class="sd">        Vector corresponding to ``A.T.dot(b)``, where ``A`` and ``b`` are as shown above.</span>
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    x : ndarray</span>
+<span class="sd">        Solution vector.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+
+    <span class="n">A_dot_A</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray_chkfinite</span><span class="p">(</span><span class="n">A_dot_A</span><span class="p">)</span>
+    <span class="n">A_dot_b</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray_chkfinite</span><span class="p">(</span><span class="n">A_dot_b</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">A_dot_A</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span> <span class="o">!=</span> <span class="mi">2</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;expected matrix&quot;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">A_dot_b</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span> <span class="o">!=</span> <span class="mi">1</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;expected vector&quot;</span><span class="p">)</span>
+
+    <span class="n">nvar</span> <span class="o">=</span> <span class="n">A_dot_A</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="k">if</span> <span class="n">nvar</span> <span class="o">!=</span> <span class="n">A_dot_A</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;expected square matrix&quot;</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">nvar</span> <span class="o">!=</span> <span class="n">A_dot_b</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;incompatible dimensions&quot;</span><span class="p">)</span>
+
+    <span class="n">P_bool</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">nvar</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">bool</span><span class="p">)</span>
+    <span class="n">x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">nvar</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">A_dot_A</span><span class="o">.</span><span class="n">dtype</span><span class="p">)</span>
+    <span class="n">s</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">empty_like</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+    <span class="n">w</span> <span class="o">=</span> <span class="n">A_dot_b</span>
+    <span class="k">while</span> <span class="ow">not</span> <span class="n">P_bool</span><span class="o">.</span><span class="n">all</span><span class="p">()</span> <span class="ow">and</span> <span class="n">w</span><span class="o">.</span><span class="n">max</span><span class="p">()</span> <span class="o">&gt;</span> <span class="n">tol</span><span class="p">:</span>
+        <span class="n">j_idx</span> <span class="o">=</span> <span class="n">w</span><span class="p">[</span><span class="o">~</span><span class="n">P_bool</span><span class="p">]</span><span class="o">.</span><span class="n">argmax</span><span class="p">()</span>
+        <span class="n">newly_allowed</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">flatnonzero</span><span class="p">(</span><span class="o">~</span><span class="n">P_bool</span><span class="p">)[</span><span class="n">j_idx</span><span class="p">]</span>
+        <span class="n">P_bool</span><span class="p">[</span><span class="n">newly_allowed</span><span class="p">]</span> <span class="o">=</span> <span class="kc">True</span>
+        <span class="n">s</span><span class="p">[:]</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="n">currPs</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">flatnonzero</span><span class="p">(</span><span class="n">P_bool</span><span class="p">)</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">currPs</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="n">s</span><span class="p">[</span><span class="n">currPs</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">solve</span><span class="p">(</span><span class="n">A_dot_A</span><span class="p">[</span><span class="n">currPs</span><span class="p">[:,</span> <span class="kc">None</span><span class="p">],</span> <span class="n">currPs</span><span class="p">[</span><span class="kc">None</span><span class="p">,</span> <span class="p">:]],</span> <span class="n">A_dot_b</span><span class="p">[</span><span class="n">currPs</span><span class="p">])</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">currP</span> <span class="o">=</span> <span class="n">currPs</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+            <span class="n">s</span><span class="p">[</span><span class="n">currP</span><span class="p">]</span> <span class="o">=</span> <span class="n">A_dot_b</span><span class="p">[</span><span class="n">currP</span><span class="p">]</span><span class="o">/</span><span class="n">A_dot_A</span><span class="p">[</span><span class="n">currP</span><span class="p">,</span> <span class="n">currP</span><span class="p">]</span>
+        <span class="n">s_P_l_0</span> <span class="o">=</span> <span class="p">(</span><span class="n">s</span><span class="p">[</span><span class="n">currPs</span><span class="p">]</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">)</span>
+        <span class="k">while</span> <span class="n">s_P_l_0</span><span class="o">.</span><span class="n">any</span><span class="p">():</span>
+            <span class="n">currPs_s_P_l_0</span> <span class="o">=</span> <span class="n">currPs</span><span class="p">[</span><span class="n">s_P_l_0</span><span class="p">]</span>
+            <span class="n">alpha</span> <span class="o">=</span> <span class="p">(</span><span class="n">x</span><span class="p">[</span><span class="n">currPs_s_P_l_0</span><span class="p">]</span><span class="o">/</span><span class="p">(</span><span class="n">x</span><span class="p">[</span><span class="n">currPs_s_P_l_0</span><span class="p">]</span> <span class="o">-</span> <span class="n">s</span><span class="p">[</span><span class="n">currPs_s_P_l_0</span><span class="p">]))</span><span class="o">.</span><span class="n">min</span><span class="p">()</span>
+            <span class="n">x</span> <span class="o">+=</span> <span class="n">alpha</span><span class="o">*</span><span class="p">(</span><span class="n">s</span><span class="o">-</span><span class="n">x</span><span class="p">)</span>
+            <span class="n">P_bool</span><span class="p">[</span><span class="n">currPs</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">x</span><span class="p">[</span><span class="n">currPs</span><span class="p">]</span> <span class="o">&gt;</span> <span class="n">tol</span><span class="p">)</span>
+            <span class="n">s</span><span class="p">[:]</span> <span class="o">=</span> <span class="mi">0</span>
+            <span class="n">currPs</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">flatnonzero</span><span class="p">(</span><span class="n">P_bool</span><span class="p">)</span>
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">currPs</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
+                <span class="n">s</span><span class="p">[</span><span class="n">currPs</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">solve</span><span class="p">(</span><span class="n">A_dot_A</span><span class="p">[</span><span class="n">currPs</span><span class="p">[:,</span> <span class="kc">None</span><span class="p">],</span> <span class="n">currPs</span><span class="p">[</span><span class="kc">None</span><span class="p">,</span> <span class="p">:]],</span> <span class="n">A_dot_b</span><span class="p">[</span><span class="n">currPs</span><span class="p">])</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">currP</span> <span class="o">=</span> <span class="n">currPs</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+                <span class="n">s</span><span class="p">[</span><span class="n">currP</span><span class="p">]</span> <span class="o">=</span> <span class="n">A_dot_b</span><span class="p">[</span><span class="n">currP</span><span class="p">]</span><span class="o">/</span><span class="n">A_dot_A</span><span class="p">[</span><span class="n">currP</span><span class="p">,</span> <span class="n">currP</span><span class="p">]</span>
+            <span class="n">s_P_l_0</span> <span class="o">=</span> <span class="p">(</span><span class="n">s</span><span class="p">[</span><span class="n">currPs</span><span class="p">]</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">)</span>
+        <span class="n">x</span><span class="p">[:]</span> <span class="o">=</span> <span class="n">s</span><span class="p">[:]</span>
+        <span class="k">if</span> <span class="n">x</span><span class="p">[</span><span class="n">newly_allowed</span><span class="p">]</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">break</span>  <span class="c1"># avoid infinite loop</span>
+        <span class="n">w</span> <span class="o">=</span> <span class="n">A_dot_b</span> <span class="o">-</span> <span class="n">A_dot_A</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">x</span></div>
+</pre></div>
+
+           </div>
+           
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        
+        &copy; Copyright 2016, Jean-Mathieu Nocquet IRD/Geoazur
+
+    </p>
+  </div>
+    
+    
+    
+    Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

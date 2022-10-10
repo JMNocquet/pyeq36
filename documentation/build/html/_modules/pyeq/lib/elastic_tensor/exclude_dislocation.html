@@ -1,0 +1,327 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>pyeq.lib.elastic_tensor.exclude_dislocation &mdash; pyeq 0.51.8 documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="../../../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../../../_static/pygments.css" type="text/css" />
+
+  
+  
+  
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="../../../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../../../../" src="../../../../_static/documentation_options.js"></script>
+        <script src="../../../../_static/jquery.js"></script>
+        <script src="../../../../_static/underscore.js"></script>
+        <script src="../../../../_static/doctools.js"></script>
+        <script src="../../../../_static/language_data.js"></script>
+    
+    <script type="text/javascript" src="../../../../_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../../../../index.html" class="icon icon-home" alt="Documentation Home"> pyeq
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                0.51.8
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../foreword.html">PYEQ: full time-dependent slip inversion</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../behaviour.html">Options controlling the overall behaviour</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../tutorial_static_inversion.html">Tutorial static inversion</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../dates.html">dates</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../roxane.html">Roxane’s notes on PYEQ</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../modules.html">for developpers</a></li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../../index.html">pyeq</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../../../index.html" class="icon icon-home"></a> &raquo;</li>
+        
+          <li><a href="../../../index.html">Module code</a> &raquo;</li>
+        
+      <li>pyeq.lib.elastic_tensor.exclude_dislocation</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>Source code for pyeq.lib.elastic_tensor.exclude_dislocation</h1><div class="highlight"><pre>
+<span></span><span class="c1">###############################################################################</span>
+<div class="viewcode-block" id="exclude_dislocation"><a class="viewcode-back" href="../../../../pyeq.lib.elastic_tensor.exclude_dislocation.html#pyeq.lib.elastic_tensor.exclude_dislocation.exclude_dislocation">[docs]</a><span class="k">def</span> <span class="nf">exclude_dislocation</span><span class="p">(</span><span class="n">G</span> <span class="p">,</span> <span class="n">geometry</span><span class="p">,</span> <span class="n">Dm</span><span class="p">,</span> \
+                        <span class="n">range_lon</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> \
+                        <span class="n">range_lat</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> \
+                        <span class="n">range_depth</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> \
+                        <span class="n">exclude_idx</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> \
+                        <span class="n">verbose</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+<span class="c1">###############################################################################</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    </span>
+<span class="sd">    From a 4-dimension elastic tensor G, make a selection of subfaults using some criterion</span>
+<span class="sd">    </span>
+<span class="sd">    The input G tensor is assumed to be organized as follows:</span>
+<span class="sd">    </span>
+<span class="sd">    G(i,j,k,l) is the prediction for dislocation j at site i component k for rake l</span>
+<span class="sd">    k=0,1,2 = east, north, up</span>
+<span class="sd">    l=0,1 : rake_principal &amp; rake_conjugate</span>
+
+<span class="sd">    geometry has the following columns:</span>
+<span class="sd">    0 : rdis_long</span>
+<span class="sd">    1 : rdis_lat</span>
+<span class="sd">    2 : rdis_depth</span>
+<span class="sd">    3 : rdis_length</span>
+<span class="sd">    4 : rdis_width</span>
+<span class="sd">    5 : rdis_area</span>
+<span class="sd">    6 : ratio_rdis_tdis</span>
+<span class="sd">    7 : strike</span>
+<span class="sd">    8 : dip</span>
+<span class="sd">    9 : centroid_long</span>
+<span class="sd">    10: centroid_lat</span>
+<span class="sd">    11: centroid_depth</span>
+<span class="sd">    12: tdis_long1</span>
+<span class="sd">    13: tdis_lat1</span>
+<span class="sd">    14: tdis_depth1</span>
+<span class="sd">    15: tdis_long2</span>
+<span class="sd">    16: tdis_lat2</span>
+<span class="sd">    17: tdis_depth2</span>
+<span class="sd">    18: tdis_long3</span>
+<span class="sd">    19: tdis_lat3</span>
+<span class="sd">    20: tdis_depth3</span>
+<span class="sd">    21: tdis_area</span>
+<span class="sd">    </span>
+<span class="sd">    :param range_lon: removes all subfaults with centroid strictly outside the provided longitude range (unit dec.deg)</span>
+<span class="sd">    :param range_lat: removes all subfault with centroid strictly outside the provided latitude range (unit dec.deg)</span>
+<span class="sd">    :param range_depth: removes all subfaults with centroid strictly outside the provided depth range (unit dec.deg)</span>
+<span class="sd">    :param exclude_idx: removes a list of subfault by index </span>
+<span class="sd">     </span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="c1">###########################################################################</span>
+    <span class="c1"># IMPORT </span>
+    <span class="c1">###########################################################################</span>
+    
+    <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+    <span class="kn">import</span> <span class="nn">pyeq.lib.lib_inversion</span>
+    
+    <span class="c1">###########################################################################</span>
+    <span class="c1"># CHECK ARGUMENT</span>
+    <span class="c1">###########################################################################</span>
+    
+    <span class="c1"># Dimension of input G</span>
+    <span class="k">if</span> <span class="n">G</span><span class="o">.</span><span class="n">ndim</span> <span class="o">!=</span> <span class="mi">4</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;!!! ERROR: Input array MUST have 4 dimensions&quot;</span><span class="p">)</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">()</span>
+
+    <span class="c1">###########################################################################</span>
+    <span class="c1"># IDX CASE</span>
+    <span class="c1"># MUST BE FIRST, OTHERWISE IDX ARE WRONG</span>
+    <span class="c1">###########################################################################</span>
+
+    
+    <span class="k">if</span> <span class="n">exclude_idx</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;-- Removing dislocations for index &#39;</span> <span class="p">,</span> <span class="n">exclude_idx</span> <span class="p">)</span>
+        <span class="n">np_idx</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">delete</span><span class="p">(</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span> <span class="n">G</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="p">)</span> <span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">exclude_idx</span><span class="p">)</span> <span class="p">)</span>
+        <span class="n">G</span> <span class="o">=</span> <span class="n">G</span><span class="p">[</span><span class="n">np_idx</span><span class="p">,:,:,:]</span>
+        <span class="n">geometry</span> <span class="o">=</span> <span class="n">geometry</span><span class="p">[</span> <span class="n">np_idx</span><span class="p">,</span> <span class="p">:</span> <span class="p">]</span>
+        <span class="n">Dm</span> <span class="o">=</span> <span class="n">Dm</span><span class="p">[</span><span class="n">np_idx</span><span class="p">]</span><span class="o">.</span><span class="n">T</span><span class="p">[</span><span class="n">np_idx</span><span class="p">]</span><span class="o">.</span><span class="n">T</span>  
+    
+    <span class="c1">###########################################################################</span>
+    <span class="c1"># MIN/MAX CASE</span>
+    <span class="c1">###########################################################################</span>
+
+    <span class="k">if</span> <span class="n">range_lon</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;-- Removing dislocations outside longitude range &#39;</span> <span class="p">,</span> <span class="n">range_lon</span> <span class="p">)</span>
+        
+        <span class="p">[</span> <span class="n">min_lon</span> <span class="p">,</span> <span class="n">max_lon</span> <span class="p">]</span> <span class="o">=</span> <span class="n">range_lon</span>
+        <span class="n">np_idx</span> <span class="o">=</span>  <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span> <span class="p">(</span> <span class="n">geometry</span><span class="p">[:,</span><span class="mi">9</span><span class="p">]</span> <span class="o">&gt;=</span> <span class="n">min_lon</span> <span class="p">)</span> <span class="o">&amp;</span> <span class="p">(</span> <span class="n">geometry</span><span class="p">[:,</span><span class="mi">9</span><span class="p">]</span> <span class="o">&lt;=</span> <span class="n">max_lon</span> <span class="p">)</span> <span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">G</span> <span class="o">=</span> <span class="n">G</span><span class="p">[</span><span class="n">np_idx</span><span class="p">,:,:,:]</span>
+        <span class="n">geometry</span> <span class="o">=</span> <span class="n">geometry</span><span class="p">[</span> <span class="n">np_idx</span><span class="p">,</span> <span class="p">:</span> <span class="p">]</span>
+        <span class="n">Dm</span> <span class="o">=</span> <span class="n">Dm</span><span class="p">[</span><span class="n">np_idx</span><span class="p">]</span><span class="o">.</span><span class="n">T</span><span class="p">[</span><span class="n">np_idx</span><span class="p">]</span><span class="o">.</span><span class="n">T</span>  
+        
+    <span class="k">if</span> <span class="n">range_lat</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;-- Removing dislocations outside latitude range &#39;</span> <span class="p">,</span> <span class="n">range_lat</span> <span class="p">)</span>
+
+        <span class="p">[</span> <span class="n">min_lat</span> <span class="p">,</span> <span class="n">max_lat</span> <span class="p">]</span> <span class="o">=</span> <span class="n">range_lat</span>
+        <span class="n">np_idx</span> <span class="o">=</span>  <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span> <span class="p">(</span> <span class="n">geometry</span><span class="p">[:,</span><span class="mi">10</span><span class="p">]</span> <span class="o">&gt;=</span> <span class="n">min_lat</span> <span class="p">)</span> <span class="o">&amp;</span> <span class="p">(</span> <span class="n">geometry</span><span class="p">[:,</span><span class="mi">10</span><span class="p">]</span> <span class="o">&lt;=</span> <span class="n">max_lat</span> <span class="p">)</span> <span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">G</span> <span class="o">=</span> <span class="n">G</span><span class="p">[</span><span class="n">np_idx</span><span class="p">,:,:,:]</span>
+        <span class="n">geometry</span> <span class="o">=</span> <span class="n">geometry</span><span class="p">[</span> <span class="n">np_idx</span><span class="p">,</span> <span class="p">:</span> <span class="p">]</span>
+        <span class="n">Dm</span> <span class="o">=</span> <span class="n">Dm</span><span class="p">[</span><span class="n">np_idx</span><span class="p">]</span><span class="o">.</span><span class="n">T</span><span class="p">[</span><span class="n">np_idx</span><span class="p">]</span><span class="o">.</span><span class="n">T</span>  
+        
+    <span class="k">if</span> <span class="n">range_depth</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;-- Removing dislocations outside depth range &#39;</span> <span class="p">,</span> <span class="n">range_depth</span> <span class="p">)</span>
+
+        <span class="p">[</span> <span class="n">min_depth</span> <span class="p">,</span> <span class="n">max_depth</span> <span class="p">]</span> <span class="o">=</span> <span class="n">range_depth</span>
+        <span class="n">np_idx</span> <span class="o">=</span>  <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span> <span class="p">(</span> <span class="n">np</span><span class="o">.</span><span class="n">fabs</span><span class="p">(</span> <span class="n">geometry</span><span class="p">[:,</span><span class="mi">11</span><span class="p">]</span> <span class="p">)</span> <span class="o">&gt;=</span> <span class="n">min_depth</span> <span class="p">)</span> <span class="o">&amp;</span> <span class="p">(</span> <span class="n">np</span><span class="o">.</span><span class="n">fabs</span><span class="p">(</span> <span class="n">geometry</span><span class="p">[:,</span><span class="mi">11</span><span class="p">]</span> <span class="p">)</span> <span class="o">&lt;=</span> <span class="n">max_depth</span> <span class="p">)</span> <span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">G</span> <span class="o">=</span> <span class="n">G</span><span class="p">[</span><span class="n">np_idx</span><span class="p">]</span>
+        <span class="n">geometry</span> <span class="o">=</span> <span class="n">geometry</span><span class="p">[</span> <span class="n">np_idx</span> <span class="p">]</span>
+        <span class="n">Dm</span> <span class="o">=</span> <span class="n">Dm</span><span class="p">[</span><span class="n">np_idx</span><span class="p">]</span><span class="o">.</span><span class="n">T</span><span class="p">[</span><span class="n">np_idx</span><span class="p">]</span><span class="o">.</span><span class="n">T</span>  
+
+    <span class="n">names</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;rdis_long&#39;</span><span class="p">,</span><span class="s1">&#39;rdis_lat&#39;</span><span class="p">,</span><span class="s1">&#39;rdis_depth&#39;</span><span class="p">,</span><span class="s1">&#39;rdis_length&#39;</span><span class="p">,</span><span class="s1">&#39;rdis_width&#39;</span><span class="p">,</span>\
+           <span class="s1">&#39;rdis_area&#39;</span><span class="p">,</span><span class="s1">&#39;ratio_rdis_tdis&#39;</span><span class="p">,</span><span class="s1">&#39;strike&#39;</span><span class="p">,</span><span class="s1">&#39;dip&#39;</span><span class="p">,</span>\
+           <span class="s1">&#39;centroid_long&#39;</span><span class="p">,</span><span class="s1">&#39;centroid_lat&#39;</span><span class="p">,</span><span class="s1">&#39;centroid_depth&#39;</span><span class="p">,</span>\
+           <span class="s1">&#39;tdis_long1&#39;</span><span class="p">,</span><span class="s1">&#39;tdis_lat1&#39;</span><span class="p">,</span><span class="s1">&#39;tdis_depth1&#39;</span><span class="p">,</span>\
+           <span class="s1">&#39;tdis_long2&#39;</span><span class="p">,</span><span class="s1">&#39;tdis_lat2&#39;</span><span class="p">,</span><span class="s1">&#39;tdis_depth2&#39;</span><span class="p">,</span>\
+           <span class="s1">&#39;tdis_long3&#39;</span><span class="p">,</span><span class="s1">&#39;tdis_lat3&#39;</span><span class="p">,</span><span class="s1">&#39;tdis_depth3&#39;</span><span class="p">,</span><span class="s1">&#39;tdis_area&#39;</span><span class="p">]</span>
+    
+    <span class="n">SGEOMETRY</span> <span class="o">=</span> <span class="n">pyeq</span><span class="o">.</span><span class="n">lib</span><span class="o">.</span><span class="n">lib_inversion</span><span class="o">.</span><span class="n">numpy_array_2_numpy_recarray</span><span class="p">(</span><span class="n">geometry</span><span class="p">,</span><span class="n">names</span><span class="p">)</span>
+
+
+    <span class="k">return</span> <span class="n">G</span> <span class="p">,</span> <span class="n">geometry</span><span class="p">,</span> <span class="n">SGEOMETRY</span> <span class="p">,</span> <span class="n">Dm</span></div>
+        
+</pre></div>
+
+           </div>
+           
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        
+        &copy; Copyright 2016, Jean-Mathieu Nocquet IRD/Geoazur
+
+    </p>
+  </div>
+    
+    
+    
+    Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

@@ -137,7 +137,10 @@ def build5( model ):
 
             for idx_site in np.arange( model.t_obs.shape[1] ):
                 # get the first not nan observation for the current site
-                idx_first_obs = np.where( np.isfinite( model.t_obs[:,idx_site,0]) )[0][0]
+                try:
+                    idx_first_obs = np.where( np.isfinite( model.t_obs[:,idx_site,0]) )[0][0]
+                except:
+                    continue
                 # get the first available observation for the current site
                 date_first_obs = model.np_obs_date_s[ idx_first_obs ]
                 # update with the duration of site in the current time step

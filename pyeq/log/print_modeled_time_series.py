@@ -1,6 +1,8 @@
-def print_modeled_time_series( model ):
+def print_modeled_time_series( model, save=True ):
     """
-    Print modeled time series
+    Computes model predicted time series
+    modeled time series are stored as pyacs Sgts object and pyacs time series tensors
+    optionally, model time series are printing as pos files if write_pos is True
     """
 
     ###########################################################################
@@ -84,8 +86,9 @@ def print_modeled_time_series( model ):
             gts.data[ :,2]  = ( TS[:,0] + model.estimated_offset_per_site[ site ][0] ) *1.E-3
             gts.data[ :,3]  = ( TS[:,2] + model.estimated_offset_per_site[ site ][2] ) *1.E-3
             gts.data[ :,4:] = 1.E-3
-            
-            gts.write_pos(idir=model.odir+'/time_series/model_all_dates', force='data' , add_key='model_all_dates' , verbose=False)
+
+            if save:
+                gts.write_pos(idir=model.odir+'/time_series/model_all_dates', force='data' , add_key='model_all_dates' , verbose=False)
 
             # observation dates available for the current site
             TS_with_NAN = model.t_obs[:,i,:]
@@ -107,8 +110,9 @@ def print_modeled_time_series( model ):
             gts.data[ :,1] = gts.data[ :,1 ] - gts.data[ 0,1 ] + model.estimated_offset_per_site[ site ][1] *1.E-3
             gts.data[ :,2] = gts.data[ :,2 ] - gts.data[ 0,2 ] + model.estimated_offset_per_site[ site ][0] *1.E-3
             gts.data[ :,3] = gts.data[ :,3 ] - gts.data[ 0,3 ] + model.estimated_offset_per_site[ site ][2] *1.E-3
-            
-            gts.write_pos(idir=model.odir+'/time_series/model', force='data' , add_key='model' , verbose=False)
+
+            if save:
+                gts.write_pos(idir=model.odir+'/time_series/model', force='data' , add_key='model' , verbose=False)
             
             # save for later use
             Mgts.append( gts )

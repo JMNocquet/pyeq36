@@ -1,4 +1,4 @@
-def print_offset( model ):
+def print_offset( model, save = True ):
     """
     print offsets.
     """
@@ -30,8 +30,9 @@ def print_offset( model ):
         comment=" Offsets in mm East North Up"
     else:
         comment=" Offsets not estimated."
-        
-    pyacs.lib.utils.save_np_array_with_string( OFFSETS , model.np_gps_site , fmt,  model.odir+'/info/ts_offset.dat', comment)
+
+    if save:
+        pyacs.lib.utils.save_np_array_with_string( OFFSETS , model.np_gps_site , fmt,  model.odir+'/info/ts_offset.dat', comment)
     
     ###########################################################################
     # SAVE MODEL.ESTIMATED_OFFSETS_PER_SITE

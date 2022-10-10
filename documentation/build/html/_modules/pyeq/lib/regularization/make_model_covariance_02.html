@@ -1,0 +1,422 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>pyeq.lib.regularization.make_model_covariance_02 &mdash; pyeq 0.51.8 documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="../../../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../../../_static/pygments.css" type="text/css" />
+
+  
+  
+  
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="../../../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../../../../" src="../../../../_static/documentation_options.js"></script>
+        <script src="../../../../_static/jquery.js"></script>
+        <script src="../../../../_static/underscore.js"></script>
+        <script src="../../../../_static/doctools.js"></script>
+        <script src="../../../../_static/language_data.js"></script>
+    
+    <script type="text/javascript" src="../../../../_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../../../../index.html" class="icon icon-home" alt="Documentation Home"> pyeq
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                0.51.8
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../foreword.html">PYEQ: full time-dependent slip inversion</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../behaviour.html">Options controlling the overall behaviour</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../tutorial_static_inversion.html">Tutorial static inversion</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../dates.html">dates</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../roxane.html">Roxane’s notes on PYEQ</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../modules.html">for developpers</a></li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../../index.html">pyeq</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../../../index.html" class="icon icon-home"></a> &raquo;</li>
+        
+          <li><a href="../../../index.html">Module code</a> &raquo;</li>
+        
+      <li>pyeq.lib.regularization.make_model_covariance_02</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>Source code for pyeq.lib.regularization.make_model_covariance_02</h1><div class="highlight"><pre>
+<span></span><span class="c1">###############################################################################</span>
+<div class="viewcode-block" id="make_model_covariance_02"><a class="viewcode-back" href="../../../../pyeq.lib.regularization.make_model_covariance_02.html#pyeq.lib.regularization.make_model_covariance_02.make_model_covariance_02">[docs]</a><span class="k">def</span> <span class="nf">make_model_covariance_02</span><span class="p">(</span> <span class="n">model</span> <span class="p">):</span>
+<span class="c1">###############################################################################</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Create a model covariance matrix Cm</span>
+<span class="sd">    </span>
+<span class="sd">    cov_02 assumes:</span>
+<span class="sd">    - temporal smoothing: specified through critical duration model.tau. Could be 0 for no temporal smoothing.</span>
+<span class="sd">    - model.np_sigma is a scalar controlling the a priori average slip rate per day (sigma**2 in mm**2 /day )</span>
+<span class="sd">    - model.np_sigma is rescaled according to the model step duration</span>
+<span class="sd">    </span>
+<span class="sd">    - with this formulation, np_sigma can also be a vector of length model.nfaults</span>
+<span class="sd">    - finally model.np_sigma can be a matrix whose columns are sigma vectors for each model time step</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    
+    <span class="c1">###########################################################################</span>
+    <span class="c1"># IMPORT</span>
+    <span class="c1">###########################################################################</span>
+    
+    <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+    <span class="kn">import</span> <span class="nn">scipy.linalg</span>    
+    <span class="kn">import</span> <span class="nn">pyacs.lib.glinalg</span>
+    <span class="kn">import</span> <span class="nn">pyeq.lib.regularization</span>
+    <span class="kn">import</span> <span class="nn">pyeq.lib.log</span>
+    <span class="kn">from</span> <span class="nn">time</span> <span class="kn">import</span> <span class="n">time</span>
+    <span class="kn">from</span> <span class="nn">progress.bar</span> <span class="kn">import</span> <span class="n">Bar</span>
+
+    <span class="c1">###########################################################################</span>
+    <span class="c1"># INITIALIZE SOME PARAMETERS</span>
+    <span class="c1">###########################################################################</span>
+
+    <span class="c1"># first get the correlation matrix</span>
+    <span class="n">corr_step</span> <span class="o">=</span> <span class="n">pyeq</span><span class="o">.</span><span class="n">lib</span><span class="o">.</span><span class="n">regularization</span><span class="o">.</span><span class="n">make_model_spatial_correlation_matrix</span><span class="p">(</span> <span class="n">model</span><span class="o">.</span><span class="n">dm</span> <span class="p">,</span> <span class="n">model</span><span class="o">.</span><span class="n">dc</span><span class="p">,</span> <span class="n">cm_type</span> <span class="o">=</span>  <span class="n">model</span><span class="o">.</span><span class="n">cm_type</span> <span class="p">)</span>
+
+    <span class="c1"># computes normalization factor (not squared, d0 (min characteristic distance in model.sgeometry ) / dc )</span>
+    <span class="k">if</span> <span class="n">model</span><span class="o">.</span><span class="n">cm_norm</span> <span class="o">==</span> <span class="s1">&#39;d0&#39;</span><span class="p">:</span>
+        <span class="n">nf</span> <span class="o">=</span> <span class="n">pyeq</span><span class="o">.</span><span class="n">lib</span><span class="o">.</span><span class="n">regularization</span><span class="o">.</span><span class="n">normalization_factor</span><span class="p">(</span> <span class="n">model</span><span class="o">.</span><span class="n">sgeometry</span> <span class="p">,</span> <span class="n">model</span><span class="o">.</span><span class="n">dc</span> <span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">nf</span> <span class="o">=</span> <span class="mf">1.</span>
+    
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;-- Normalization factor accounting for fault discretization: </span><span class="si">%.3lf</span><span class="s2"> &quot;</span> <span class="o">%</span> <span class="n">nf</span> <span class="p">)</span>
+
+    <span class="c1"># computes model step duration vector in days delta_time_in_days</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;-- Computing model step duration vector&quot;</span> <span class="p">)</span>
+    <span class="n">delta_time_in_days</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">diff</span><span class="p">(</span> <span class="n">model</span><span class="o">.</span><span class="n">np_model_date_s</span> <span class="o">/</span> <span class="mf">86400.</span> <span class="p">)</span>
+
+    <span class="c1"># handling the np_sigma</span>
+    
+    <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;-- Handling model covariance diagonal (sigma)&#39;</span><span class="p">)</span>
+
+    <span class="n">model</span><span class="o">.</span><span class="n">np_sigma</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="k">if</span> <span class="n">model</span><span class="o">.</span><span class="n">sigma_type</span> <span class="o">==</span> <span class="s1">&#39;time_constant/fault_constant&#39;</span><span class="p">:</span>
+        <span class="n">model</span><span class="o">.</span><span class="n">np_sigma</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span> <span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">nparameters</span><span class="p">)</span> <span class="p">)</span> <span class="o">+</span> <span class="n">model</span><span class="o">.</span><span class="n">sigma_time</span>
+
+    <span class="k">if</span> <span class="n">model</span><span class="o">.</span><span class="n">sigma_type</span> <span class="o">==</span> <span class="s1">&#39;time_variable/fault_constant&#39;</span><span class="p">:</span>
+        <span class="n">model</span><span class="o">.</span><span class="n">np_sigma</span> <span class="o">=</span> <span class="n">pyacs</span><span class="o">.</span><span class="n">lib</span><span class="o">.</span><span class="n">glinalg</span><span class="o">.</span><span class="n">matrix_from_pattern</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span> <span class="n">model</span><span class="o">.</span><span class="n">sigma_time</span><span class="p">]),</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="mi">1</span><span class="p">,</span> <span class="n">model</span><span class="o">.</span><span class="n">nstep</span> <span class="p">)</span> <span class="p">)</span> <span class="o">+</span> <span class="n">model</span><span class="o">.</span><span class="n">sigma_fault</span> <span class="p">)</span><span class="o">.</span><span class="n">flatten</span><span class="p">()</span> 
+    
+    <span class="k">if</span> <span class="n">model</span><span class="o">.</span><span class="n">sigma_type</span> <span class="o">==</span> <span class="s1">&#39;time_constant/fault_variable&#39;</span><span class="p">:</span>
+        <span class="n">model</span><span class="o">.</span><span class="n">np_sigma</span> <span class="o">=</span> <span class="n">pyacs</span><span class="o">.</span><span class="n">lib</span><span class="o">.</span><span class="n">glinalg</span><span class="o">.</span><span class="n">matrix_from_pattern</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span> <span class="n">model</span><span class="o">.</span><span class="n">sigma_fault</span><span class="p">]),</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="mi">1</span><span class="p">,</span> <span class="n">model</span><span class="o">.</span><span class="n">nstep</span> <span class="p">)</span> <span class="p">)</span> <span class="o">+</span> <span class="n">model</span><span class="o">.</span><span class="n">sigma_time</span> <span class="p">)</span><span class="o">.</span><span class="n">flatten</span><span class="p">()</span> 
+
+    <span class="k">if</span> <span class="n">model</span><span class="o">.</span><span class="n">sigma_type</span> <span class="o">==</span> <span class="s1">&#39;time_variable/fault_variable&#39;</span><span class="p">:</span>
+        <span class="n">model</span><span class="o">.</span><span class="n">np_sigma</span> <span class="o">=</span> <span class="n">pyacs</span><span class="o">.</span><span class="n">lib</span><span class="o">.</span><span class="n">glinalg</span><span class="o">.</span><span class="n">matrix_from_pattern</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span> <span class="n">model</span><span class="o">.</span><span class="n">sigma_fault</span><span class="p">]),</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span> <span class="p">[</span><span class="n">model</span><span class="o">.</span><span class="n">sigma_time</span><span class="p">]</span> <span class="p">)</span> <span class="p">)</span><span class="o">.</span><span class="n">flatten</span><span class="p">()</span>
+
+    <span class="c1"># fault discretization lengthscale normalization</span>
+    <span class="n">np_sigma</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">np_sigma</span> <span class="o">*</span> <span class="n">nf</span> 
+
+<span class="c1">###############################################################################</span>
+<span class="c1"># CASE TEMPORAL SMOOTHING</span>
+<span class="c1">###############################################################################</span>
+
+    <span class="k">if</span> <span class="n">model</span><span class="o">.</span><span class="n">tau</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;-- Building the model covariance matrix CM with temporal smoothing. Correlation time is tau = </span><span class="si">%.2lf</span><span class="s2"> days&quot;</span> <span class="o">%</span> <span class="n">model</span><span class="o">.</span><span class="n">tau</span> <span class="p">)</span>
+        
+    
+        <span class="c1"># spatial correlation at all time step</span>
+        <span class="n">ones</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span> <span class="p">(</span> <span class="n">model</span><span class="o">.</span><span class="n">nstep</span> <span class="p">,</span> <span class="n">model</span><span class="o">.</span><span class="n">nstep</span> <span class="p">)</span> <span class="p">)</span> <span class="o">+</span> <span class="mf">1.</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;-- Filling the model correlation matrix with spatial correlation blocks&quot;</span> <span class="p">)</span>
+        <span class="n">Corr_spatial</span> <span class="o">=</span>  <span class="n">pyacs</span><span class="o">.</span><span class="n">lib</span><span class="o">.</span><span class="n">glinalg</span><span class="o">.</span><span class="n">matrix_from_pattern</span><span class="p">(</span> <span class="n">corr_step</span> <span class="p">,</span> <span class="n">ones</span> <span class="p">)</span>
+        
+        <span class="c1"># compute the time distance among model time step matrix</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;-- Computing the model step time distance matrix&quot;</span> <span class="p">)</span>
+        <span class="n">delta_day_2D</span> <span class="o">=</span> <span class="n">pyeq</span><span class="o">.</span><span class="n">lib</span><span class="o">.</span><span class="n">regularization</span><span class="o">.</span><span class="n">time_to_2D_diff_time_in_days</span><span class="p">(</span>  <span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">np_model_date_s</span> <span class="o">/</span> <span class="mf">86400.</span><span class="p">)[:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">+</span> <span class="n">delta_time_in_days</span> <span class="o">/</span> <span class="mi">2</span> <span class="p">)</span>
+    
+        <span class="c1"># temporal correlation at all time step</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;-- Computing the model step time correlation matrix&quot;</span> <span class="p">)</span>
+        <span class="n">corr_time_2D</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span> <span class="o">-</span><span class="n">delta_day_2D</span> <span class="o">/</span> <span class="n">model</span><span class="o">.</span><span class="n">tau</span> <span class="p">)</span>
+
+        <span class="c1"># temporal correlation matrix            </span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;-- Filling the model correlation matrix with time correlation blocks&quot;</span> <span class="p">)</span>
+        <span class="n">ones</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span> <span class="p">(</span> <span class="n">model</span><span class="o">.</span><span class="n">nfaults</span> <span class="p">,</span> <span class="n">model</span><span class="o">.</span><span class="n">nfaults</span> <span class="p">)</span> <span class="p">)</span> <span class="o">+</span> <span class="mf">1.</span>
+        <span class="n">Corr_time</span> <span class="o">=</span>  <span class="n">pyacs</span><span class="o">.</span><span class="n">lib</span><span class="o">.</span><span class="n">glinalg</span><span class="o">.</span><span class="n">matrix_from_pattern</span><span class="p">(</span> <span class="n">ones</span> <span class="p">,</span> <span class="n">corr_time_2D</span> <span class="p">)</span>
+        
+        <span class="c1"># spatial and time correlation matrix</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;-- Merging spatial and time correlation matrices&quot;</span> <span class="p">)</span>
+        <span class="n">Corr</span> <span class="o">=</span> <span class="n">Corr_spatial</span> <span class="o">*</span> <span class="n">Corr_time</span>
+        
+        <span class="c1"># get the model covariance matrix</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;-- Converting correlation to covariance with shape:&#39;</span> <span class="p">,</span> <span class="n">Corr</span><span class="o">.</span><span class="n">shape</span> <span class="p">)</span>
+        
+        <span class="n">CM</span> <span class="o">=</span> <span class="n">pyacs</span><span class="o">.</span><span class="n">lib</span><span class="o">.</span><span class="n">glinalg</span><span class="o">.</span><span class="n">corr_to_cov</span><span class="p">(</span><span class="n">Corr</span><span class="p">,</span> <span class="n">np_sigma</span> <span class="p">)</span>
+
+        <span class="c1"># get the inverse covariance matrix  </span>
+        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;-- Computing the inverse model covariance matrix of shape: &#39;</span> <span class="p">,</span> <span class="n">CM</span><span class="o">.</span><span class="n">shape</span> <span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;-- And build the normal matrix&#39;</span> <span class="p">)</span>
+        <span class="n">model</span><span class="o">.</span><span class="n">N</span> <span class="o">=</span>  <span class="n">model</span><span class="o">.</span><span class="n">N</span> <span class="o">+</span> <span class="n">pyacs</span><span class="o">.</span><span class="n">lib</span><span class="o">.</span><span class="n">glinalg</span><span class="o">.</span><span class="n">syminv</span><span class="p">(</span> <span class="n">CM</span> <span class="p">)</span>
+
+<span class="c1">###############################################################################</span>
+<span class="c1"># CASE NO TEMPORAL SMOOTHING</span>
+<span class="c1">###############################################################################</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="c1"># compute the inversion correlation matrix</span>
+        <span class="c1"># !!! THERE IS A SURPRISE HERE</span>
+        <span class="c1"># THE COVARIANCE MATRIX APPEARS TO BE BETTER CONDITIONED</span>
+        <span class="c1"># IF THE COVARIANCE IS INVERSED COMPARED TO THE CORRLATION</span>
+        <span class="c1"># MATRIX INVERSED AND THEN MULTIPLIED BY 1/sigma**2</span>
+        <span class="c1"># THIS LEADS TO SUB-OPTIMAL CODING</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;-- Computing the individual model_step inverse spatial correlation matrix (inv_corr_step)&quot;</span><span class="p">)</span>
+
+        <span class="c1">#######################################################################        </span>
+        <span class="k">if</span> <span class="n">model</span><span class="o">.</span><span class="n">sigma_type</span> <span class="o">==</span> <span class="s1">&#39;time_constant/fault_constant&#39;</span><span class="p">:</span>
+        <span class="c1">#######################################################################        </span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;-- Computing the time step covariance matrix - sigma_type is </span><span class="si">%s</span><span class="s2"> &quot;</span> <span class="o">%</span> <span class="p">(</span> <span class="n">model</span><span class="o">.</span><span class="n">sigma_type</span> <span class="p">)</span> <span class="p">)</span>
+
+            <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span> <span class="n">np</span><span class="o">.</span><span class="n">fabs</span><span class="p">(</span> <span class="n">np</span><span class="o">.</span><span class="n">diff</span><span class="p">(</span> <span class="n">delta_time_in_days</span> <span class="p">)</span> <span class="p">)</span> <span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;-- Constant time step case &quot;</span><span class="p">)</span>
+                <span class="n">normalization_factor</span> <span class="o">=</span> <span class="n">delta_time_in_days</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">*</span> <span class="n">model</span><span class="o">.</span><span class="n">sigma_time</span><span class="o">**</span><span class="mi">2</span> <span class="o">*</span> <span class="n">nf</span>
+                <span class="n">cm_step</span> <span class="o">=</span> <span class="n">corr_step</span> <span class="o">*</span> <span class="n">normalization_factor</span>
+                <span class="n">inv_cm_step</span> <span class="o">=</span> <span class="n">pyacs</span><span class="o">.</span><span class="n">lib</span><span class="o">.</span><span class="n">glinalg</span><span class="o">.</span><span class="n">syminv</span><span class="p">(</span> <span class="n">cm_step</span> <span class="p">)</span>
+                <span class="n">model</span><span class="o">.</span><span class="n">N</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">N</span> <span class="o">+</span> <span class="n">scipy</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">block_diag</span><span class="p">(</span><span class="o">*</span><span class="p">([</span><span class="n">inv_cm_step</span><span class="p">]</span> <span class="o">*</span> <span class="n">model</span><span class="o">.</span><span class="n">nstep</span><span class="p">))</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;-- Variable time step case &quot;</span><span class="p">)</span>
+                <span class="c1"># THIS COULD BE IMPROVED: HERE THIS REQUIRES NSTEP INVERSION</span>
+                <span class="c1"># ALTHOUGH MANY OF THEM ARE PROBABLY THE SAME</span>
+
+                <span class="n">bar</span> <span class="o">=</span> <span class="n">Bar</span><span class="p">(</span><span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="nb">max</span><span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">nstep</span> <span class="p">,</span> <span class="n">suffix</span> <span class="o">=</span> <span class="s1">&#39;</span><span class="si">%(percent).1f%%</span><span class="s1"> - </span><span class="si">%(eta)d</span><span class="s1">s&#39;</span><span class="p">)</span>
+
+                <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span> <span class="n">model</span><span class="o">.</span><span class="n">nstep</span> <span class="p">):</span>
+
+                    <span class="n">bar</span><span class="o">.</span><span class="n">next</span><span class="p">()</span>
+                    
+                    <span class="n">normalization_factor</span> <span class="o">=</span> <span class="n">delta_time_in_days</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">*</span> <span class="n">model</span><span class="o">.</span><span class="n">sigma_time</span><span class="o">**</span><span class="mi">2</span> <span class="o">*</span> <span class="n">nf</span>
+                    <span class="n">cm_step</span> <span class="o">=</span> <span class="n">corr_step</span> <span class="o">*</span> <span class="n">normalization_factor</span>
+                    <span class="n">inv_cm_step</span> <span class="o">=</span> <span class="n">pyacs</span><span class="o">.</span><span class="n">lib</span><span class="o">.</span><span class="n">glinalg</span><span class="o">.</span><span class="n">syminv</span><span class="p">(</span> <span class="n">cm_step</span> <span class="p">)</span>
+                    <span class="n">model</span><span class="o">.</span><span class="n">N</span><span class="p">[</span> <span class="n">i</span> <span class="o">*</span> <span class="n">model</span><span class="o">.</span><span class="n">nfaults</span><span class="p">:(</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span> <span class="o">*</span> <span class="n">model</span><span class="o">.</span><span class="n">nfaults</span> <span class="p">,</span> <span class="n">i</span> <span class="o">*</span> <span class="n">model</span><span class="o">.</span><span class="n">nfaults</span><span class="p">:(</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span> <span class="o">*</span> <span class="n">model</span><span class="o">.</span><span class="n">nfaults</span> <span class="p">]</span> <span class="o">=</span> \
+                        <span class="n">model</span><span class="o">.</span><span class="n">N</span><span class="p">[</span> <span class="n">i</span> <span class="o">*</span> <span class="n">model</span><span class="o">.</span><span class="n">nfaults</span><span class="p">:(</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span> <span class="o">*</span> <span class="n">model</span><span class="o">.</span><span class="n">nfaults</span> <span class="p">,</span> <span class="n">i</span> <span class="o">*</span> <span class="n">model</span><span class="o">.</span><span class="n">nfaults</span><span class="p">:(</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span> <span class="o">*</span> <span class="n">model</span><span class="o">.</span><span class="n">nfaults</span> <span class="p">]</span> <span class="o">+</span> <span class="n">inv_cm_step</span>
+                
+                <span class="n">bar</span><span class="o">.</span><span class="n">finish</span><span class="p">()</span>
+
+        <span class="c1">#######################################################################        </span>
+        <span class="k">if</span> <span class="n">model</span><span class="o">.</span><span class="n">sigma_type</span> <span class="o">==</span> <span class="s1">&#39;time_variable/fault_constant&#39;</span><span class="p">:</span>
+        <span class="c1">#######################################################################        </span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;-- Computing the time step covariance matrix - sigma_type is </span><span class="si">%s</span><span class="s2"> &quot;</span> <span class="o">%</span> <span class="p">(</span> <span class="n">model</span><span class="o">.</span><span class="n">sigma_type</span> <span class="p">)</span> <span class="p">)</span>
+
+            <span class="n">bar</span> <span class="o">=</span> <span class="n">Bar</span><span class="p">(</span><span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="nb">max</span><span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">nstep</span> <span class="p">,</span> <span class="n">suffix</span> <span class="o">=</span> <span class="s1">&#39;</span><span class="si">%(percent).1f%%</span><span class="s1"> - </span><span class="si">%(eta)d</span><span class="s1">s&#39;</span><span class="p">)</span>
+
+            <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span> <span class="n">model</span><span class="o">.</span><span class="n">nstep</span> <span class="p">):</span>
+
+                <span class="n">bar</span><span class="o">.</span><span class="n">next</span><span class="p">()</span>
+                <span class="n">normalization_factor</span> <span class="o">=</span> <span class="n">delta_time_in_days</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">*</span> <span class="n">model</span><span class="o">.</span><span class="n">sigma_time</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">**</span><span class="mi">2</span> <span class="o">*</span> <span class="n">nf</span>
+                <span class="n">cm_step</span> <span class="o">=</span> <span class="n">corr_step</span> <span class="o">*</span> <span class="n">normalization_factor</span>
+                <span class="n">inv_cm_step</span> <span class="o">=</span> <span class="n">pyacs</span><span class="o">.</span><span class="n">lib</span><span class="o">.</span><span class="n">glinalg</span><span class="o">.</span><span class="n">syminv</span><span class="p">(</span> <span class="n">cm_step</span> <span class="p">)</span>
+                <span class="n">model</span><span class="o">.</span><span class="n">N</span><span class="p">[</span> <span class="n">i</span> <span class="o">*</span> <span class="n">model</span><span class="o">.</span><span class="n">nfaults</span><span class="p">:(</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span> <span class="o">*</span> <span class="n">model</span><span class="o">.</span><span class="n">nfaults</span> <span class="p">,</span> <span class="n">i</span> <span class="o">*</span> <span class="n">model</span><span class="o">.</span><span class="n">nfaults</span><span class="p">:(</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span> <span class="o">*</span> <span class="n">model</span><span class="o">.</span><span class="n">nfaults</span> <span class="p">]</span> <span class="o">=</span> \
+                    <span class="n">model</span><span class="o">.</span><span class="n">N</span><span class="p">[</span> <span class="n">i</span> <span class="o">*</span> <span class="n">model</span><span class="o">.</span><span class="n">nfaults</span><span class="p">:(</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span> <span class="o">*</span> <span class="n">model</span><span class="o">.</span><span class="n">nfaults</span> <span class="p">,</span> <span class="n">i</span> <span class="o">*</span> <span class="n">model</span><span class="o">.</span><span class="n">nfaults</span><span class="p">:(</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span> <span class="o">*</span> <span class="n">model</span><span class="o">.</span><span class="n">nfaults</span> <span class="p">]</span> <span class="o">+</span> <span class="n">inv_cm_step</span>
+            
+            <span class="n">bar</span><span class="o">.</span><span class="n">finish</span><span class="p">()</span>
+
+        <span class="c1">#######################################################################        </span>
+        <span class="k">if</span> <span class="n">model</span><span class="o">.</span><span class="n">sigma_type</span> <span class="o">==</span> <span class="s1">&#39;time_constant/fault_variable&#39;</span><span class="p">:</span>
+        <span class="c1">#######################################################################        </span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;-- Computing the time step covariance matrix - sigma_type is </span><span class="si">%s</span><span class="s2"> &quot;</span> <span class="o">%</span> <span class="p">(</span> <span class="n">model</span><span class="o">.</span><span class="n">sigma_type</span> <span class="p">)</span> <span class="p">)</span>
+
+            <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span> <span class="n">np</span><span class="o">.</span><span class="n">fabs</span><span class="p">(</span> <span class="n">np</span><span class="o">.</span><span class="n">diff</span><span class="p">(</span> <span class="n">delta_time_in_days</span> <span class="p">)</span> <span class="p">)</span> <span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;-- Constant time step case &quot;</span><span class="p">)</span>
+                <span class="n">std_vector</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span> <span class="n">delta_time_in_days</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span> <span class="o">*</span> <span class="n">model</span><span class="o">.</span><span class="n">time_sigma</span> <span class="o">*</span> <span class="n">model</span><span class="o">.</span><span class="n">sigma_fault</span> <span class="o">*</span> <span class="n">nf</span>
+                <span class="n">inv_cm_step</span> <span class="o">=</span> <span class="n">pyacs</span><span class="o">.</span><span class="n">lib</span><span class="o">.</span><span class="n">glinalg</span><span class="o">.</span><span class="n">corr_to_cov</span><span class="p">(</span> <span class="n">corr_step</span><span class="p">,</span>  <span class="n">std_vector</span> <span class="p">)</span>
+                <span class="n">model</span><span class="o">.</span><span class="n">N</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">N</span> <span class="o">+</span> <span class="n">scipy</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">block_diag</span><span class="p">(</span><span class="o">*</span><span class="p">([</span><span class="n">inv_cm_step</span><span class="p">]</span> <span class="o">*</span> <span class="n">model</span><span class="o">.</span><span class="n">nstep</span><span class="p">))</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;-- Variable time step case &quot;</span><span class="p">)</span>
+                <span class="c1"># THIS COULD BE IMPROVED: HERE THIS REQUIRES NSTEP INVERSION</span>
+                <span class="c1"># ALTHOUGH MANY OF THEM ARE PROBABLY THE SAME</span>
+
+                <span class="n">bar</span> <span class="o">=</span> <span class="n">Bar</span><span class="p">(</span><span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="nb">max</span><span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">nstep</span> <span class="p">,</span> <span class="n">suffix</span> <span class="o">=</span> <span class="s1">&#39;</span><span class="si">%(percent).1f%%</span><span class="s1"> - </span><span class="si">%(eta)d</span><span class="s1">s&#39;</span><span class="p">)</span>
+
+                <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span> <span class="n">model</span><span class="o">.</span><span class="n">nstep</span> <span class="p">):</span>
+
+                    <span class="n">bar</span><span class="o">.</span><span class="n">next</span><span class="p">()</span>
+                    <span class="n">std_vector</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span> <span class="n">delta_time_in_days</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="p">)</span> <span class="o">*</span> <span class="n">model</span><span class="o">.</span><span class="n">fault_sigma</span> <span class="o">*</span> <span class="n">model</span><span class="o">.</span><span class="n">sigma_time</span> <span class="o">*</span> <span class="n">nf</span>
+                    <span class="n">cm_step</span> <span class="o">=</span> <span class="n">pyacs</span><span class="o">.</span><span class="n">lib</span><span class="o">.</span><span class="n">glinalg</span><span class="o">.</span><span class="n">corr_to_cov</span><span class="p">(</span> <span class="n">corr_step</span><span class="p">,</span>  <span class="n">std_vector</span> <span class="p">)</span>
+                    <span class="n">inv_cm_step</span> <span class="o">=</span> <span class="n">pyacs</span><span class="o">.</span><span class="n">lib</span><span class="o">.</span><span class="n">glinalg</span><span class="o">.</span><span class="n">syminv</span><span class="p">(</span> <span class="n">cm_step</span> <span class="p">)</span>
+                    <span class="n">model</span><span class="o">.</span><span class="n">N</span><span class="p">[</span> <span class="n">i</span> <span class="o">*</span> <span class="n">model</span><span class="o">.</span><span class="n">nfaults</span><span class="p">:(</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span> <span class="o">*</span> <span class="n">model</span><span class="o">.</span><span class="n">nfaults</span> <span class="p">,</span> <span class="n">i</span> <span class="o">*</span> <span class="n">model</span><span class="o">.</span><span class="n">nfaults</span><span class="p">:(</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span> <span class="o">*</span> <span class="n">model</span><span class="o">.</span><span class="n">nfaults</span> <span class="p">]</span> <span class="o">=</span> \
+                        <span class="n">model</span><span class="o">.</span><span class="n">N</span><span class="p">[</span> <span class="n">i</span> <span class="o">*</span> <span class="n">model</span><span class="o">.</span><span class="n">nfaults</span><span class="p">:(</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span> <span class="o">*</span> <span class="n">model</span><span class="o">.</span><span class="n">nfaults</span> <span class="p">,</span> <span class="n">i</span> <span class="o">*</span> <span class="n">model</span><span class="o">.</span><span class="n">nfaults</span><span class="p">:(</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span> <span class="o">*</span> <span class="n">model</span><span class="o">.</span><span class="n">nfaults</span> <span class="p">]</span> <span class="o">+</span> <span class="n">inv_cm_step</span>
+                
+                <span class="n">bar</span><span class="o">.</span><span class="n">finish</span><span class="p">()</span>
+
+        <span class="c1">#######################################################################        </span>
+        <span class="k">if</span> <span class="n">model</span><span class="o">.</span><span class="n">sigma_type</span> <span class="o">==</span> <span class="s1">&#39;time_variable/fault_variable&#39;</span><span class="p">:</span>
+        <span class="c1">#######################################################################        </span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;-- Computing the time step covariance matrix - sigma_type is </span><span class="si">%s</span><span class="s2"> &quot;</span> <span class="o">%</span> <span class="p">(</span> <span class="n">model</span><span class="o">.</span><span class="n">sigma_type</span> <span class="p">)</span> <span class="p">)</span>
+
+            <span class="n">bar</span> <span class="o">=</span> <span class="n">Bar</span><span class="p">(</span><span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="nb">max</span><span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">nstep</span> <span class="p">,</span> <span class="n">suffix</span> <span class="o">=</span> <span class="s1">&#39;</span><span class="si">%(percent).1f%%</span><span class="s1"> - </span><span class="si">%(eta)d</span><span class="s1">s&#39;</span><span class="p">)</span>
+
+            <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span> <span class="n">model</span><span class="o">.</span><span class="n">nstep</span> <span class="p">):</span>
+
+                <span class="n">bar</span><span class="o">.</span><span class="n">next</span><span class="p">()</span>
+                <span class="n">std_vector</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span> <span class="n">delta_time_in_days</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="p">)</span> <span class="o">*</span> <span class="n">model</span><span class="o">.</span><span class="n">fault_sigma</span> <span class="o">*</span> <span class="n">model</span><span class="o">.</span><span class="n">sigma_time</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+                <span class="n">cm_step</span> <span class="o">=</span> <span class="n">pyacs</span><span class="o">.</span><span class="n">lib</span><span class="o">.</span><span class="n">glinalg</span><span class="o">.</span><span class="n">corr_to_cov</span><span class="p">(</span> <span class="n">corr_step</span><span class="p">,</span>  <span class="n">std_vector</span> <span class="p">)</span>
+                <span class="n">inv_cm_step</span> <span class="o">=</span> <span class="n">pyacs</span><span class="o">.</span><span class="n">lib</span><span class="o">.</span><span class="n">glinalg</span><span class="o">.</span><span class="n">syminv</span><span class="p">(</span> <span class="n">cm_step</span> <span class="p">)</span>
+                <span class="n">model</span><span class="o">.</span><span class="n">N</span><span class="p">[</span> <span class="n">i</span> <span class="o">*</span> <span class="n">model</span><span class="o">.</span><span class="n">nfaults</span><span class="p">:(</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span> <span class="o">*</span> <span class="n">model</span><span class="o">.</span><span class="n">nfaults</span> <span class="p">,</span> <span class="n">i</span> <span class="o">*</span> <span class="n">model</span><span class="o">.</span><span class="n">nfaults</span><span class="p">:(</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span> <span class="o">*</span> <span class="n">model</span><span class="o">.</span><span class="n">nfaults</span> <span class="p">]</span> <span class="o">=</span> \
+                    <span class="n">model</span><span class="o">.</span><span class="n">N</span><span class="p">[</span> <span class="n">i</span> <span class="o">*</span> <span class="n">model</span><span class="o">.</span><span class="n">nfaults</span><span class="p">:(</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span> <span class="o">*</span> <span class="n">model</span><span class="o">.</span><span class="n">nfaults</span> <span class="p">,</span> <span class="n">i</span> <span class="o">*</span> <span class="n">model</span><span class="o">.</span><span class="n">nfaults</span><span class="p">:(</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span> <span class="o">*</span> <span class="n">model</span><span class="o">.</span><span class="n">nfaults</span> <span class="p">]</span> <span class="o">+</span> <span class="n">inv_cm_step</span>
+            
+            <span class="n">bar</span><span class="o">.</span><span class="n">finish</span><span class="p">()</span>
+
+    
+    <span class="k">return</span> <span class="n">model</span></div>
+
+
+</pre></div>
+
+           </div>
+           
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        
+        &copy; Copyright 2016, Jean-Mathieu Nocquet IRD/Geoazur
+
+    </p>
+  </div>
+    
+    
+    
+    Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

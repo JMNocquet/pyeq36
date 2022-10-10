@@ -1,4 +1,4 @@
-def print_dates( model ):
+def print_dates( model , save=True ):
     """
     Print model and observation dates
     """
@@ -89,29 +89,29 @@ def print_dates( model ):
     ###########################################################################
     # SAVE MODEL DATES IN DIR: INFO
     ###########################################################################
-
+    if save:
     
-    wf = open( model.odir+'/info/model_dates.dat' , 'w' )
-    VERBOSE("saving model dates file in %s" % (model.odir+'/info/model_dates.dat') )
-    
-    wf.write("#step  start_date            end_date             delta_d delta_t0 start_doy   end_doy   start_decyear     end_decyear\n")
-    for i in np.arange( np_model_date_s.shape[0]-1 ):
-        
-        sdatetime = np_model_datetime[i]
-        edatetime = np_model_datetime[i+1]
-        iso_sdate = np_model_date_isoformat[i]
-        iso_edate = np_model_date_isoformat[i+1]
-        delta_d   = ( np_model_date_s[i+1] - np_model_date_s[i] ) / 86400.
-        delta_t0  = ( np_model_date_s[i+1] - np_model_date_s[0] ) / 86400.
-        syear, sdoy, _ut  = at.datetime2dayno( sdatetime )
-        eyear, edoy, _ut  = at.datetime2dayno( edatetime )
+        wf = open( model.odir+'/info/model_dates.dat' , 'w' )
+        VERBOSE("saving model dates file in %s" % (model.odir+'/info/model_dates.dat') )
 
-        sdecyear = at.datetime2decyear( sdatetime )
-        edecyear = at.datetime2decyear( edatetime )
+        wf.write("#step  start_date            end_date             delta_d delta_t0 start_doy   end_doy   start_decyear     end_decyear\n")
+        for i in np.arange( np_model_date_s.shape[0]-1 ):
 
-        wf.write("%04d  %s -> %s %8.3lf %8.3lf %04d %03d -> %04d %03d %15.10lf -> %15.10lf \n" % ( i, iso_sdate, iso_edate, delta_d, delta_t0, syear, sdoy, eyear, edoy, sdecyear, edecyear ))
+            sdatetime = np_model_datetime[i]
+            edatetime = np_model_datetime[i+1]
+            iso_sdate = np_model_date_isoformat[i]
+            iso_edate = np_model_date_isoformat[i+1]
+            delta_d   = ( np_model_date_s[i+1] - np_model_date_s[i] ) / 86400.
+            delta_t0  = ( np_model_date_s[i+1] - np_model_date_s[0] ) / 86400.
+            syear, sdoy, _ut  = at.datetime2dayno( sdatetime )
+            eyear, edoy, _ut  = at.datetime2dayno( edatetime )
 
-    wf.close()
+            sdecyear = at.datetime2decyear( sdatetime )
+            edecyear = at.datetime2decyear( edatetime )
+
+            wf.write("%04d  %s -> %s %8.3lf %8.3lf %04d %03d -> %04d %03d %15.10lf -> %15.10lf \n" % ( i, iso_sdate, iso_edate, delta_d, delta_t0, syear, sdoy, eyear, edoy, sdecyear, edecyear ))
+
+        wf.close()
 
 
 
@@ -121,21 +121,21 @@ def print_dates( model ):
     ###########################################################################
 
 
-    wf = open( model.odir+'/info/obs_dates.dat' , 'w' )
-    VERBOSE("saving observation dates file in %s" % (model.odir+'/info/obs_dates.dat') )
-    
-    wf.write("#obs  date                 delta_t0  year doy      decyear\n")
-    for i in np.arange( np_obs_date_s.shape[0] ):
-        
-        sdatetime = np_obs_datetime[i]
-        iso_sdate = np_obs_date_isoformat[i]
-        delta_t0  = np_obs_delta_d[i]
-        syear, sdoy, _ut  = at.datetime2dayno( sdatetime )
-        sdecyear = at.datetime2decyear( sdatetime )
+        wf = open( model.odir+'/info/obs_dates.dat' , 'w' )
+        VERBOSE("saving observation dates file in %s" % (model.odir+'/info/obs_dates.dat') )
 
-        wf.write("%04d  %s  %8.3lf  %04d %03d %15.10lf\n" % ( i, iso_sdate, delta_t0, syear, sdoy, sdecyear ))
+        wf.write("#obs  date                 delta_t0  year doy      decyear\n")
+        for i in np.arange( np_obs_date_s.shape[0] ):
 
-    wf.close()
+            sdatetime = np_obs_datetime[i]
+            iso_sdate = np_obs_date_isoformat[i]
+            delta_t0  = np_obs_delta_d[i]
+            syear, sdoy, _ut  = at.datetime2dayno( sdatetime )
+            sdecyear = at.datetime2decyear( sdatetime )
+
+            wf.write("%04d  %s  %8.3lf  %04d %03d %15.10lf\n" % ( i, iso_sdate, delta_t0, syear, sdoy, sdecyear ))
+
+        wf.close()
 
     return model
 

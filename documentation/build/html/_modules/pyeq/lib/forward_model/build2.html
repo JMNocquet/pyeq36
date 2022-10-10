@@ -1,0 +1,489 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>pyeq.lib.forward_model.build2 &mdash; pyeq 0.51.8 documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="../../../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../../../_static/pygments.css" type="text/css" />
+
+  
+  
+  
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="../../../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../../../../" src="../../../../_static/documentation_options.js"></script>
+        <script src="../../../../_static/jquery.js"></script>
+        <script src="../../../../_static/underscore.js"></script>
+        <script src="../../../../_static/doctools.js"></script>
+        <script src="../../../../_static/language_data.js"></script>
+    
+    <script type="text/javascript" src="../../../../_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../../../../index.html" class="icon icon-home" alt="Documentation Home"> pyeq
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                0.51.8
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../foreword.html">PYEQ: full time-dependent slip inversion</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../behaviour.html">Options controlling the overall behaviour</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../tutorial_static_inversion.html">Tutorial static inversion</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../dates.html">dates</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../roxane.html">Roxane’s notes on PYEQ</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../modules.html">for developpers</a></li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../../index.html">pyeq</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../../../index.html" class="icon icon-home"></a> &raquo;</li>
+        
+          <li><a href="../../../index.html">Module code</a> &raquo;</li>
+        
+      <li>pyeq.lib.forward_model.build2</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>Source code for pyeq.lib.forward_model.build2</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Routines to build the linear system</span>
+<span class="sd">build 2 allows variable model time step but not site starting after the first observation date - use build 3</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="c1">###############################################################################</span>
+<div class="viewcode-block" id="build2"><a class="viewcode-back" href="../../../../pyeq.lib.forward_model.build2.html#pyeq.lib.forward_model.build2.build2">[docs]</a><span class="k">def</span> <span class="nf">build2</span><span class="p">(</span> <span class="n">model</span> <span class="p">):</span>
+<span class="c1">###############################################################################</span>
+    
+    <span class="n">RAKE</span> <span class="o">=</span> <span class="kc">False</span>
+    <span class="n">n_constant</span> <span class="o">=</span> <span class="mi">0</span>
+    
+
+    <span class="c1">###########################################################################</span>
+    <span class="c1"># import</span>
+    <span class="c1">###########################################################################</span>
+    
+    <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+    <span class="kn">import</span> <span class="nn">resource</span>
+    <span class="kn">import</span> <span class="nn">textwrap</span>
+    
+    <span class="c1"># pyacs</span>
+    <span class="kn">import</span> <span class="nn">pyacs.lib.glinalg</span>
+    <span class="kn">import</span> <span class="nn">pyacs.lib.astrotime</span> <span class="k">as</span> <span class="nn">at</span>
+    <span class="c1"># pyeq</span>
+    <span class="kn">import</span> <span class="nn">pyeq.lib.elastic_tensor</span>
+    <span class="kn">import</span> <span class="nn">pyeq.lib.obs_tensor</span>
+    <span class="kn">import</span> <span class="nn">pyeq.lib.obs_tensor.dk_from_obs_tensor</span>
+    
+
+    <span class="n">terminal_width</span> <span class="o">=</span> <span class="mi">80</span>
+    
+    <span class="c1">###########################################################################</span>
+    <span class="c1"># CHECK WETHER ANY OBSERVATION STARTS LATER THAN THE FIRST OBS AVAILABLE</span>
+    <span class="c1">###########################################################################</span>
+
+    <span class="n">idx_site_no_obs_at_first_obs_date</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span> <span class="n">np</span><span class="o">.</span><span class="n">isnan</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">t_obs</span><span class="p">[</span><span class="mi">0</span><span class="p">,:,</span><span class="mi">0</span><span class="p">])</span>  <span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+
+    <span class="k">if</span> <span class="n">idx_site_no_obs_at_first_obs_date</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;[WARNING] some sites do not start at the first observation date.&quot;</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;[WARNING] either use --build 3 option or remove those sites using --exclude_gps option&quot;</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span> <span class="n">textwrap</span><span class="o">.</span><span class="n">fill</span><span class="p">(</span><span class="s2">&quot; &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span> <span class="n">model</span><span class="o">.</span><span class="n">name_obs</span><span class="p">[</span> <span class="n">idx_site_no_obs_at_first_obs_date</span>  <span class="p">]</span> <span class="p">)</span> <span class="p">,</span> <span class="n">width</span><span class="o">=</span><span class="n">terminal_width</span> <span class="p">)</span> <span class="p">))</span>
+        <span class="kn">import</span> <span class="nn">sys</span>
+        <span class="n">sys</span><span class="o">.</span><span class="n">exit</span><span class="p">()</span>
+
+
+    <span class="c1">###########################################################################</span>
+    <span class="c1"># COMPONENTS &amp; RAKE</span>
+    <span class="c1">###########################################################################</span>
+    
+    <span class="c1"># components</span>
+    <span class="k">if</span> <span class="n">model</span><span class="o">.</span><span class="n">UP</span><span class="p">:</span>
+        <span class="n">np_component</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">]</span> <span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">np_component</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">]</span> <span class="p">)</span>
+    
+    <span class="k">if</span> <span class="n">model</span><span class="o">.</span><span class="n">debug</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;-- np_component:&quot;</span> <span class="p">,</span> <span class="n">np_component</span> <span class="p">)</span>
+    
+    <span class="c1"># rake</span>
+    <span class="k">if</span> <span class="n">RAKE</span><span class="p">:</span>
+        <span class="n">np_rake</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">]</span> <span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">np_rake</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span> <span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="p">)</span>
+
+    <span class="n">nrake</span> <span class="o">=</span> <span class="n">np_rake</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> 
+    
+    <span class="c1"># debug</span>
+    <span class="k">if</span> <span class="n">model</span><span class="o">.</span><span class="n">debug</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;-- np_rake:&quot;</span> <span class="p">,</span> <span class="n">np_rake</span> <span class="p">)</span>
+        
+    <span class="c1">###########################################################################</span>
+    <span class="c1"># OBSERVATION TENSOR</span>
+    <span class="c1">###########################################################################</span>
+
+    <span class="c1"># let&#39;s try to make a data tensor</span>
+    <span class="c1"># D(i,j,k) would be the displacement divided by the uncertainty</span>
+    <span class="c1"># observation time index i</span>
+    <span class="c1"># for site j</span>
+    <span class="c1"># for component k</span>
+    <span class="c1"># no data would be Nan</span>
+    
+    
+    <span class="c1">###########################################################################</span>
+    <span class="c1"># AUXILIARY INDEX</span>
+    <span class="c1">###########################################################################</span>
+    
+    <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;-- list of observation dates&#39;</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span> <span class="n">model</span><span class="o">.</span><span class="n">t_obs</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="p">):</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span> <span class="n">at</span><span class="o">.</span><span class="n">seconds2datetime</span><span class="p">(</span> <span class="n">model</span><span class="o">.</span><span class="n">np_obs_date_s</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="p">)</span><span class="o">.</span><span class="n">isoformat</span><span class="p">(</span><span class="s1">&#39; &#39;</span><span class="p">)</span>   <span class="p">)</span> <span class="p">)</span>
+    
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;-- Building H_i_k  : dictionary providing the list of indexes k for observation time for each model time step i&quot;</span><span class="p">)</span>
+    <span class="c1"># H_i_k  : dictionary providing the list of indexes k for observation time for each model time step i</span>
+    <span class="n">H_i_k</span> <span class="o">=</span> <span class="p">{}</span>
+
+    
+    <span class="k">for</span> <span class="n">model_time_step</span> <span class="ow">in</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span> <span class="n">model</span><span class="o">.</span><span class="n">np_model_date_s</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">-</span><span class="mi">2</span> <span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="n">step</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span> <span class="p">):</span>
+        <span class="n">sdate_s</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">np_model_date_s</span><span class="p">[</span> <span class="n">model_time_step</span> <span class="p">]</span>
+        <span class="n">edate_s</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">np_model_date_s</span><span class="p">[</span> <span class="n">model_time_step</span> <span class="o">+</span> <span class="mi">1</span> <span class="p">]</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;--- model_time_step: </span><span class="si">%04d</span><span class="s2"> </span><span class="si">%s</span><span class="s2"> -&gt; </span><span class="si">%s</span><span class="s2"> &quot;</span> <span class="o">%</span> <span class="p">(</span> <span class="n">model_time_step</span><span class="p">,</span> <span class="n">at</span><span class="o">.</span><span class="n">seconds2datetime</span><span class="p">(</span><span class="n">sdate_s</span><span class="p">)</span><span class="o">.</span><span class="n">isoformat</span><span class="p">(</span><span class="s1">&#39; &#39;</span><span class="p">),</span> <span class="n">at</span><span class="o">.</span><span class="n">seconds2datetime</span><span class="p">(</span><span class="n">edate_s</span><span class="p">)</span><span class="o">.</span><span class="n">isoformat</span><span class="p">(</span><span class="s1">&#39; &#39;</span><span class="p">)</span> <span class="p">)</span> <span class="p">)</span>
+        <span class="n">H_i_k</span><span class="p">[</span> <span class="n">model_time_step</span> <span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
+        
+        <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span> <span class="n">model</span><span class="o">.</span><span class="n">np_obs_date_s</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]):</span>
+            <span class="k">if</span> <span class="p">(</span> <span class="p">(</span> <span class="n">model</span><span class="o">.</span><span class="n">np_obs_date_s</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">&gt;</span> <span class="n">sdate_s</span> <span class="p">)</span> <span class="ow">and</span> <span class="p">(</span> <span class="n">model</span><span class="o">.</span><span class="n">np_obs_date_s</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">&lt;=</span> <span class="n">edate_s</span> <span class="p">)</span> <span class="p">):</span>
+                <span class="n">H_i_k</span><span class="p">[</span> <span class="n">model_time_step</span> <span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span> <span class="n">k</span> <span class="p">)</span>
+                 
+        <span class="n">H_i_k</span><span class="p">[</span> <span class="n">model_time_step</span> <span class="p">]</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">(</span> <span class="n">H_i_k</span><span class="p">[</span> <span class="n">model_time_step</span> <span class="p">]</span> <span class="p">)</span>
+        
+    <span class="k">if</span> <span class="n">model</span><span class="o">.</span><span class="n">verbose</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;--- list of observation index per model time step&quot;</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">H_i_k</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;--- model time step </span><span class="si">%d</span><span class="s2">: </span><span class="si">%s</span><span class="s2"> &quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">key</span><span class="p">,</span><span class="n">value</span><span class="p">)</span> <span class="p">)</span>
+            
+
+    <span class="c1"># H_k_obs: dictionary providing the list of GNSS site indexes available at observation time t_k</span>
+
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;-- Building H_k_obs: dictionary providing the list of GNSS site indexes available at observation time t_k&quot;</span><span class="p">)</span>
+    
+    <span class="n">H_k_obs</span> <span class="o">=</span> <span class="p">{}</span>
+    <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span> <span class="n">model</span><span class="o">.</span><span class="n">np_obs_date_s</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]):</span>
+        <span class="n">H_k_obs</span><span class="p">[</span> <span class="n">k</span> <span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span> <span class="n">np</span><span class="o">.</span><span class="n">isfinite</span><span class="p">(</span> <span class="n">model</span><span class="o">.</span><span class="n">t_obs</span><span class="p">[</span> <span class="n">k</span><span class="p">,:,</span><span class="mi">0</span> <span class="p">]))</span>
+
+    <span class="k">if</span> <span class="n">model</span><span class="o">.</span><span class="n">debug</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;H_k_obs&#39;</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">H_k_obs</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="nb">print</span><span class="p">(</span><span class="n">key</span><span class="p">,</span><span class="n">value</span><span class="p">)</span>
+
+        <span class="k">for</span> <span class="n">klkl</span> <span class="ow">in</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span> <span class="n">model</span><span class="o">.</span><span class="n">name_obs</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="p">):</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%04d</span><span class="s2"> </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span> <span class="n">klkl</span><span class="p">,</span> <span class="n">name_obs</span><span class="p">[</span> <span class="n">klkl</span> <span class="p">]</span> <span class="p">))</span>
+
+    <span class="c1">## stupid?! H_k_tk : dictionary providing the observation date tk at the observation index k</span>
+
+
+    <span class="c1">###########################################################################</span>
+    <span class="c1"># ATPA ATBP and various variables initialization</span>
+    <span class="c1">###########################################################################</span>
+
+    <span class="n">n_model_time_step</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">np_model_date_s</span><span class="o">.</span><span class="n">size</span> <span class="o">-</span> <span class="mi">1</span>
+    <span class="n">nfaults</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">green</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+    <span class="n">model</span><span class="o">.</span><span class="n">n_model_time_step</span> <span class="o">=</span> <span class="n">n_model_time_step</span>
+    
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;-- Initializing ATPA &amp; ATPB&quot;</span><span class="p">)</span>
+    
+    <span class="c1"># ATPA</span>
+    
+    <span class="n">memory_usage</span> <span class="o">=</span> <span class="n">resource</span><span class="o">.</span><span class="n">getrusage</span><span class="p">(</span><span class="n">resource</span><span class="o">.</span><span class="n">RUSAGE_SELF</span><span class="p">)</span><span class="o">.</span><span class="n">ru_maxrss</span> <span class="o">/</span> <span class="mi">1024</span> <span class="o">/</span> <span class="mi">1024</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;-- memory usage before ATPA initialization in Gb Linux/Mac OS X : </span><span class="si">%.1lf</span><span class="s2"> / </span><span class="si">%.1lf</span><span class="s2">&quot;</span> <span class="o">%</span>  <span class="p">(</span><span class="n">memory_usage</span><span class="p">,</span><span class="n">memory_usage</span><span class="o">/</span><span class="mi">1024</span><span class="p">)</span> <span class="p">)</span>
+
+    <span class="n">n_atpa</span> <span class="o">=</span> <span class="n">nfaults</span> <span class="o">*</span> <span class="n">nrake</span> <span class="o">*</span> <span class="n">n_model_time_step</span> <span class="o">+</span> <span class="n">n_constant</span>
+    <span class="n">ATPA</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span> <span class="p">(</span><span class="n">n_atpa</span><span class="p">,</span><span class="n">n_atpa</span><span class="p">)</span> <span class="p">)</span>
+
+    <span class="n">memory_usage</span> <span class="o">=</span> <span class="n">resource</span><span class="o">.</span><span class="n">getrusage</span><span class="p">(</span><span class="n">resource</span><span class="o">.</span><span class="n">RUSAGE_SELF</span><span class="p">)</span><span class="o">.</span><span class="n">ru_maxrss</span> <span class="o">/</span> <span class="mi">1024</span> <span class="o">/</span> <span class="mi">1024</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;-- memory usage after ATPA initialization in Gb Linux/Mac OS X : </span><span class="si">%.1lf</span><span class="s2"> / </span><span class="si">%.1lf</span><span class="s2">&quot;</span> <span class="o">%</span>  <span class="p">(</span><span class="n">memory_usage</span><span class="p">,</span><span class="n">memory_usage</span><span class="o">/</span><span class="mi">1024</span><span class="p">)</span> <span class="p">)</span>
+    
+    <span class="c1"># ATPB</span>
+    
+    <span class="n">ATPB</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span> <span class="p">(</span><span class="n">n_atpa</span><span class="p">,</span><span class="mi">1</span><span class="p">)</span> <span class="p">)</span>
+
+    <span class="n">memory_usage</span> <span class="o">=</span> <span class="n">resource</span><span class="o">.</span><span class="n">getrusage</span><span class="p">(</span><span class="n">resource</span><span class="o">.</span><span class="n">RUSAGE_SELF</span><span class="p">)</span><span class="o">.</span><span class="n">ru_maxrss</span> <span class="o">/</span> <span class="mi">1024</span> <span class="o">/</span> <span class="mi">1024</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;-- memory usage after ATPB initialization in Gb Linux/Mac OS X : </span><span class="si">%.1lf</span><span class="s2"> / </span><span class="si">%.1lf</span><span class="s2">&quot;</span> <span class="o">%</span>  <span class="p">(</span><span class="n">memory_usage</span><span class="p">,</span><span class="n">memory_usage</span><span class="o">/</span><span class="mi">1024</span><span class="p">)</span> <span class="p">)</span>
+
+    <span class="c1"># COLUMN OF ATPA CORRESPONDING TO A TIME STEP</span>
+
+    <span class="c1"># number of columns for C</span>
+    <span class="n">ncc</span> <span class="o">=</span> <span class="n">nfaults</span> <span class="o">*</span> <span class="n">nrake</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;-- nrake&#39;</span> <span class="p">,</span> <span class="n">nrake</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;-- nfaults&#39;</span> <span class="p">,</span> <span class="n">nfaults</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;-- Initializing the individual model time step matrices&quot;</span><span class="p">)</span>
+    <span class="n">C</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span> <span class="p">(</span> <span class="n">ncc</span> <span class="o">*</span> <span class="n">n_model_time_step</span> <span class="p">,</span> <span class="n">ncc</span> <span class="p">)</span> <span class="p">)</span>
+
+    <span class="c1"># GAMMA MODEL STEP DURATION VECTOR</span>
+    
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;-- Initializing the vector of time duration&quot;</span><span class="p">)</span>
+    <span class="n">GAMMA</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">diff</span><span class="p">(</span> <span class="n">model</span><span class="o">.</span><span class="n">np_model_date_s</span> <span class="p">,</span> <span class="mi">1</span> <span class="p">)</span>
+    
+    <span class="c1">###########################################################################</span>
+    <span class="c1"># loop on model time steps</span>
+    <span class="c1">###########################################################################</span>
+
+    <span class="c1"># RHS sub-vector</span>
+    <span class="n">Bi</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span> <span class="p">(</span> <span class="n">nfaults</span><span class="o">*</span><span class="n">nrake</span> <span class="p">,</span> <span class="mi">1</span> <span class="p">)</span> <span class="p">)</span>
+    
+    <span class="c1"># loop is made reverse in time</span>
+    <span class="k">for</span> <span class="n">model_time_step</span> <span class="ow">in</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span> <span class="n">model</span><span class="o">.</span><span class="n">n_model_time_step</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span> <span class="p">):</span>
+<span class="c1">#    for model_time_step in np.arange( np_model_date_s.shape[0]-2 , -1, step = -1 ):</span>
+  
+        <span class="k">if</span> <span class="n">model</span><span class="o">.</span><span class="n">verbose</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;-- Building equations for model time step: </span><span class="si">%04d</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">model_time_step</span> <span class="p">)</span>
+        
+        <span class="c1"># Get the list of the k-index of observation time within the current model time step</span>
+        
+        <span class="n">lk</span> <span class="o">=</span> <span class="n">H_i_k</span><span class="p">[</span> <span class="n">model_time_step</span> <span class="p">]</span>
+        
+        
+        <span class="c1">#######################################################################</span>
+        <span class="c1"># loop on k observation time within the current model time step</span>
+        <span class="c1">#######################################################################</span>
+        <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">lk</span><span class="p">:</span>
+            
+            <span class="c1"># get tk time for observation k</span>
+            
+            <span class="n">tk</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">np_obs_date_s</span><span class="p">[</span> <span class="n">k</span> <span class="p">]</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;-- model time step: </span><span class="si">%04d</span><span class="s2"> observation time step: </span><span class="si">%04d</span><span class="s2"> </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">model_time_step</span> <span class="p">,</span> <span class="n">k</span><span class="p">,</span> <span class="n">at</span><span class="o">.</span><span class="n">seconds2datetime</span><span class="p">(</span><span class="n">tk</span><span class="p">)</span><span class="o">.</span><span class="n">isoformat</span><span class="p">(</span><span class="s1">&#39; &#39;</span><span class="p">)</span> <span class="p">)</span> <span class="p">)</span>
+            
+            <span class="c1"># get Gkt and Gk2</span>
+            <span class="k">if</span> <span class="n">model</span><span class="o">.</span><span class="n">debug</span><span class="p">:</span>
+                <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;-- model time step: </span><span class="si">%04d</span><span class="s2"> observation time step: </span><span class="si">%04d</span><span class="s2"> Gkt from pyeq.lib.elastic_tensor.shrink&quot;</span>  <span class="o">%</span> <span class="p">(</span><span class="n">model_time_step</span> <span class="p">,</span> <span class="n">k</span> <span class="p">)</span> <span class="p">)</span>
+            
+            <span class="c1"># extract Gkt as a 2D matrix for available sites with the chosen components at date tk</span>
+            <span class="n">Gkt</span> <span class="o">=</span> <span class="n">pyeq</span><span class="o">.</span><span class="n">lib</span><span class="o">.</span><span class="n">elastic_tensor</span><span class="o">.</span><span class="n">shrink</span><span class="p">(</span> <span class="n">model</span><span class="o">.</span><span class="n">green</span><span class="p">,</span> <span class="n">lfaults</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">lobs</span><span class="o">=</span><span class="n">H_k_obs</span><span class="p">[</span><span class="n">k</span><span class="p">],</span> <span class="n">lcomponent</span><span class="o">=</span><span class="n">np_component</span><span class="p">,</span> <span class="n">lrake</span><span class="o">=</span><span class="n">np_rake</span><span class="p">)</span><span class="o">.</span><span class="n">T</span>
+
+            <span class="c1"># Get dk, observation vector at date tk for available sites with the chosen components</span>
+            <span class="k">if</span> <span class="n">model</span><span class="o">.</span><span class="n">debug</span><span class="p">:</span>
+                <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;-- model time step: </span><span class="si">%04d</span><span class="s2"> observation time step: </span><span class="si">%04d</span><span class="s2"> get normalized observation using pyeq.lib.obs_tensor.dk_from_obs_tensor&quot;</span>  <span class="o">%</span> <span class="p">(</span><span class="n">model_time_step</span> <span class="p">,</span> <span class="n">k</span> <span class="p">)</span> <span class="p">)</span>
+            
+            <span class="n">Dk</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">t_obs</span><span class="p">[</span><span class="n">k</span><span class="p">][</span> <span class="n">H_k_obs</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="p">][:,</span><span class="n">np_component</span><span class="p">]</span><span class="o">.</span><span class="n">T</span><span class="o">.</span><span class="n">flatten</span><span class="p">()</span>
+
+            <span class="c1"># normalize the observation vector</span>
+            <span class="n">Sdk</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">t_obs</span><span class="p">[</span><span class="n">k</span><span class="p">][</span> <span class="n">H_k_obs</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="p">][:,</span><span class="n">np_component</span> <span class="o">+</span><span class="mi">3</span> <span class="p">]</span><span class="o">.</span><span class="n">T</span><span class="o">.</span><span class="n">flatten</span><span class="p">()</span>
+            <span class="n">Dk</span>  <span class="o">=</span> <span class="n">Dk</span> <span class="o">/</span> <span class="n">Sdk</span>
+
+            <span class="c1"># normalize the Green matrix</span>
+            <span class="n">Gkt</span> <span class="o">=</span> <span class="p">(</span><span class="n">Gkt</span> <span class="o">/</span> <span class="n">Sdk</span> <span class="p">)</span> 
+            <span class="n">Gk2</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span> <span class="n">Gkt</span> <span class="p">,</span> <span class="n">Gkt</span><span class="o">.</span><span class="n">T</span> <span class="p">)</span>
+            
+            <span class="c1"># handle the Gamma functions</span>
+            <span class="c1"># get GAMMA, change for the current time step, remove time steps after the current one to ensure size is compatible with C</span>
+            <span class="c1"># we choose as a unit for parameters delta_m, slip rate expressed in mm/day</span>
+            <span class="k">if</span> <span class="n">model</span><span class="o">.</span><span class="n">debug</span><span class="p">:</span>
+                <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;-- model time step: </span><span class="si">%04d</span><span class="s2"> observation time step: </span><span class="si">%04d</span><span class="s2"> gamma_k: vector of duration&quot;</span>  <span class="o">%</span> <span class="p">(</span><span class="n">model_time_step</span> <span class="p">,</span> <span class="n">k</span> <span class="p">)</span> <span class="p">)</span>
+
+            <span class="n">gamma_k</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span> <span class="n">GAMMA</span> <span class="p">)</span>
+            <span class="n">gamma_k</span><span class="p">[</span> <span class="n">model_time_step</span> <span class="p">]</span> <span class="o">=</span> <span class="p">(</span> <span class="n">tk</span> <span class="o">-</span> <span class="n">model</span><span class="o">.</span><span class="n">np_model_date_s</span><span class="p">[</span> <span class="n">model_time_step</span> <span class="p">]</span> <span class="p">)</span>
+            <span class="n">gamma_k</span> <span class="o">=</span> <span class="n">gamma_k</span> <span class="o">/</span> <span class="mf">86400.</span>
+
+            <span class="c1"># Update C (See &quot;Algorithm to build the observation normal system in paper&quot;)</span>
+            <span class="k">if</span> <span class="n">model</span><span class="o">.</span><span class="n">debug</span><span class="p">:</span>
+                <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;-- model time step: </span><span class="si">%04d</span><span class="s2"> observation time step: </span><span class="si">%04d</span><span class="s2"> Individual column matrix for ATPA&quot;</span>  <span class="o">%</span> <span class="p">(</span><span class="n">model_time_step</span> <span class="p">,</span> <span class="n">k</span> <span class="p">)</span> <span class="p">)</span>
+            <span class="n">C</span> <span class="o">=</span> <span class="n">C</span> <span class="o">+</span> <span class="n">gamma_k</span><span class="p">[</span> <span class="n">model_time_step</span> <span class="p">]</span> <span class="o">*</span> <span class="n">pyacs</span><span class="o">.</span><span class="n">lib</span><span class="o">.</span><span class="n">glinalg</span><span class="o">.</span><span class="n">odot</span><span class="p">(</span> <span class="n">gamma_k</span><span class="p">[:</span><span class="n">model_time_step</span><span class="o">+</span><span class="mi">1</span><span class="p">]</span> <span class="p">,</span> <span class="n">pyacs</span><span class="o">.</span><span class="n">lib</span><span class="o">.</span><span class="n">glinalg</span><span class="o">.</span><span class="n">repeat_matrix_in_col</span><span class="p">(</span><span class="n">Gk2</span> <span class="p">,</span> <span class="n">model_time_step</span><span class="o">+</span><span class="mi">1</span> <span class="p">)</span> <span class="p">)</span>
+            
+            <span class="c1"># Update Bk</span>
+            <span class="k">if</span> <span class="n">model</span><span class="o">.</span><span class="n">debug</span><span class="p">:</span>
+                <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;-- model time step: </span><span class="si">%04d</span><span class="s2"> observation time step: </span><span class="si">%04d</span><span class="s2"> Individual vector for ATPB&quot;</span>  <span class="o">%</span> <span class="p">(</span><span class="n">model_time_step</span> <span class="p">,</span> <span class="n">k</span> <span class="p">)</span> <span class="p">)</span>
+            <span class="n">Bi</span> <span class="o">=</span> <span class="n">Bi</span> <span class="o">+</span> <span class="n">gamma_k</span><span class="p">[</span> <span class="n">model_time_step</span> <span class="p">]</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span> <span class="n">Gkt</span> <span class="p">,</span> <span class="n">Dk</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">)</span> <span class="p">)</span>
+            
+        <span class="c1">#######################################################################</span>
+        <span class="c1"># end loop on k</span>
+        <span class="c1">#######################################################################</span>
+
+        <span class="c1"># C is ready to be inserted into ATPA</span>
+        
+        <span class="c1"># inserting C as a column</span>
+        <span class="k">if</span> <span class="n">model</span><span class="o">.</span><span class="n">debug</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;-- model time step: </span><span class="si">%04d</span><span class="s2"> Inserting the normal observation column in ATPA&quot;</span>  <span class="o">%</span> <span class="p">(</span><span class="n">model_time_step</span> <span class="p">)</span> <span class="p">)</span>
+        <span class="n">ATPA</span><span class="p">[</span> <span class="p">:</span><span class="n">C</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="p">,</span> <span class="n">model_time_step</span><span class="o">*</span><span class="n">ncc</span><span class="p">:(</span><span class="n">model_time_step</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span><span class="o">*</span><span class="n">ncc</span> <span class="p">]</span> <span class="o">=</span> <span class="n">C</span>
+
+
+        <span class="c1"># inserting C.T as a row</span>
+        <span class="k">if</span> <span class="n">model</span><span class="o">.</span><span class="n">debug</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;-- model time step: </span><span class="si">%04d</span><span class="s2"> Inserting the normal observation row in ATPA&quot;</span>  <span class="o">%</span> <span class="p">(</span><span class="n">model_time_step</span> <span class="p">)</span> <span class="p">)</span>
+        <span class="n">ATPA</span><span class="p">[</span> <span class="n">model_time_step</span><span class="o">*</span><span class="n">ncc</span><span class="p">:(</span><span class="n">model_time_step</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span><span class="o">*</span><span class="n">ncc</span> <span class="p">,</span> <span class="p">:</span><span class="n">C</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="p">]</span> <span class="o">=</span> <span class="n">C</span><span class="o">.</span><span class="n">T</span>
+
+        <span class="c1"># Updating ATPB</span>
+        <span class="k">if</span> <span class="n">model</span><span class="o">.</span><span class="n">debug</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;-- model time step: </span><span class="si">%04d</span><span class="s2"> Updating ATPB&quot;</span>  <span class="o">%</span> <span class="p">(</span><span class="n">model_time_step</span> <span class="p">)</span> <span class="p">)</span>
+        
+        <span class="n">ATPB</span><span class="p">[</span> <span class="n">model_time_step</span><span class="o">*</span><span class="n">ncc</span><span class="p">:(</span><span class="n">model_time_step</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span><span class="o">*</span><span class="n">ncc</span> <span class="p">]</span> <span class="o">=</span> <span class="n">Bi</span> 
+
+        <span class="c1">#######################################################################</span>
+        <span class="c1"># end of the current model time step</span>
+        <span class="c1">#######################################################################</span>
+        
+        <span class="c1"># Remove the last rows of C corresponding to the current time step</span>
+        <span class="k">if</span> <span class="n">model</span><span class="o">.</span><span class="n">debug</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;-- model time step: </span><span class="si">%04d</span><span class="s2"> Resizing individual column matrix for next model time step&quot;</span>  <span class="o">%</span> <span class="p">(</span><span class="n">model_time_step</span> <span class="p">)</span> <span class="p">)</span>
+        
+        <span class="n">C</span> <span class="o">=</span> <span class="n">C</span><span class="p">[:</span><span class="o">-</span><span class="n">ncc</span><span class="p">,:]</span>
+        
+    <span class="k">return</span> <span class="n">ATPA</span> <span class="p">,</span> <span class="n">ATPB</span></div>
+
+
+
+</pre></div>
+
+           </div>
+           
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        
+        &copy; Copyright 2016, Jean-Mathieu Nocquet IRD/Geoazur
+
+    </p>
+  </div>
+    
+    
+    
+    Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>
