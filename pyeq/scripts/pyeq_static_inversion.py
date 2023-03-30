@@ -545,7 +545,10 @@ if np.count_nonzero( OBS[:,4:6] ) == 0:
 
 Cd_gps_east  = args.wh**2 * OBS[:,4]**2
 Cd_gps_north = args.wh**2 * OBS[:,5]**2
-if GREEN_UP.shape[0] > 0:
+
+# change JMN 06/11/2022
+#if GREEN_UP.shape[0] > 0:
+if OBS_UP.shape[0] > 0:
     Cd_gps_up    = args.wu**2 * OBS_UP[:,3]**2
 
 if insar_mode:
@@ -557,7 +560,9 @@ if insar_mode:
         Cd = np.diag( np.hstack( (Cd_gps_east,Cd_gps_north,Cd_insar) ) )
         
 else:
-    if GREEN_UP.shape[0] > 0:
+    # change JMN 06/11/2022
+    #if GREEN_UP.shape[0] > 0:
+    if OBS_UP.shape[0] > 0:
         Cd = np.diag( np.hstack( (Cd_gps_east,Cd_gps_north,Cd_gps_up) ) )
     else:
         Cd = np.diag( np.hstack( (Cd_gps_east,Cd_gps_north) ) )
@@ -619,6 +624,8 @@ if save_mode:
     np.save('Cmm.npy',Cmm)
 
     sys.exit()
+
+print(Cd)
 
 A,B,SQRT_Wm,SQRT_Wd=lib_inversion.normalize_linear_system(\
                     G,d,m0,Cd,Cm,args.rake_constraint,\

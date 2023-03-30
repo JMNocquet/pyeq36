@@ -1,93 +1,51 @@
-
-
 <!DOCTYPE html>
 <html class="writer-html5" lang="en" >
 <head>
-  <meta charset="utf-8">
-  
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  
-  <title>pyeq.lib.meade_tde.tde module &mdash; pyeq 0.51.8 documentation</title>
-  
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
-  
-  <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
-  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
-
-  
-  
-  
-  
-
-  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>pyeq.lib.meade_tde.tde module &mdash; pyeq 0.55.1 documentation</title>
+      <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
   <!--[if lt IE 9]>
     <script src="_static/js/html5shiv.min.js"></script>
   <![endif]-->
   
-    
-      <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
-        <script src="_static/jquery.js"></script>
-        <script src="_static/underscore.js"></script>
+        <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
         <script src="_static/doctools.js"></script>
-        <script src="_static/language_data.js"></script>
-    
-    <script type="text/javascript" src="_static/js/theme.js"></script>
-
-    
+        <script src="_static/sphinx_highlight.js"></script>
+    <script src="_static/js/theme.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
     <link rel="next" title="pyeq.lib.nnls package" href="pyeq.lib.nnls.html" />
     <link rel="prev" title="pyeq.lib.meade_tde.strain_functions module" href="pyeq.lib.meade_tde.strain_functions.html" /> 
 </head>
 
-<body class="wy-body-for-nav">
-
-   
+<body class="wy-body-for-nav"> 
   <div class="wy-grid-for-nav">
-    
     <nav data-toggle="wy-nav-shift" class="wy-nav-side">
       <div class="wy-side-scroll">
         <div class="wy-side-nav-search" >
-          
 
           
-            <a href="index.html" class="icon icon-home" alt="Documentation Home"> pyeq
           
-
-          
+          <a href="index.html" class="icon icon-home">
+            pyeq
           </a>
-
-          
-            
-            
               <div class="version">
-                0.51.8
+                0.55.1
               </div>
-            
-          
-
-          
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
-    <input type="text" name="q" placeholder="Search docs" />
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
     <input type="hidden" name="check_keywords" value="yes" />
     <input type="hidden" name="area" value="default" />
   </form>
 </div>
-
-          
-        </div>
-
-        
-        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
-          
-            
-            
-              
-            
-            
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
               <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="foreword.html">PYEQ: full time-dependent slip inversion</a></li>
+<li class="toctree-l1"><a class="reference internal" href="installation.html">How to install pyeq?</a></li>
 <li class="toctree-l1"><a class="reference internal" href="behaviour.html">Options controlling the overall behaviour</a></li>
 <li class="toctree-l1"><a class="reference internal" href="tutorial_static_inversion.html">Tutorial static inversion</a></li>
 <li class="toctree-l1"><a class="reference internal" href="dates.html">dates</a></li>
@@ -105,266 +63,67 @@
 </li>
 </ul>
 
-            
-          
         </div>
-        
       </div>
     </nav>
 
-    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
-
-      
-      <nav class="wy-nav-top" aria-label="top navigation">
-        
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
           <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
           <a href="index.html">pyeq</a>
-        
       </nav>
 
-
       <div class="wy-nav-content">
-        
         <div class="rst-content">
-        
-          
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-<div role="navigation" aria-label="breadcrumbs navigation">
-
+          <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
-    
-      <li><a href="index.html" class="icon icon-home"></a> &raquo;</li>
-        
-          <li><a href="modules.html">for developpers</a> &raquo;</li>
-        
-          <li><a href="pyeq.html">pyeq package</a> &raquo;</li>
-        
-          <li><a href="pyeq.lib.html">pyeq.lib package</a> &raquo;</li>
-        
-          <li><a href="pyeq.lib.meade_tde.html">pyeq.lib.meade_tde package</a> &raquo;</li>
-        
-      <li>pyeq.lib.meade_tde.tde module</li>
-    
-    
+      <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="modules.html">for developpers</a></li>
+          <li class="breadcrumb-item"><a href="pyeq.html">pyeq package</a></li>
+          <li class="breadcrumb-item"><a href="pyeq.lib.html">pyeq.lib package</a></li>
+          <li class="breadcrumb-item"><a href="pyeq.lib.meade_tde.html">pyeq.lib.meade_tde package</a></li>
+      <li class="breadcrumb-item active">pyeq.lib.meade_tde.tde module</li>
       <li class="wy-breadcrumbs-aside">
-        
-            
             <a href="_sources/pyeq.lib.meade_tde.tde.rst.txt" rel="nofollow"> View page source</a>
-          
-        
       </li>
-    
   </ul>
-
-  
   <hr/>
 </div>
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
-            
-  <div class="section" id="module-pyeq.lib.meade_tde.tde">
-<span id="pyeq-lib-meade-tde-tde-module"></span><h1>pyeq.lib.meade_tde.tde module<a class="headerlink" href="#module-pyeq.lib.meade_tde.tde" title="Permalink to this headline">¶</a></h1>
-<dl class="py function">
-<dt id="pyeq.lib.meade_tde.tde.calc_tri_strains">
-<code class="sig-prename descclassname">pyeq.lib.meade_tde.tde.</code><code class="sig-name descname">calc_tri_strains</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">sx</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">sy</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">sz</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">x</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">y</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">z</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">pr</span><span class="o">=</span><span class="default_value">0.25</span></em>, <em class="sig-param"><span class="n">ss</span><span class="o">=</span><span class="default_value">0.0</span></em>, <em class="sig-param"><span class="n">ts</span><span class="o">=</span><span class="default_value">0.0</span></em>, <em class="sig-param"><span class="n">ds</span><span class="o">=</span><span class="default_value">0.0</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pyeq/lib/meade_tde/tde.html#calc_tri_strains"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyeq.lib.meade_tde.tde.calc_tri_strains" title="Permalink to this definition">¶</a></dt>
-<dd><p>Calculates strains due to slip on a triangular dislocation in an
-elastic half space utilizing the symbolically differentiated
-displacement gradient tensor derived from the expressions for
-the displacements due to an angular dislocation in an elastic half
-space (Comninou and Dunders, 1975).</p>
-<dl class="simple">
-<dt>Arguments</dt><dd><p>sx : x-coordinates of observation points
-sy : y-coordinates of observation points
-sz : z-coordinates of observation points
-x  : x-coordinates of triangle vertices.
-y  : y-coordinates of triangle vertices.
-z  : z-coordinates of triangle vertices.
-pr : Poisson’s ratio
-ss : strike slip displacement
-ts : tensile slip displacement
-ds : dip slip displacement</p>
-</dd>
-<dt>Returns</dt><dd><p>E  : structure containing the strains (E.xx, E.yy, E.zz, E.xy, E.xz, E.yz)</p>
-</dd>
-</dl>
-<p>This paper should and related code should be cited as:
-Brendan J. Meade, Algorithms for the calculation of exact 
-displacements, strains, and stresses for Triangular Dislocation 
-Elements in a uniform elastic half space, Computers &amp; 
-Geosciences (2007), doi:10.1016/j.cageo.2006.12.003.</p>
-<p>Use at your own risk and please let me know of any bugs/errors.</p>
-<p>Copyright (c) 2006 Brendan Meade</p>
-<p>Ported to Python by Richard Styron 2015.</p>
-</dd></dl>
-
-<dl class="py function">
-<dt id="pyeq.lib.meade_tde.tde.calc_tri_displacements">
-<code class="sig-prename descclassname">pyeq.lib.meade_tde.tde.</code><code class="sig-name descname">calc_tri_displacements</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">sx</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">sy</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">sz</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">x</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">y</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">z</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">pr</span><span class="o">=</span><span class="default_value">0.25</span></em>, <em class="sig-param"><span class="n">ss</span><span class="o">=</span><span class="default_value">0.0</span></em>, <em class="sig-param"><span class="n">ts</span><span class="o">=</span><span class="default_value">0.0</span></em>, <em class="sig-param"><span class="n">ds</span><span class="o">=</span><span class="default_value">0.0</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pyeq/lib/meade_tde/tde.html#calc_tri_displacements"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyeq.lib.meade_tde.tde.calc_tri_displacements" title="Permalink to this definition">¶</a></dt>
-<dd><p>Calculates displacements due to slip on a triangular dislocation in an
-elastic half space utilizing the Comninou and Dunders (1975) expressions
-for the displacements due to an angular dislocation in an elastic half
-space.</p>
-<dl class="simple">
-<dt>Arguments</dt><dd><p>sx : x-coordinates of observation points
-sy : y-coordinates of observation points
-sz : z-coordinates of observation points
-x  : x-coordinates of triangle vertices.
-y  : y-coordinates of triangle vertices.
-z  : z-coordinates of triangle vertices.
-pr : Poisson’s ratio
-ss : strike slip displacement
-ts : tensile slip displacement
-ds : dip slip displacement</p>
-</dd>
-<dt>Returns</dt><dd><p>U  : Dictionary containing the displacements (U[‘x’], U[‘y’], U[‘z’])</p>
-</dd>
-</dl>
-<p>This paper should and related code should be cited as:
-Brendan J. Meade, Algorithms for the calculation of exact 
-displacements, strains, and stresses for Triangular Dislocation 
-Elements in a uniform elastic half space, Computers &amp; 
-Geosciences (2007), doi:10.1016/j.cageo.2006.12.003.</p>
-<p>That code Copyright (c) 2006 Brendan Meade</p>
-<p>Ported to Python by Richard Styron, Aug 2015</p>
-</dd></dl>
-
-<dl class="py function">
-<dt id="pyeq.lib.meade_tde.tde.calc_slip_vector">
-<code class="sig-prename descclassname">pyeq.lib.meade_tde.tde.</code><code class="sig-name descname">calc_slip_vector</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">x</span></em>, <em class="sig-param"><span class="n">y</span></em>, <em class="sig-param"><span class="n">z</span></em>, <em class="sig-param"><span class="n">ss</span><span class="o">=</span><span class="default_value">0.0</span></em>, <em class="sig-param"><span class="n">ts</span><span class="o">=</span><span class="default_value">0.0</span></em>, <em class="sig-param"><span class="n">ds</span><span class="o">=</span><span class="default_value">0.0</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pyeq/lib/meade_tde/tde.html#calc_slip_vector"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyeq.lib.meade_tde.tde.calc_slip_vector" title="Permalink to this definition">¶</a></dt>
-<dd><p>Calculates a 3D slip vector for displacement on a triangle, given
-strike-slip, tensile-slip and dip-slip displacement components.</p>
-<dl class="simple">
-<dt>Arguments</dt><dd><p>x  : x-coordinates of triangle vertices.
-y  : y-coordinates of triangle vertices.
-z  : z-coordinates of triangle vertices.
-ss : strike slip displacement
-ts : tensile slip displacement
-ds : dip slip displacement</p>
-</dd>
-</dl>
-<p>Note: Will modify the ordering of triangle coordinates variables passed,
-even outside of the function scope, if ‘clockwise circulation’ does not
-hold. If this function is used outside of <cite>calc_tri_displacement</cite> or
-<cite>calc_tri_strains</cite>, make sure to send it a copy of the triangle coordinate
-variables instead of the original, or strange bugs could result.</p>
-</dd></dl>
-
-<dl class="py function">
-<dt id="pyeq.lib.meade_tde.tde.get_edge_params">
-<code class="sig-prename descclassname">pyeq.lib.meade_tde.tde.</code><code class="sig-name descname">get_edge_params</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">i_tri</span></em>, <em class="sig-param"><span class="n">x</span></em>, <em class="sig-param"><span class="n">y</span></em>, <em class="sig-param"><span class="n">z</span></em>, <em class="sig-param"><span class="n">slip_vec</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pyeq/lib/meade_tde/tde.html#get_edge_params"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyeq.lib.meade_tde.tde.get_edge_params" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py function">
-<dt id="pyeq.lib.meade_tde.tde.get_edge_strains">
-<code class="sig-prename descclassname">pyeq.lib.meade_tde.tde.</code><code class="sig-name descname">get_edge_strains</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">sx</span></em>, <em class="sig-param"><span class="n">sy</span></em>, <em class="sig-param"><span class="n">sz</span></em>, <em class="sig-param"><span class="n">x</span></em>, <em class="sig-param"><span class="n">y</span></em>, <em class="sig-param"><span class="n">z</span></em>, <em class="sig-param"><span class="n">i_tri</span></em>, <em class="sig-param"><span class="n">beta</span></em>, <em class="sig-param"><span class="n">pr</span></em>, <em class="sig-param"><span class="n">lss</span></em>, <em class="sig-param"><span class="n">lts</span></em>, <em class="sig-param"><span class="n">lds</span></em>, <em class="sig-param"><span class="n">strike</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pyeq/lib/meade_tde/tde.html#get_edge_strains"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyeq.lib.meade_tde.tde.get_edge_strains" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py function">
-<dt id="pyeq.lib.meade_tde.tde.get_edge_displacements">
-<code class="sig-prename descclassname">pyeq.lib.meade_tde.tde.</code><code class="sig-name descname">get_edge_displacements</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">sx</span></em>, <em class="sig-param"><span class="n">sy</span></em>, <em class="sig-param"><span class="n">sz</span></em>, <em class="sig-param"><span class="n">x</span></em>, <em class="sig-param"><span class="n">y</span></em>, <em class="sig-param"><span class="n">z</span></em>, <em class="sig-param"><span class="n">i_tri</span></em>, <em class="sig-param"><span class="n">beta</span></em>, <em class="sig-param"><span class="n">pr</span></em>, <em class="sig-param"><span class="n">lss</span></em>, <em class="sig-param"><span class="n">lts</span></em>, <em class="sig-param"><span class="n">lds</span></em>, <em class="sig-param"><span class="n">strike</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pyeq/lib/meade_tde/tde.html#get_edge_displacements"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyeq.lib.meade_tde.tde.get_edge_displacements" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py function">
-<dt id="pyeq.lib.meade_tde.tde.rotate_xy_vec">
-<code class="sig-prename descclassname">pyeq.lib.meade_tde.tde.</code><code class="sig-name descname">rotate_xy_vec</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">x</span></em>, <em class="sig-param"><span class="n">y</span></em>, <em class="sig-param"><span class="n">alpha</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pyeq/lib/meade_tde/tde.html#rotate_xy_vec"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyeq.lib.meade_tde.tde.rotate_xy_vec" title="Permalink to this definition">¶</a></dt>
-<dd><p>Rotates a vector by an angle alpha</p>
-</dd></dl>
-
-<dl class="py function">
-<dt id="pyeq.lib.meade_tde.tde.offset_underlying_points">
-<code class="sig-prename descclassname">pyeq.lib.meade_tde.tde.</code><code class="sig-name descname">offset_underlying_points</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">x</span></em>, <em class="sig-param"><span class="n">y</span></em>, <em class="sig-param"><span class="n">z</span></em>, <em class="sig-param"><span class="n">sx</span></em>, <em class="sig-param"><span class="n">sy</span></em>, <em class="sig-param"><span class="n">sz</span></em>, <em class="sig-param"><span class="n">slip_vec</span></em>, <em class="sig-param"><span class="n">U</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pyeq/lib/meade_tde/tde.html#offset_underlying_points"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyeq.lib.meade_tde.tde.offset_underlying_points" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py function">
-<dt id="pyeq.lib.meade_tde.tde.point_in_poly">
-<code class="sig-prename descclassname">pyeq.lib.meade_tde.tde.</code><code class="sig-name descname">point_in_poly</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">x</span></em>, <em class="sig-param"><span class="n">y</span></em>, <em class="sig-param"><span class="n">poly</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pyeq/lib/meade_tde/tde.html#point_in_poly"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyeq.lib.meade_tde.tde.point_in_poly" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py function">
-<dt id="pyeq.lib.meade_tde.tde.line_plane_intersect">
-<code class="sig-prename descclassname">pyeq.lib.meade_tde.tde.</code><code class="sig-name descname">line_plane_intersect</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">x</span></em>, <em class="sig-param"><span class="n">y</span></em>, <em class="sig-param"><span class="n">z</span></em>, <em class="sig-param"><span class="n">sx</span></em>, <em class="sig-param"><span class="n">sy</span></em>, <em class="sig-param"><span class="n">sz</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pyeq/lib/meade_tde/tde.html#line_plane_intersect"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyeq.lib.meade_tde.tde.line_plane_intersect" title="Permalink to this definition">¶</a></dt>
-<dd><p>Calculate the intersection of a line and a plane using a parametric
-representation of the plane. This is hardcoded for a vertical line.</p>
-</dd></dl>
-
-<dl class="py function">
-<dt id="pyeq.lib.meade_tde.tde.strain_to_stress">
-<code class="sig-prename descclassname">pyeq.lib.meade_tde.tde.</code><code class="sig-name descname">strain_to_stress</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">E</span></em>, <em class="sig-param"><span class="n">lamda</span></em>, <em class="sig-param"><span class="n">mu</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pyeq/lib/meade_tde/tde.html#strain_to_stress"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyeq.lib.meade_tde.tde.strain_to_stress" title="Permalink to this definition">¶</a></dt>
-<dd><p>Calculate stresses and invariants given a strain tensor and elastic
-moduli lambda and mu.</p>
-<p>Returns a dict S with the stress components and invariants.</p>
-</dd></dl>
-
-</div>
+             
+  <section id="pyeq-lib-meade-tde-tde-module">
+<h1>pyeq.lib.meade_tde.tde module<a class="headerlink" href="#pyeq-lib-meade-tde-tde-module" title="Permalink to this heading"></a></h1>
+</section>
 
 
            </div>
-           
           </div>
-          <footer>
-  
-    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
-      
-        <a href="pyeq.lib.nnls.html" class="btn btn-neutral float-right" title="pyeq.lib.nnls package" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
-      
-      
-        <a href="pyeq.lib.meade_tde.strain_functions.html" class="btn btn-neutral float-left" title="pyeq.lib.meade_tde.strain_functions module" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
-      
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="pyeq.lib.meade_tde.strain_functions.html" class="btn btn-neutral float-left" title="pyeq.lib.meade_tde.strain_functions module" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="pyeq.lib.nnls.html" class="btn btn-neutral float-right" title="pyeq.lib.nnls package" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
-  
 
   <hr/>
 
   <div role="contentinfo">
-    <p>
-        
-        &copy; Copyright 2016, Jean-Mathieu Nocquet IRD/Geoazur
-
-    </p>
+    <p>&#169; Copyright 2016, Jean-Mathieu Nocquet IRD/Geoazur.</p>
   </div>
-    
-    
-    
-    Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a
-    
-    <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a>
-    
-    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
 
 </footer>
-
         </div>
       </div>
-
     </section>
-
   </div>
-  
-
-  <script type="text/javascript">
+  <script>
       jQuery(function () {
           SphinxRtdTheme.Navigation.enable(true);
       });
-  </script>
-
-  
-  
-    
-   
+  </script> 
 
 </body>
 </html>

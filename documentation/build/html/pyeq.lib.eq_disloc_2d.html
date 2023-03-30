@@ -1,93 +1,51 @@
-
-
 <!DOCTYPE html>
 <html class="writer-html5" lang="en" >
 <head>
-  <meta charset="utf-8">
-  
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  
-  <title>pyeq.lib.eq_disloc_2d module &mdash; pyeq 0.51.8 documentation</title>
-  
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
-  
-  <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
-  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
-
-  
-  
-  
-  
-
-  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>pyeq.lib.eq_disloc_2d module &mdash; pyeq 0.55.1 documentation</title>
+      <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
   <!--[if lt IE 9]>
     <script src="_static/js/html5shiv.min.js"></script>
   <![endif]-->
   
-    
-      <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
-        <script src="_static/jquery.js"></script>
-        <script src="_static/underscore.js"></script>
+        <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
         <script src="_static/doctools.js"></script>
-        <script src="_static/language_data.js"></script>
-    
-    <script type="text/javascript" src="_static/js/theme.js"></script>
-
-    
+        <script src="_static/sphinx_highlight.js"></script>
+    <script src="_static/js/theme.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
     <link rel="next" title="pyeq.lib.eq_disloc_3d module" href="pyeq.lib.eq_disloc_3d.html" />
     <link rel="prev" title="pyeq.lib.edcmp module" href="pyeq.lib.edcmp.html" /> 
 </head>
 
-<body class="wy-body-for-nav">
-
-   
+<body class="wy-body-for-nav"> 
   <div class="wy-grid-for-nav">
-    
     <nav data-toggle="wy-nav-shift" class="wy-nav-side">
       <div class="wy-side-scroll">
         <div class="wy-side-nav-search" >
-          
 
           
-            <a href="index.html" class="icon icon-home" alt="Documentation Home"> pyeq
           
-
-          
+          <a href="index.html" class="icon icon-home">
+            pyeq
           </a>
-
-          
-            
-            
               <div class="version">
-                0.51.8
+                0.55.1
               </div>
-            
-          
-
-          
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
-    <input type="text" name="q" placeholder="Search docs" />
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
     <input type="hidden" name="check_keywords" value="yes" />
     <input type="hidden" name="area" value="default" />
   </form>
 </div>
-
-          
-        </div>
-
-        
-        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
-          
-            
-            
-              
-            
-            
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
               <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="foreword.html">PYEQ: full time-dependent slip inversion</a></li>
+<li class="toctree-l1"><a class="reference internal" href="installation.html">How to install pyeq?</a></li>
 <li class="toctree-l1"><a class="reference internal" href="behaviour.html">Options controlling the overall behaviour</a></li>
 <li class="toctree-l1"><a class="reference internal" href="tutorial_static_inversion.html">Tutorial static inversion</a></li>
 <li class="toctree-l1"><a class="reference internal" href="dates.html">dates</a></li>
@@ -105,85 +63,43 @@
 </li>
 </ul>
 
-            
-          
         </div>
-        
       </div>
     </nav>
 
-    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
-
-      
-      <nav class="wy-nav-top" aria-label="top navigation">
-        
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
           <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
           <a href="index.html">pyeq</a>
-        
       </nav>
 
-
       <div class="wy-nav-content">
-        
         <div class="rst-content">
-        
-          
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-<div role="navigation" aria-label="breadcrumbs navigation">
-
+          <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
-    
-      <li><a href="index.html" class="icon icon-home"></a> &raquo;</li>
-        
-          <li><a href="modules.html">for developpers</a> &raquo;</li>
-        
-          <li><a href="pyeq.html">pyeq package</a> &raquo;</li>
-        
-          <li><a href="pyeq.lib.html">pyeq.lib package</a> &raquo;</li>
-        
-      <li>pyeq.lib.eq_disloc_2d module</li>
-    
-    
+      <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="modules.html">for developpers</a></li>
+          <li class="breadcrumb-item"><a href="pyeq.html">pyeq package</a></li>
+          <li class="breadcrumb-item"><a href="pyeq.lib.html">pyeq.lib package</a></li>
+      <li class="breadcrumb-item active">pyeq.lib.eq_disloc_2d module</li>
       <li class="wy-breadcrumbs-aside">
-        
-            
             <a href="_sources/pyeq.lib.eq_disloc_2d.rst.txt" rel="nofollow"> View page source</a>
-          
-        
       </li>
-    
   </ul>
-
-  
   <hr/>
 </div>
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
-            
-  <div class="section" id="module-pyeq.lib.eq_disloc_2d">
-<span id="pyeq-lib-eq-disloc-2d-module"></span><h1>pyeq.lib.eq_disloc_2d module<a class="headerlink" href="#module-pyeq.lib.eq_disloc_2d" title="Permalink to this headline">¶</a></h1>
+             
+  <section id="module-pyeq.lib.eq_disloc_2d">
+<span id="pyeq-lib-eq-disloc-2d-module"></span><h1>pyeq.lib.eq_disloc_2d module<a class="headerlink" href="#module-pyeq.lib.eq_disloc_2d" title="Permalink to this heading"></a></h1>
 <p>2D Elastic Dislocation Library
 Uses analytical solution from Segall, P. (2010). Earthquake and volcano deformation. Princeton University Press.
 :Note 1: Only dip-slip fault solution implemented so far (08/06/2017)
 :Note 2: 0-90 dip means dip to positive axis (right) while -90-0 means dip to the left.
 :Note 3: Be careful with signs. For dip slip dislocations, positive slip indicates thrust motion.         For a vertical strike-slip fault, positive slip indicates left-lateral motion.</p>
 <dl class="py function">
-<dt id="pyeq.lib.eq_disloc_2d.vss_eq_2d">
-<code class="sig-prename descclassname">pyeq.lib.eq_disloc_2d.</code><code class="sig-name descname">vss_eq_2d</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">x</span></em>, <em class="sig-param"><span class="n">d</span></em>, <em class="sig-param"><span class="n">s</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pyeq/lib/eq_disloc_2d.html#vss_eq_2d"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyeq.lib.eq_disloc_2d.vss_eq_2d" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="pyeq.lib.eq_disloc_2d.vss_eq_2d">
+<span class="sig-prename descclassname"><span class="pre">pyeq.lib.eq_disloc_2d.</span></span><span class="sig-name descname"><span class="pre">vss_eq_2d</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">d</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">s</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pyeq/lib/eq_disloc_2d.html#vss_eq_2d"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pyeq.lib.eq_disloc_2d.vss_eq_2d" title="Permalink to this definition"></a></dt>
 <dd><p>Calculates along strike horizontal surface displacements for a 2D infinitely long vertical strike-slip fault extending from depth d to the surface</p>
 <p>:param x     : 1D numpy array of location of points (distance from the fault surface trace)
 :param d     : bottom depth of the fault
@@ -192,8 +108,8 @@ Uses analytical solution from Segall, P. (2010). Earthquake and volcano deformat
 </dd></dl>
 
 <dl class="py function">
-<dt id="pyeq.lib.eq_disloc_2d.vss_buried_eq_2d">
-<code class="sig-prename descclassname">pyeq.lib.eq_disloc_2d.</code><code class="sig-name descname">vss_buried_eq_2d</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">x</span></em>, <em class="sig-param"><span class="n">t</span></em>, <em class="sig-param"><span class="n">b</span></em>, <em class="sig-param"><span class="n">s</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pyeq/lib/eq_disloc_2d.html#vss_buried_eq_2d"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyeq.lib.eq_disloc_2d.vss_buried_eq_2d" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="pyeq.lib.eq_disloc_2d.vss_buried_eq_2d">
+<span class="sig-prename descclassname"><span class="pre">pyeq.lib.eq_disloc_2d.</span></span><span class="sig-name descname"><span class="pre">vss_buried_eq_2d</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">t</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">b</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">s</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pyeq/lib/eq_disloc_2d.html#vss_buried_eq_2d"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pyeq.lib.eq_disloc_2d.vss_buried_eq_2d" title="Permalink to this definition"></a></dt>
 <dd><p>Calculates along strike horizontal surface displacements for a 2D infinitely long vertical strike-slip fault extending from depth t (top) to b (bottom)</p>
 <p>:param x     : 1D numpy array of location of points (distance from the fault surface trace)
 :param d     : bottom depth of the fault
@@ -202,8 +118,8 @@ Uses analytical solution from Segall, P. (2010). Earthquake and volcano deformat
 </dd></dl>
 
 <dl class="py function">
-<dt id="pyeq.lib.eq_disloc_2d.vss_interseismic_eq_2d">
-<code class="sig-prename descclassname">pyeq.lib.eq_disloc_2d.</code><code class="sig-name descname">vss_interseismic_eq_2d</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">x</span></em>, <em class="sig-param"><span class="n">d</span></em>, <em class="sig-param"><span class="n">s</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pyeq/lib/eq_disloc_2d.html#vss_interseismic_eq_2d"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyeq.lib.eq_disloc_2d.vss_interseismic_eq_2d" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="pyeq.lib.eq_disloc_2d.vss_interseismic_eq_2d">
+<span class="sig-prename descclassname"><span class="pre">pyeq.lib.eq_disloc_2d.</span></span><span class="sig-name descname"><span class="pre">vss_interseismic_eq_2d</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">d</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">s</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pyeq/lib/eq_disloc_2d.html#vss_interseismic_eq_2d"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pyeq.lib.eq_disloc_2d.vss_interseismic_eq_2d" title="Permalink to this definition"></a></dt>
 <dd><p>Calculates the interseismic displacement along strike horizontal surface displacements for a 2D infinitely long vertical strike-slip fault extending from depth d to the surface</p>
 <p>:param x     : 1D numpy array of location of points (distance from the fault surface trace)
 :param d     : bottom depth of the fault
@@ -212,8 +128,8 @@ Uses analytical solution from Segall, P. (2010). Earthquake and volcano deformat
 </dd></dl>
 
 <dl class="py function">
-<dt id="pyeq.lib.eq_disloc_2d.ds_eq_2d">
-<code class="sig-prename descclassname">pyeq.lib.eq_disloc_2d.</code><code class="sig-name descname">ds_eq_2d</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">x</span></em>, <em class="sig-param"><span class="n">d</span></em>, <em class="sig-param"><span class="n">dip</span></em>, <em class="sig-param"><span class="n">s</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pyeq/lib/eq_disloc_2d.html#ds_eq_2d"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyeq.lib.eq_disloc_2d.ds_eq_2d" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="pyeq.lib.eq_disloc_2d.ds_eq_2d">
+<span class="sig-prename descclassname"><span class="pre">pyeq.lib.eq_disloc_2d.</span></span><span class="sig-name descname"><span class="pre">ds_eq_2d</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">d</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dip</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">s</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pyeq/lib/eq_disloc_2d.html#ds_eq_2d"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pyeq.lib.eq_disloc_2d.ds_eq_2d" title="Permalink to this definition"></a></dt>
 <dd><p>Calculates strike-perpendicular horizontal and vertical displacements for a 2D dip slip fault reaching the surface at x=0.</p>
 <p>:param x     : 1D numpy array of location of points (distance from the fault surface trace)
 :param d     : bottom depth of the fault
@@ -225,8 +141,8 @@ Uses analytical solution from Segall, P. (2010). Earthquake and volcano deformat
 </dd></dl>
 
 <dl class="py function">
-<dt id="pyeq.lib.eq_disloc_2d.ds_buried_eq_2d">
-<code class="sig-prename descclassname">pyeq.lib.eq_disloc_2d.</code><code class="sig-name descname">ds_buried_eq_2d</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">x</span></em>, <em class="sig-param"><span class="n">t</span></em>, <em class="sig-param"><span class="n">b</span></em>, <em class="sig-param"><span class="n">dip</span></em>, <em class="sig-param"><span class="n">s</span></em>, <em class="sig-param"><span class="n">ref_x</span><span class="o">=</span><span class="default_value">'surface'</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pyeq/lib/eq_disloc_2d.html#ds_buried_eq_2d"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyeq.lib.eq_disloc_2d.ds_buried_eq_2d" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="pyeq.lib.eq_disloc_2d.ds_buried_eq_2d">
+<span class="sig-prename descclassname"><span class="pre">pyeq.lib.eq_disloc_2d.</span></span><span class="sig-name descname"><span class="pre">ds_buried_eq_2d</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">t</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">b</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dip</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">s</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ref_x</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'surface'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pyeq/lib/eq_disloc_2d.html#ds_buried_eq_2d"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pyeq.lib.eq_disloc_2d.ds_buried_eq_2d" title="Permalink to this definition"></a></dt>
 <dd><p>Calculates horizontal and vertical displacements for a 2D buried dip slip fault</p>
 <p>:param x     : numpy array of location of points
 :param t     : top depth of the fault
@@ -238,8 +154,8 @@ Uses analytical solution from Segall, P. (2010). Earthquake and volcano deformat
 </dd></dl>
 
 <dl class="py function">
-<dt id="pyeq.lib.eq_disloc_2d.ds_ramp_eq_2d">
-<code class="sig-prename descclassname">pyeq.lib.eq_disloc_2d.</code><code class="sig-name descname">ds_ramp_eq_2d</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">x</span></em>, <em class="sig-param"><span class="n">x1</span></em>, <em class="sig-param"><span class="n">y1</span></em>, <em class="sig-param"><span class="n">dip1</span></em>, <em class="sig-param"><span class="n">l1</span></em>, <em class="sig-param"><span class="n">D</span></em>, <em class="sig-param"><span class="n">y2</span></em>, <em class="sig-param"><span class="n">s</span></em>, <em class="sig-param"><span class="n">s2</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pyeq/lib/eq_disloc_2d.html#ds_ramp_eq_2d"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyeq.lib.eq_disloc_2d.ds_ramp_eq_2d" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="pyeq.lib.eq_disloc_2d.ds_ramp_eq_2d">
+<span class="sig-prename descclassname"><span class="pre">pyeq.lib.eq_disloc_2d.</span></span><span class="sig-name descname"><span class="pre">ds_ramp_eq_2d</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">x1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dip1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">l1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">D</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">s</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">s2</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pyeq/lib/eq_disloc_2d.html#ds_ramp_eq_2d"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pyeq.lib.eq_disloc_2d.ds_ramp_eq_2d" title="Permalink to this definition"></a></dt>
 <dd><p>Calculates horizontal and vertical displacements for a 2D ramp made of of two faults    fault_1 has coordinates (x1,y1) with dip dip1 and length l1
 fault_2 has coordinates starting at (x1,y1) and ending at (x1+D,y2) with y2 &lt; y1</p>
 <p>:param x     : numpy array of location of points (horizontal distance from the fault top fault edge)
@@ -250,11 +166,11 @@ fault_2 has coordinates starting at (x1,y1) and ending at (x1+D,y2) with y2 &lt;
 </dd></dl>
 
 <dl class="py function">
-<dt id="pyeq.lib.eq_disloc_2d.unit_vector_profile">
-<code class="sig-prename descclassname">pyeq.lib.eq_disloc_2d.</code><code class="sig-name descname">unit_vector_profile</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">ilon</span></em>, <em class="sig-param"><span class="n">ilat</span></em>, <em class="sig-param"><span class="n">flon</span></em>, <em class="sig-param"><span class="n">flat</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pyeq/lib/eq_disloc_2d.html#unit_vector_profile"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyeq.lib.eq_disloc_2d.unit_vector_profile" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="pyeq.lib.eq_disloc_2d.unit_vector_profile">
+<span class="sig-prename descclassname"><span class="pre">pyeq.lib.eq_disloc_2d.</span></span><span class="sig-name descname"><span class="pre">unit_vector_profile</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ilon</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ilat</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">flon</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">flat</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pyeq/lib/eq_disloc_2d.html#unit_vector_profile"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pyeq.lib.eq_disloc_2d.unit_vector_profile" title="Permalink to this definition"></a></dt>
 <dd><p>Returns the unit direction vector in ENU coordinates for a profile</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>ilon</strong> – longitude in dec.deg for initial point of the profile</p></li>
 <li><p><strong>ilat</strong> – latitude in dec.deg for initial point of the profile</p></li>
@@ -267,11 +183,11 @@ fault_2 has coordinates starting at (x1,y1) and ending at (x1+D,y2) with y2 &lt;
 </dd></dl>
 
 <dl class="py function">
-<dt id="pyeq.lib.eq_disloc_2d.ds_2_los">
-<code class="sig-prename descclassname">pyeq.lib.eq_disloc_2d.</code><code class="sig-name descname">ds_2_los</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">ux</span></em>, <em class="sig-param"><span class="n">uy</span></em>, <em class="sig-param"><span class="n">u_profile</span></em>, <em class="sig-param"><span class="n">u_los</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pyeq/lib/eq_disloc_2d.html#ds_2_los"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyeq.lib.eq_disloc_2d.ds_2_los" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="pyeq.lib.eq_disloc_2d.ds_2_los">
+<span class="sig-prename descclassname"><span class="pre">pyeq.lib.eq_disloc_2d.</span></span><span class="sig-name descname"><span class="pre">ds_2_los</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ux</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">uy</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">u_profile</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">u_los</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pyeq/lib/eq_disloc_2d.html#ds_2_los"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pyeq.lib.eq_disloc_2d.ds_2_los" title="Permalink to this definition"></a></dt>
 <dd><p>Returns the LOS displacement given the unit direction vector of a profile and LOS</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>ux</strong><strong>,</strong><strong>uy</strong> – 1D numpy array including horizontal and vertical displacements</p></li>
 <li><p><strong>u_profile</strong> – unit direction vector in ENU coordinates</p></li>
@@ -282,62 +198,37 @@ fault_2 has coordinates starting at (x1,y1) and ending at (x1+D,y2) with y2 &lt;
 :return dlos : 1D numpy array of displacement in the LOS</p>
 </dd></dl>
 
-</div>
+</section>
 
 
            </div>
-           
           </div>
-          <footer>
-  
-    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
-      
-        <a href="pyeq.lib.eq_disloc_3d.html" class="btn btn-neutral float-right" title="pyeq.lib.eq_disloc_3d module" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
-      
-      
-        <a href="pyeq.lib.edcmp.html" class="btn btn-neutral float-left" title="pyeq.lib.edcmp module" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
-      
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="pyeq.lib.edcmp.html" class="btn btn-neutral float-left" title="pyeq.lib.edcmp module" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="pyeq.lib.eq_disloc_3d.html" class="btn btn-neutral float-right" title="pyeq.lib.eq_disloc_3d module" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
-  
 
   <hr/>
 
   <div role="contentinfo">
-    <p>
-        
-        &copy; Copyright 2016, Jean-Mathieu Nocquet IRD/Geoazur
-
-    </p>
+    <p>&#169; Copyright 2016, Jean-Mathieu Nocquet IRD/Geoazur.</p>
   </div>
-    
-    
-    
-    Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a
-    
-    <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a>
-    
-    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
 
 </footer>
-
         </div>
       </div>
-
     </section>
-
   </div>
-  
-
-  <script type="text/javascript">
+  <script>
       jQuery(function () {
           SphinxRtdTheme.Navigation.enable(true);
       });
-  </script>
-
-  
-  
-    
-   
+  </script> 
 
 </body>
 </html>

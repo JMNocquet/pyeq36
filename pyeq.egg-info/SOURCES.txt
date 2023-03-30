@@ -55,6 +55,7 @@ pyeq/green/edcmp_rde/__init__.py
 pyeq/green/edcmp_rde/check_edcmp_executable.py
 pyeq/green/edcmp_rde/disp_tilt_strain_stress_from_edcmp.py
 pyeq/green/make/__init__.py
+pyeq/green/make/cutde_tde.py
 pyeq/green/make/edcmp_rde.py
 pyeq/green/make/meade_tde.py
 pyeq/green/make/nikkhoo_rde.py

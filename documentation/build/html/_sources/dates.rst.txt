@@ -57,7 +57,7 @@ To generate 11 dates (that is model will have 10 time steps) between 2016/01/01 
 	
 Note: in this case, dates are not anymore expressed at 12:00. In PYEQ the rounding option will handle this. Setting -rounding 'day' will round all observation and model dates at 12:00. -rounding 'minute' will preserve the original time but also interpret observation dates at their original minute.
 
-Dates can ve comnbined using 'union'
+Dates can be combined using 'union'
 
 ::
 

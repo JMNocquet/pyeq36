@@ -17,6 +17,7 @@
 # TODO change make_model_name
 # TODO reactivate printing resolution.dat ; there is a compatibility issue when model.geometry_type = 'TDV'
 # TODO implement model.geometry_type = 'RDE' (rectangular dislocation element)
+# TODO check incompatible options: mpck option is not compatible with backwards and cross_validation
 
 ###################################################################
 # MODULES IMPORT
@@ -33,6 +34,7 @@ import pkg_resources
 
 # PYACS
 
+import pyacs
 import pyeq.date
 import pyeq.regularization
 import pyeq.regularization.damping

@@ -2,6 +2,11 @@ from setuptools import setup
 
 ###############################################################################
 # VERSION HISTORY
+# 0.55.2 on 20230330 : added Green's function computation using cutde (https://github.com/tbenthompson/cutde)
+# 0.55.1 on 20230328 : can now read 0-360 longitude files in pyeq_parametrize_curve_surface_triangle.py/get_depth
+# 0.55.0 on 20230227 : added import pyacs in pyaks.py. Was causing an error when --cross_validation build with mpck option
+# 0.54.9 on 20221106 : adding tensile slip for nikkhoo in pyaq_make_green.py and pyeq.make.green for nikkhoo_tde/rde
+# 0.54.8 on 20221010 : New version avec Github update
 # 0.54.7 on 20220904 : K-fold cross-validation operational
 # 0.54.6 on 20220904 : start implementation of K-fold cross-validation approach for regularization parameters choice
 # 0.54.5 on 20220329 : implemented slip resolved on vertices. model.geometry_type = 'TDV added'
@@ -50,8 +55,8 @@ from sphinx.setup_command import BuildDoc
 cmdclass = {'build_sphinx': BuildDoc}
 
 name = 'pyeq'
-version = '0.54'
-release = '0.54.7'
+version = '0.55'
+release = '0.55.2'
 
 setup(name = name,
       version = release,

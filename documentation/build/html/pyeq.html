@@ -1,93 +1,51 @@
-
-
 <!DOCTYPE html>
 <html class="writer-html5" lang="en" >
 <head>
-  <meta charset="utf-8">
-  
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  
-  <title>pyeq package &mdash; pyeq 0.51.8 documentation</title>
-  
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
-  
-  <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
-  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
-
-  
-  
-  
-  
-
-  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>pyeq package &mdash; pyeq 0.55.1 documentation</title>
+      <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
   <!--[if lt IE 9]>
     <script src="_static/js/html5shiv.min.js"></script>
   <![endif]-->
   
-    
-      <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
-        <script src="_static/jquery.js"></script>
-        <script src="_static/underscore.js"></script>
+        <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
         <script src="_static/doctools.js"></script>
-        <script src="_static/language_data.js"></script>
-    
-    <script type="text/javascript" src="_static/js/theme.js"></script>
-
-    
+        <script src="_static/sphinx_highlight.js"></script>
+    <script src="_static/js/theme.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
     <link rel="next" title="pyeq.lib package" href="pyeq.lib.html" />
     <link rel="prev" title="for developpers" href="modules.html" /> 
 </head>
 
-<body class="wy-body-for-nav">
-
-   
+<body class="wy-body-for-nav"> 
   <div class="wy-grid-for-nav">
-    
     <nav data-toggle="wy-nav-shift" class="wy-nav-side">
       <div class="wy-side-scroll">
         <div class="wy-side-nav-search" >
-          
 
           
-            <a href="index.html" class="icon icon-home" alt="Documentation Home"> pyeq
           
-
-          
+          <a href="index.html" class="icon icon-home">
+            pyeq
           </a>
-
-          
-            
-            
               <div class="version">
-                0.51.8
+                0.55.1
               </div>
-            
-          
-
-          
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
-    <input type="text" name="q" placeholder="Search docs" />
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
     <input type="hidden" name="check_keywords" value="yes" />
     <input type="hidden" name="area" value="default" />
   </form>
 </div>
-
-          
-        </div>
-
-        
-        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
-          
-            
-            
-              
-            
-            
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
               <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="foreword.html">PYEQ: full time-dependent slip inversion</a></li>
+<li class="toctree-l1"><a class="reference internal" href="installation.html">How to install pyeq?</a></li>
 <li class="toctree-l1"><a class="reference internal" href="behaviour.html">Options controlling the overall behaviour</a></li>
 <li class="toctree-l1"><a class="reference internal" href="tutorial_static_inversion.html">Tutorial static inversion</a></li>
 <li class="toctree-l1"><a class="reference internal" href="dates.html">dates</a></li>
@@ -105,75 +63,35 @@
 </li>
 </ul>
 
-            
-          
         </div>
-        
       </div>
     </nav>
 
-    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
-
-      
-      <nav class="wy-nav-top" aria-label="top navigation">
-        
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
           <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
           <a href="index.html">pyeq</a>
-        
       </nav>
 
-
       <div class="wy-nav-content">
-        
         <div class="rst-content">
-        
-          
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-<div role="navigation" aria-label="breadcrumbs navigation">
-
+          <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
-    
-      <li><a href="index.html" class="icon icon-home"></a> &raquo;</li>
-        
-          <li><a href="modules.html">for developpers</a> &raquo;</li>
-        
-      <li>pyeq package</li>
-    
-    
+      <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="modules.html">for developpers</a></li>
+      <li class="breadcrumb-item active">pyeq package</li>
       <li class="wy-breadcrumbs-aside">
-        
-            
             <a href="_sources/pyeq.rst.txt" rel="nofollow"> View page source</a>
-          
-        
       </li>
-    
   </ul>
-
-  
   <hr/>
 </div>
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
-            
-  <div class="section" id="pyeq-package">
-<h1>pyeq package<a class="headerlink" href="#pyeq-package" title="Permalink to this headline">¶</a></h1>
-<div class="section" id="subpackages">
-<h2>Subpackages<a class="headerlink" href="#subpackages" title="Permalink to this headline">¶</a></h2>
+             
+  <section id="pyeq-package">
+<h1>pyeq package<a class="headerlink" href="#pyeq-package" title="Permalink to this heading"></a></h1>
+<section id="subpackages">
+<h2>Subpackages<a class="headerlink" href="#subpackages" title="Permalink to this heading"></a></h2>
 <div class="toctree-wrapper compound">
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="pyeq.lib.html">pyeq.lib package</a><ul>
@@ -189,7 +107,7 @@
 <li class="toctree-l5"><a class="reference internal" href="pyeq.lib.conf.read_conf.html">pyeq.lib.conf.read_conf module</a></li>
 </ul>
 </li>
-<li class="toctree-l4"><a class="reference internal" href="pyeq.lib.conf.html#module-pyeq.lib.conf">Module contents</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyeq.lib.conf.html#module-contents">Module contents</a></li>
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="pyeq.lib.date.html">pyeq.lib.date package</a><ul>
@@ -200,7 +118,7 @@
 <li class="toctree-l5"><a class="reference internal" href="pyeq.lib.date.get_model_date.html">pyeq.lib.date.get_model_date module</a></li>
 </ul>
 </li>
-<li class="toctree-l4"><a class="reference internal" href="pyeq.lib.date.html#module-pyeq.lib.date">Module contents</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyeq.lib.date.html#module-contents">Module contents</a></li>
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="pyeq.lib.elastic_tensor.html">pyeq.lib.elastic_tensor package</a><ul>
@@ -211,7 +129,7 @@
 <li class="toctree-l5"><a class="reference internal" href="pyeq.lib.elastic_tensor.shrink.html">pyeq.lib.elastic_tensor.shrink module</a></li>
 </ul>
 </li>
-<li class="toctree-l4"><a class="reference internal" href="pyeq.lib.elastic_tensor.html#module-pyeq.lib.elastic_tensor">Module contents</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyeq.lib.elastic_tensor.html#module-contents">Module contents</a></li>
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="pyeq.lib.forward_model.html">pyeq.lib.forward_model package</a><ul>
@@ -223,12 +141,16 @@
 <li class="toctree-l5"><a class="reference internal" href="pyeq.lib.forward_model.build4.html">pyeq.lib.forward_model.build4 module</a></li>
 </ul>
 </li>
-<li class="toctree-l4"><a class="reference internal" href="pyeq.lib.forward_model.html#module-pyeq.lib.forward_model">Module contents</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyeq.lib.forward_model.html#module-contents">Module contents</a></li>
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="pyeq.lib.geometry.html">pyeq.lib.geometry package</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="pyeq.lib.geometry.html#submodules">Submodules</a><ul>
-<li class="toctree-l5"><a class="reference internal" href="pyeq.lib.geometry.to_np_array.html">pyeq.lib.geometry.to_np_array module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="pyeq.lib.geometry.to_np_array.html">pyeq.lib.geometry.to_np_array module</a><ul>
+<li class="toctree-l6"><a class="reference internal" href="pyeq.lib.geometry.to_np_array.html#pyeq.lib.geometry.to_np_array.npy_geometry_to_array_and_recarray"><code class="docutils literal notranslate"><span class="pre">npy_geometry_to_array_and_recarray()</span></code></a></li>
+<li class="toctree-l6"><a class="reference internal" href="pyeq.lib.geometry.to_np_array.html#pyeq.lib.geometry.to_np_array.dat_geometry_to_array_and_recarray"><code class="docutils literal notranslate"><span class="pre">dat_geometry_to_array_and_recarray()</span></code></a></li>
+</ul>
+</li>
 </ul>
 </li>
 <li class="toctree-l4"><a class="reference internal" href="pyeq.lib.geometry.html#module-pyeq.lib.geometry">Module contents</a></li>
@@ -239,7 +161,7 @@
 <li class="toctree-l5"><a class="reference internal" href="pyeq.lib.gps_time_series.read.html">pyeq.lib.gps_time_series.read module</a></li>
 </ul>
 </li>
-<li class="toctree-l4"><a class="reference internal" href="pyeq.lib.gps_time_series.html#module-pyeq.lib.gps_time_series">Module contents</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyeq.lib.gps_time_series.html#module-contents">Module contents</a></li>
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="pyeq.lib.log.html">pyeq.lib.log package</a><ul>
@@ -257,7 +179,7 @@
 <li class="toctree-l5"><a class="reference internal" href="pyeq.lib.log.print_summary.html">pyeq.lib.log.print_summary module</a></li>
 </ul>
 </li>
-<li class="toctree-l4"><a class="reference internal" href="pyeq.lib.log.html#module-pyeq.lib.log">Module contents</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyeq.lib.log.html#module-contents">Module contents</a></li>
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="pyeq.lib.meade_tde.html">pyeq.lib.meade_tde package</a><ul>
@@ -267,7 +189,7 @@
 <li class="toctree-l5"><a class="reference internal" href="pyeq.lib.meade_tde.tde.html">pyeq.lib.meade_tde.tde module</a></li>
 </ul>
 </li>
-<li class="toctree-l4"><a class="reference internal" href="pyeq.lib.meade_tde.html#module-pyeq.lib.meade_tde">Module contents</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyeq.lib.meade_tde.html#module-contents">Module contents</a></li>
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="pyeq.lib.nnls.html">pyeq.lib.nnls package</a><ul>
@@ -278,12 +200,20 @@
 <li class="toctree-l5"><a class="reference internal" href="pyeq.lib.nnls.sequential_nnls_1.html">pyeq.lib.nnls.sequential_nnls_1 module</a></li>
 </ul>
 </li>
-<li class="toctree-l4"><a class="reference internal" href="pyeq.lib.nnls.html#module-pyeq.lib.nnls">Module contents</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyeq.lib.nnls.html#module-contents">Module contents</a></li>
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="pyeq.lib.objects.html">pyeq.lib.objects package</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="pyeq.lib.objects.html#submodules">Submodules</a><ul>
-<li class="toctree-l5"><a class="reference internal" href="pyeq.lib.objects.pyeq_model.html">pyeq.lib.objects.pyeq_model module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="pyeq.lib.objects.pyeq_model.html">pyeq.lib.objects.pyeq_model module</a><ul>
+<li class="toctree-l6"><a class="reference internal" href="pyeq.lib.objects.pyeq_model.html#pyeq.lib.objects.pyeq_model.pyeq_model"><code class="docutils literal notranslate"><span class="pre">pyeq_model</span></code></a><ul>
+<li class="toctree-l7"><a class="reference internal" href="pyeq.lib.objects.pyeq_model.html#pyeq.lib.objects.pyeq_model.pyeq_model.load"><code class="docutils literal notranslate"><span class="pre">pyeq_model.load()</span></code></a></li>
+<li class="toctree-l7"><a class="reference internal" href="pyeq.lib.objects.pyeq_model.html#pyeq.lib.objects.pyeq_model.pyeq_model.print_info"><code class="docutils literal notranslate"><span class="pre">pyeq_model.print_info()</span></code></a></li>
+<li class="toctree-l7"><a class="reference internal" href="pyeq.lib.objects.pyeq_model.html#pyeq.lib.objects.pyeq_model.pyeq_model.write_pickle"><code class="docutils literal notranslate"><span class="pre">pyeq_model.write_pickle()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
 </ul>
 </li>
 <li class="toctree-l4"><a class="reference internal" href="pyeq.lib.objects.html#module-pyeq.lib.objects">Module contents</a></li>
@@ -298,7 +228,7 @@
 <li class="toctree-l5"><a class="reference internal" href="pyeq.lib.obs_tensor.sgts2obs_tensor.html">pyeq.lib.obs_tensor.sgts2obs_tensor module</a></li>
 </ul>
 </li>
-<li class="toctree-l4"><a class="reference internal" href="pyeq.lib.obs_tensor.html#module-pyeq.lib.obs_tensor">Module contents</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyeq.lib.obs_tensor.html#module-contents">Module contents</a></li>
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="pyeq.lib.okada.html">pyeq.lib.okada package</a><ul>
@@ -308,16 +238,28 @@
 <li class="toctree-l5"><a class="reference internal" href="pyeq.lib.okada.okada.html">pyeq.lib.okada.okada module</a></li>
 </ul>
 </li>
-<li class="toctree-l4"><a class="reference internal" href="pyeq.lib.okada.html#module-pyeq.lib.okada">Module contents</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyeq.lib.okada.html#module-contents">Module contents</a></li>
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="pyeq.lib.regularization.html">pyeq.lib.regularization package</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="pyeq.lib.regularization.html#submodules">Submodules</a><ul>
 <li class="toctree-l5"><a class="reference internal" href="pyeq.lib.regularization.make_inv_Cm.html">pyeq.lib.regularization.make_inv_Cm module</a></li>
-<li class="toctree-l5"><a class="reference internal" href="pyeq.lib.regularization.make_model_covariance_01.html">pyeq.lib.regularization.make_model_covariance_01 module</a></li>
-<li class="toctree-l5"><a class="reference internal" href="pyeq.lib.regularization.make_model_covariance_02.html">pyeq.lib.regularization.make_model_covariance_02 module</a></li>
-<li class="toctree-l5"><a class="reference internal" href="pyeq.lib.regularization.make_model_spatial_correlation_matrix.html">pyeq.lib.regularization.make_model_spatial_correlation_matrix module</a></li>
-<li class="toctree-l5"><a class="reference internal" href="pyeq.lib.regularization.normalization_factor.html">pyeq.lib.regularization.normalization_factor module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="pyeq.lib.regularization.make_model_covariance_01.html">pyeq.lib.regularization.make_model_covariance_01 module</a><ul>
+<li class="toctree-l6"><a class="reference internal" href="pyeq.lib.regularization.make_model_covariance_01.html#pyeq.lib.regularization.make_model_covariance_01.make_model_covariance_01"><code class="docutils literal notranslate"><span class="pre">make_model_covariance_01()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l5"><a class="reference internal" href="pyeq.lib.regularization.make_model_covariance_02.html">pyeq.lib.regularization.make_model_covariance_02 module</a><ul>
+<li class="toctree-l6"><a class="reference internal" href="pyeq.lib.regularization.make_model_covariance_02.html#pyeq.lib.regularization.make_model_covariance_02.make_model_covariance_02"><code class="docutils literal notranslate"><span class="pre">make_model_covariance_02()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l5"><a class="reference internal" href="pyeq.lib.regularization.make_model_spatial_correlation_matrix.html">pyeq.lib.regularization.make_model_spatial_correlation_matrix module</a><ul>
+<li class="toctree-l6"><a class="reference internal" href="pyeq.lib.regularization.make_model_spatial_correlation_matrix.html#pyeq.lib.regularization.make_model_spatial_correlation_matrix.make_model_spatial_correlation_matrix"><code class="docutils literal notranslate"><span class="pre">make_model_spatial_correlation_matrix()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l5"><a class="reference internal" href="pyeq.lib.regularization.normalization_factor.html">pyeq.lib.regularization.normalization_factor module</a><ul>
+<li class="toctree-l6"><a class="reference internal" href="pyeq.lib.regularization.normalization_factor.html#pyeq.lib.regularization.normalization_factor.normalization_factor"><code class="docutils literal notranslate"><span class="pre">normalization_factor()</span></code></a></li>
+</ul>
+</li>
 </ul>
 </li>
 <li class="toctree-l4"><a class="reference internal" href="pyeq.lib.regularization.html#module-pyeq.lib.regularization">Module contents</a></li>
@@ -327,17 +269,83 @@
 </li>
 <li class="toctree-l2"><a class="reference internal" href="pyeq.lib.html#submodules">Submodules</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="pyeq.lib.dislocation.html">pyeq.lib.dislocation module</a></li>
-<li class="toctree-l3"><a class="reference internal" href="pyeq.lib.edcmp.html">pyeq.lib.edcmp module</a></li>
-<li class="toctree-l3"><a class="reference internal" href="pyeq.lib.eq_disloc_2d.html">pyeq.lib.eq_disloc_2d module</a></li>
-<li class="toctree-l3"><a class="reference internal" href="pyeq.lib.eq_disloc_3d.html">pyeq.lib.eq_disloc_3d module</a></li>
-<li class="toctree-l3"><a class="reference internal" href="pyeq.lib.errors.html">pyeq.lib.errors module</a></li>
-<li class="toctree-l3"><a class="reference internal" href="pyeq.lib.green_tensor.html">pyeq.lib.green_tensor module</a></li>
-<li class="toctree-l3"><a class="reference internal" href="pyeq.lib.lib_inversion.html">pyeq.lib.lib_inversion module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="pyeq.lib.edcmp.html">pyeq.lib.edcmp module</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="pyeq.lib.edcmp.html#pyeq.lib.edcmp.disp_tilt_strain_stress_from_edcmp"><code class="docutils literal notranslate"><span class="pre">disp_tilt_strain_stress_from_edcmp()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="pyeq.lib.eq_disloc_2d.html">pyeq.lib.eq_disloc_2d module</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="pyeq.lib.eq_disloc_2d.html#pyeq.lib.eq_disloc_2d.vss_eq_2d"><code class="docutils literal notranslate"><span class="pre">vss_eq_2d()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyeq.lib.eq_disloc_2d.html#pyeq.lib.eq_disloc_2d.vss_buried_eq_2d"><code class="docutils literal notranslate"><span class="pre">vss_buried_eq_2d()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyeq.lib.eq_disloc_2d.html#pyeq.lib.eq_disloc_2d.vss_interseismic_eq_2d"><code class="docutils literal notranslate"><span class="pre">vss_interseismic_eq_2d()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyeq.lib.eq_disloc_2d.html#pyeq.lib.eq_disloc_2d.ds_eq_2d"><code class="docutils literal notranslate"><span class="pre">ds_eq_2d()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyeq.lib.eq_disloc_2d.html#pyeq.lib.eq_disloc_2d.ds_buried_eq_2d"><code class="docutils literal notranslate"><span class="pre">ds_buried_eq_2d()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyeq.lib.eq_disloc_2d.html#pyeq.lib.eq_disloc_2d.ds_ramp_eq_2d"><code class="docutils literal notranslate"><span class="pre">ds_ramp_eq_2d()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyeq.lib.eq_disloc_2d.html#pyeq.lib.eq_disloc_2d.unit_vector_profile"><code class="docutils literal notranslate"><span class="pre">unit_vector_profile()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyeq.lib.eq_disloc_2d.html#pyeq.lib.eq_disloc_2d.ds_2_los"><code class="docutils literal notranslate"><span class="pre">ds_2_los()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="pyeq.lib.eq_disloc_3d.html">pyeq.lib.eq_disloc_3d module</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="pyeq.lib.eq_disloc_3d.html#pyeq.lib.eq_disloc_3d.Dislocation"><code class="docutils literal notranslate"><span class="pre">Dislocation</span></code></a><ul>
+<li class="toctree-l5"><a class="reference internal" href="pyeq.lib.eq_disloc_3d.html#pyeq.lib.eq_disloc_3d.Dislocation.subfaults"><code class="docutils literal notranslate"><span class="pre">Dislocation.subfaults()</span></code></a></li>
+<li class="toctree-l5"><a class="reference internal" href="pyeq.lib.eq_disloc_3d.html#pyeq.lib.eq_disloc_3d.Dislocation.corners"><code class="docutils literal notranslate"><span class="pre">Dislocation.corners()</span></code></a></li>
+<li class="toctree-l5"><a class="reference internal" href="pyeq.lib.eq_disloc_3d.html#pyeq.lib.eq_disloc_3d.Dislocation.centroid"><code class="docutils literal notranslate"><span class="pre">Dislocation.centroid()</span></code></a></li>
+<li class="toctree-l5"><a class="reference internal" href="pyeq.lib.eq_disloc_3d.html#pyeq.lib.eq_disloc_3d.Dislocation.write_gmt"><code class="docutils literal notranslate"><span class="pre">Dislocation.write_gmt()</span></code></a></li>
+<li class="toctree-l5"><a class="reference internal" href="pyeq.lib.eq_disloc_3d.html#pyeq.lib.eq_disloc_3d.Dislocation.print_info"><code class="docutils literal notranslate"><span class="pre">Dislocation.print_info()</span></code></a></li>
+<li class="toctree-l5"><a class="reference internal" href="pyeq.lib.eq_disloc_3d.html#pyeq.lib.eq_disloc_3d.Dislocation.disp_slip_rake_no_edcmp"><code class="docutils literal notranslate"><span class="pre">Dislocation.disp_slip_rake_no_edcmp()</span></code></a></li>
+<li class="toctree-l5"><a class="reference internal" href="pyeq.lib.eq_disloc_3d.html#pyeq.lib.eq_disloc_3d.Dislocation.disp_slip_rake"><code class="docutils literal notranslate"><span class="pre">Dislocation.disp_slip_rake()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="pyeq.lib.errors.html">pyeq.lib.errors module</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="pyeq.lib.errors.html#pyeq.lib.errors.PyeqError"><code class="docutils literal notranslate"><span class="pre">PyeqError</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyeq.lib.errors.html#pyeq.lib.errors.PyeqNpzReadError"><code class="docutils literal notranslate"><span class="pre">PyeqNpzReadError</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyeq.lib.errors.html#pyeq.lib.errors.PyeqNpzFormatError"><code class="docutils literal notranslate"><span class="pre">PyeqNpzFormatError</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="pyeq.lib.green_tensor.html">pyeq.lib.green_tensor module</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="pyeq.lib.green_tensor.html#pyeq.lib.green_tensor.GREEN_ENU_TO_GREEN_RAKE_MAIN_RAKE_CONJUGATE"><code class="docutils literal notranslate"><span class="pre">GREEN_ENU_TO_GREEN_RAKE_MAIN_RAKE_CONJUGATE()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="pyeq.lib.lib_inversion.html">pyeq.lib.lib_inversion module</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="pyeq.lib.lib_inversion.html#pyeq.lib.lib_inversion.sp"><code class="docutils literal notranslate"><span class="pre">sp()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyeq.lib.lib_inversion.html#pyeq.lib.lib_inversion.Sm"><code class="docutils literal notranslate"><span class="pre">Sm()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyeq.lib.lib_inversion.html#pyeq.lib.lib_inversion.Sm_min"><code class="docutils literal notranslate"><span class="pre">Sm_min()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyeq.lib.lib_inversion.html#pyeq.lib.lib_inversion.Corr_to_Cov"><code class="docutils literal notranslate"><span class="pre">Corr_to_Cov()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyeq.lib.lib_inversion.html#pyeq.lib.lib_inversion.Cov_to_Corr"><code class="docutils literal notranslate"><span class="pre">Cov_to_Corr()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyeq.lib.lib_inversion.html#pyeq.lib.lib_inversion.vector_2_array"><code class="docutils literal notranslate"><span class="pre">vector_2_array()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyeq.lib.lib_inversion.html#pyeq.lib.lib_inversion.array_2_vector"><code class="docutils literal notranslate"><span class="pre">array_2_vector()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyeq.lib.lib_inversion.html#pyeq.lib.lib_inversion.numpy_array_2_numpy_recarray"><code class="docutils literal notranslate"><span class="pre">numpy_array_2_numpy_recarray()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyeq.lib.lib_inversion.html#pyeq.lib.lib_inversion.numpy_recarray_2_numpy_array"><code class="docutils literal notranslate"><span class="pre">numpy_recarray_2_numpy_array()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyeq.lib.lib_inversion.html#pyeq.lib.lib_inversion.rectangular_dislocations_from_geometry"><code class="docutils literal notranslate"><span class="pre">rectangular_dislocations_from_geometry()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyeq.lib.lib_inversion.html#pyeq.lib.lib_inversion.centroid_from_geometry"><code class="docutils literal notranslate"><span class="pre">centroid_from_geometry()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyeq.lib.lib_inversion.html#pyeq.lib.lib_inversion.make_isotropic_exponential_Cm"><code class="docutils literal notranslate"><span class="pre">make_isotropic_exponential_Cm()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyeq.lib.lib_inversion.html#pyeq.lib.lib_inversion.normalize_linear_system"><code class="docutils literal notranslate"><span class="pre">normalize_linear_system()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyeq.lib.lib_inversion.html#pyeq.lib.lib_inversion.make_inversion_linear_bayesian"><code class="docutils literal notranslate"><span class="pre">make_inversion_linear_bayesian()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyeq.lib.lib_inversion.html#pyeq.lib.lib_inversion.sym_inv_chol"><code class="docutils literal notranslate"><span class="pre">sym_inv_chol()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyeq.lib.lib_inversion.html#pyeq.lib.lib_inversion.sol_unbounded_gaussian"><code class="docutils literal notranslate"><span class="pre">sol_unbounded_gaussian()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyeq.lib.lib_inversion.html#pyeq.lib.lib_inversion.renormalization_bounded_inversion"><code class="docutils literal notranslate"><span class="pre">renormalization_bounded_inversion()</span></code></a></li>
+</ul>
+</li>
 <li class="toctree-l3"><a class="reference internal" href="pyeq.lib.make_inversion.html">pyeq.lib.make_inversion module</a></li>
-<li class="toctree-l3"><a class="reference internal" href="pyeq.lib.print_log_kinematic.html">pyeq.lib.print_log_kinematic module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="pyeq.lib.print_log_kinematic.html">pyeq.lib.print_log_kinematic module</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="pyeq.lib.print_log_kinematic.html#pyeq.lib.print_log_kinematic.interp_slip_at_dates"><code class="docutils literal notranslate"><span class="pre">interp_slip_at_dates()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyeq.lib.print_log_kinematic.html#pyeq.lib.print_log_kinematic.predict_disp_from_model"><code class="docutils literal notranslate"><span class="pre">predict_disp_from_model()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyeq.lib.print_log_kinematic.html#pyeq.lib.print_log_kinematic.predict_time_series_from_model"><code class="docutils literal notranslate"><span class="pre">predict_time_series_from_model()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyeq.lib.print_log_kinematic.html#pyeq.lib.print_log_kinematic.print_kinematic_inversion_results"><code class="docutils literal notranslate"><span class="pre">print_kinematic_inversion_results()</span></code></a></li>
+</ul>
+</li>
 <li class="toctree-l3"><a class="reference internal" href="pyeq.lib.print_log_kinematic2.html">pyeq.lib.print_log_kinematic2 module</a></li>
-<li class="toctree-l3"><a class="reference internal" href="pyeq.lib.print_log_static.html">pyeq.lib.print_log_static module</a></li>
-<li class="toctree-l3"><a class="reference internal" href="pyeq.lib.regularization2.html">pyeq.lib.regularization2 module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="pyeq.lib.print_log_static.html">pyeq.lib.print_log_static module</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="pyeq.lib.print_log_static.html#pyeq.lib.print_log_static.print_static_inversion_results"><code class="docutils literal notranslate"><span class="pre">print_static_inversion_results()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="pyeq.lib.regularization2.html">pyeq.lib.regularization2 module</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="pyeq.lib.regularization2.html#pyeq.lib.regularization2.add_Cminv_to_ATPA_temporal_smoothing"><code class="docutils literal notranslate"><span class="pre">add_Cminv_to_ATPA_temporal_smoothing()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyeq.lib.regularization2.html#pyeq.lib.regularization2.add_Cminv_to_ATPA"><code class="docutils literal notranslate"><span class="pre">add_Cminv_to_ATPA()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyeq.lib.regularization2.html#pyeq.lib.regularization2.renorm_w_geometry"><code class="docutils literal notranslate"><span class="pre">renorm_w_geometry()</span></code></a></li>
+</ul>
+</li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="pyeq.lib.html#module-pyeq.lib">Module contents</a></li>
@@ -345,66 +353,41 @@
 </li>
 </ul>
 </div>
-</div>
-<div class="section" id="module-pyeq">
-<span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-pyeq" title="Permalink to this headline">¶</a></h2>
-</div>
-</div>
+</section>
+<section id="module-pyeq">
+<span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-pyeq" title="Permalink to this heading"></a></h2>
+</section>
+</section>
 
 
            </div>
-           
           </div>
-          <footer>
-  
-    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
-      
-        <a href="pyeq.lib.html" class="btn btn-neutral float-right" title="pyeq.lib package" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
-      
-      
-        <a href="modules.html" class="btn btn-neutral float-left" title="for developpers" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
-      
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="modules.html" class="btn btn-neutral float-left" title="for developpers" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="pyeq.lib.html" class="btn btn-neutral float-right" title="pyeq.lib package" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
-  
 
   <hr/>
 
   <div role="contentinfo">
-    <p>
-        
-        &copy; Copyright 2016, Jean-Mathieu Nocquet IRD/Geoazur
-
-    </p>
+    <p>&#169; Copyright 2016, Jean-Mathieu Nocquet IRD/Geoazur.</p>
   </div>
-    
-    
-    
-    Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a
-    
-    <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a>
-    
-    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
 
 </footer>
-
         </div>
       </div>
-
     </section>
-
   </div>
-  
-
-  <script type="text/javascript">
+  <script>
       jQuery(function () {
           SphinxRtdTheme.Navigation.enable(true);
       });
-  </script>
-
-  
-  
-    
-   
+  </script> 
 
 </body>
 </html>

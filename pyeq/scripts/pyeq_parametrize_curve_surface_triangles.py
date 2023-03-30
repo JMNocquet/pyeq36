@@ -168,27 +168,26 @@ def get_depth(longitude, latitude, grid):
 
     ds = netCDF4.Dataset( grid )
     z = ds.variables['z'][:].T
+    # change JMN 28/03/2023 - account for 0-360 grid like slab2
+    longitudes = ds.variables['x'][:]
+    lidx = np.where( longitudes > 180 )[0]
+    longitudes[lidx] = longitudes[lidx] - 360.
     interp = scipy.interpolate.RegularGridInterpolator(
-        tuple((ds.variables['x'][:], ds.variables['y'][:])),
+        tuple((longitudes, ds.variables['y'][:])),
         z.data,
         method='linear',
         bounds_error=False)
-
+#    interp = scipy.interpolate.RegularGridInterpolator(
+#        tuple((ds.variables['x'][:], ds.variables['y'][:])),
+#        z.data,
+#        method='linear',
+#        bounds_error=False)
     interpolated = interp( (np.array([longitude]),np.array([latitude])) )
 
     if np.isnan(interpolated):
         return 'NaN'
     else:
         return interpolated[0]
-
-# ###################################################################
-# def get_depth_netcdf(longitude,latitude,grid):
-# ###################################################################
-#     from mpl_toolkits import basemap
-#     lat = grid.variables['y'][:]
-#     lon = grid.variables['x'][:]
-#     z = grid.variables['z'][:].data
-#     return(basemap.interp(z, lon, lat, np.array([longitude]),np.array([latitude]), order=1))
 
 ###################################################################
 def face_area_strike_dip(face,verts,grid):
@@ -419,14 +418,13 @@ lidx_vert = []
 
 for i in sorted(lindex_face):
     face=faces[i]
-    print("tde #%4d: %04d %04d %04d " % (i,face[0],face[1],face[2]) )
+    #print("tde #%4d: %04d %04d %04d " % (i,face[0],face[1],face[2]) )
     lidx_vert.append( face[0] )
     lidx_vert.append( face[1] )
     lidx_vert.append( face[2] )
 
 # make the list uniq
 np_idx_vert = np.array( list(set( lidx_vert ) ))
-print( np_idx_vert )
 # make the numpy array for save
 np_v = np.zeros((len(lindex_face),3),dtype=int)
 np_c = np.zeros( ( np_idx_vert.shape[0],3 ) )

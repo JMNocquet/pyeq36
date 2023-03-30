@@ -1,93 +1,51 @@
-
-
 <!DOCTYPE html>
 <html class="writer-html5" lang="en" >
 <head>
-  <meta charset="utf-8">
-  
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  
-  <title>pyeq.lib.lib_inversion module &mdash; pyeq 0.51.8 documentation</title>
-  
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
-  
-  <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
-  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
-
-  
-  
-  
-  
-
-  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>pyeq.lib.lib_inversion module &mdash; pyeq 0.55.1 documentation</title>
+      <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
   <!--[if lt IE 9]>
     <script src="_static/js/html5shiv.min.js"></script>
   <![endif]-->
   
-    
-      <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
-        <script src="_static/jquery.js"></script>
-        <script src="_static/underscore.js"></script>
+        <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
         <script src="_static/doctools.js"></script>
-        <script src="_static/language_data.js"></script>
-    
-    <script type="text/javascript" src="_static/js/theme.js"></script>
-
-    
+        <script src="_static/sphinx_highlight.js"></script>
+    <script src="_static/js/theme.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
     <link rel="next" title="pyeq.lib.make_inversion module" href="pyeq.lib.make_inversion.html" />
     <link rel="prev" title="pyeq.lib.green_tensor module" href="pyeq.lib.green_tensor.html" /> 
 </head>
 
-<body class="wy-body-for-nav">
-
-   
+<body class="wy-body-for-nav"> 
   <div class="wy-grid-for-nav">
-    
     <nav data-toggle="wy-nav-shift" class="wy-nav-side">
       <div class="wy-side-scroll">
         <div class="wy-side-nav-search" >
-          
 
           
-            <a href="index.html" class="icon icon-home" alt="Documentation Home"> pyeq
           
-
-          
+          <a href="index.html" class="icon icon-home">
+            pyeq
           </a>
-
-          
-            
-            
               <div class="version">
-                0.51.8
+                0.55.1
               </div>
-            
-          
-
-          
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
-    <input type="text" name="q" placeholder="Search docs" />
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
     <input type="hidden" name="check_keywords" value="yes" />
     <input type="hidden" name="area" value="default" />
   </form>
 </div>
-
-          
-        </div>
-
-        
-        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
-          
-            
-            
-              
-            
-            
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
               <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="foreword.html">PYEQ: full time-dependent slip inversion</a></li>
+<li class="toctree-l1"><a class="reference internal" href="installation.html">How to install pyeq?</a></li>
 <li class="toctree-l1"><a class="reference internal" href="behaviour.html">Options controlling the overall behaviour</a></li>
 <li class="toctree-l1"><a class="reference internal" href="tutorial_static_inversion.html">Tutorial static inversion</a></li>
 <li class="toctree-l1"><a class="reference internal" href="dates.html">dates</a></li>
@@ -105,86 +63,44 @@
 </li>
 </ul>
 
-            
-          
         </div>
-        
       </div>
     </nav>
 
-    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
-
-      
-      <nav class="wy-nav-top" aria-label="top navigation">
-        
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
           <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
           <a href="index.html">pyeq</a>
-        
       </nav>
 
-
       <div class="wy-nav-content">
-        
         <div class="rst-content">
-        
-          
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-<div role="navigation" aria-label="breadcrumbs navigation">
-
+          <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
-    
-      <li><a href="index.html" class="icon icon-home"></a> &raquo;</li>
-        
-          <li><a href="modules.html">for developpers</a> &raquo;</li>
-        
-          <li><a href="pyeq.html">pyeq package</a> &raquo;</li>
-        
-          <li><a href="pyeq.lib.html">pyeq.lib package</a> &raquo;</li>
-        
-      <li>pyeq.lib.lib_inversion module</li>
-    
-    
+      <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="modules.html">for developpers</a></li>
+          <li class="breadcrumb-item"><a href="pyeq.html">pyeq package</a></li>
+          <li class="breadcrumb-item"><a href="pyeq.lib.html">pyeq.lib package</a></li>
+      <li class="breadcrumb-item active">pyeq.lib.lib_inversion module</li>
       <li class="wy-breadcrumbs-aside">
-        
-            
             <a href="_sources/pyeq.lib.lib_inversion.rst.txt" rel="nofollow"> View page source</a>
-          
-        
       </li>
-    
   </ul>
-
-  
   <hr/>
 </div>
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
-            
-  <div class="section" id="module-pyeq.lib.lib_inversion">
-<span id="pyeq-lib-lib-inversion-module"></span><h1>pyeq.lib.lib_inversion module<a class="headerlink" href="#module-pyeq.lib.lib_inversion" title="Permalink to this headline">¶</a></h1>
+             
+  <section id="module-pyeq.lib.lib_inversion">
+<span id="pyeq-lib-lib-inversion-module"></span><h1>pyeq.lib.lib_inversion module<a class="headerlink" href="#module-pyeq.lib.lib_inversion" title="Permalink to this heading"></a></h1>
 <p># VARIOUS INVERSION SCHEMES TO RETRIEVE EQ SLIP DISTRIBUTION FROM STATIC OFFSETS
 # AUTHOR: J.-M. NOCQUET GEOAZUR-IRD-CNRS-OCA, Univ. Nice, FRANCE
 # DATE  : February 2013</p>
 <dl class="py function">
-<dt id="pyeq.lib.lib_inversion.sp">
-<code class="sig-prename descclassname">pyeq.lib.lib_inversion.</code><code class="sig-name descname">sp</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">v</span></em>, <em class="sig-param"><span class="n">W</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pyeq/lib/lib_inversion.html#sp"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyeq.lib.lib_inversion.sp" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="pyeq.lib.lib_inversion.sp">
+<span class="sig-prename descclassname"><span class="pre">pyeq.lib.lib_inversion.</span></span><span class="sig-name descname"><span class="pre">sp</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">v</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">W</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pyeq/lib/lib_inversion.html#sp"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pyeq.lib.lib_inversion.sp" title="Permalink to this definition"></a></dt>
 <dd><p>scalar product with weight.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>v</strong> – vector as 1D numpy array</p></li>
 <li><p><strong>w</strong> – weight vector as 1D numpy array</p></li>
@@ -195,72 +111,72 @@
 </dd></dl>
 
 <dl class="py function">
-<dt id="pyeq.lib.lib_inversion.Sm">
-<code class="sig-prename descclassname">pyeq.lib.lib_inversion.</code><code class="sig-name descname">Sm</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">G</span></em>, <em class="sig-param"><span class="n">m</span></em>, <em class="sig-param"><span class="n">d</span></em>, <em class="sig-param"><span class="n">Cd</span></em>, <em class="sig-param"><span class="n">m0</span></em>, <em class="sig-param"><span class="n">Cm</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pyeq/lib/lib_inversion.html#Sm"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyeq.lib.lib_inversion.Sm" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="pyeq.lib.lib_inversion.Sm">
+<span class="sig-prename descclassname"><span class="pre">pyeq.lib.lib_inversion.</span></span><span class="sig-name descname"><span class="pre">Sm</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">G</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">m</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">d</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">Cd</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">m0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">Cm</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pyeq/lib/lib_inversion.html#Sm"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pyeq.lib.lib_inversion.Sm" title="Permalink to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="py function">
-<dt id="pyeq.lib.lib_inversion.Sm_min">
-<code class="sig-prename descclassname">pyeq.lib.lib_inversion.</code><code class="sig-name descname">Sm_min</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">G</span></em>, <em class="sig-param"><span class="n">d</span></em>, <em class="sig-param"><span class="n">Cd</span></em>, <em class="sig-param"><span class="n">m0</span></em>, <em class="sig-param"><span class="n">Cm</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pyeq/lib/lib_inversion.html#Sm_min"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyeq.lib.lib_inversion.Sm_min" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="pyeq.lib.lib_inversion.Sm_min">
+<span class="sig-prename descclassname"><span class="pre">pyeq.lib.lib_inversion.</span></span><span class="sig-name descname"><span class="pre">Sm_min</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">G</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">d</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">Cd</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">m0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">Cm</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pyeq/lib/lib_inversion.html#Sm_min"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pyeq.lib.lib_inversion.Sm_min" title="Permalink to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="py function">
-<dt id="pyeq.lib.lib_inversion.Corr_to_Cov">
-<code class="sig-prename descclassname">pyeq.lib.lib_inversion.</code><code class="sig-name descname">Corr_to_Cov</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">corr</span></em>, <em class="sig-param"><span class="n">sigma_m</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pyeq/lib/lib_inversion.html#Corr_to_Cov"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyeq.lib.lib_inversion.Corr_to_Cov" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="pyeq.lib.lib_inversion.Corr_to_Cov">
+<span class="sig-prename descclassname"><span class="pre">pyeq.lib.lib_inversion.</span></span><span class="sig-name descname"><span class="pre">Corr_to_Cov</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">corr</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sigma_m</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pyeq/lib/lib_inversion.html#Corr_to_Cov"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pyeq.lib.lib_inversion.Corr_to_Cov" title="Permalink to this definition"></a></dt>
 <dd><p>Correlation to covariance matrix
 sigma_m is a vector with sqrt(diag(Cov))
 or a scalar</p>
 </dd></dl>
 
 <dl class="py function">
-<dt id="pyeq.lib.lib_inversion.Cov_to_Corr">
-<code class="sig-prename descclassname">pyeq.lib.lib_inversion.</code><code class="sig-name descname">Cov_to_Corr</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">Cov</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pyeq/lib/lib_inversion.html#Cov_to_Corr"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyeq.lib.lib_inversion.Cov_to_Corr" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="pyeq.lib.lib_inversion.Cov_to_Corr">
+<span class="sig-prename descclassname"><span class="pre">pyeq.lib.lib_inversion.</span></span><span class="sig-name descname"><span class="pre">Cov_to_Corr</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">Cov</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pyeq/lib/lib_inversion.html#Cov_to_Corr"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pyeq.lib.lib_inversion.Cov_to_Corr" title="Permalink to this definition"></a></dt>
 <dd><p>Covariance to correlation transformation</p>
 </dd></dl>
 
 <dl class="py function">
-<dt id="pyeq.lib.lib_inversion.vector_2_array">
-<code class="sig-prename descclassname">pyeq.lib.lib_inversion.</code><code class="sig-name descname">vector_2_array</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">M</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pyeq/lib/lib_inversion.html#vector_2_array"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyeq.lib.lib_inversion.vector_2_array" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="pyeq.lib.lib_inversion.vector_2_array">
+<span class="sig-prename descclassname"><span class="pre">pyeq.lib.lib_inversion.</span></span><span class="sig-name descname"><span class="pre">vector_2_array</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">M</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pyeq/lib/lib_inversion.html#vector_2_array"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pyeq.lib.lib_inversion.vector_2_array" title="Permalink to this definition"></a></dt>
 <dd><p>if M is a 1D vector, converts it to a 2D array of single column</p>
 </dd></dl>
 
 <dl class="py function">
-<dt id="pyeq.lib.lib_inversion.array_2_vector">
-<code class="sig-prename descclassname">pyeq.lib.lib_inversion.</code><code class="sig-name descname">array_2_vector</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">M</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pyeq/lib/lib_inversion.html#array_2_vector"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyeq.lib.lib_inversion.array_2_vector" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="pyeq.lib.lib_inversion.array_2_vector">
+<span class="sig-prename descclassname"><span class="pre">pyeq.lib.lib_inversion.</span></span><span class="sig-name descname"><span class="pre">array_2_vector</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">M</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pyeq/lib/lib_inversion.html#array_2_vector"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pyeq.lib.lib_inversion.array_2_vector" title="Permalink to this definition"></a></dt>
 <dd><p>If M is a 2D array with a single column, return the column as a vector, return M else</p>
 </dd></dl>
 
 <dl class="py function">
-<dt id="pyeq.lib.lib_inversion.numpy_array_2_numpy_recarray">
-<code class="sig-prename descclassname">pyeq.lib.lib_inversion.</code><code class="sig-name descname">numpy_array_2_numpy_recarray</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">A</span></em>, <em class="sig-param"><span class="n">names</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pyeq/lib/lib_inversion.html#numpy_array_2_numpy_recarray"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyeq.lib.lib_inversion.numpy_array_2_numpy_recarray" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="pyeq.lib.lib_inversion.numpy_array_2_numpy_recarray">
+<span class="sig-prename descclassname"><span class="pre">pyeq.lib.lib_inversion.</span></span><span class="sig-name descname"><span class="pre">numpy_array_2_numpy_recarray</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">A</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">names</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pyeq/lib/lib_inversion.html#numpy_array_2_numpy_recarray"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pyeq.lib.lib_inversion.numpy_array_2_numpy_recarray" title="Permalink to this definition"></a></dt>
 <dd><p>Converts a numpy array to a numpy recarray
 names is the names of each field</p>
 </dd></dl>
 
 <dl class="py function">
-<dt id="pyeq.lib.lib_inversion.numpy_recarray_2_numpy_array">
-<code class="sig-prename descclassname">pyeq.lib.lib_inversion.</code><code class="sig-name descname">numpy_recarray_2_numpy_array</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">A</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pyeq/lib/lib_inversion.html#numpy_recarray_2_numpy_array"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyeq.lib.lib_inversion.numpy_recarray_2_numpy_array" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="pyeq.lib.lib_inversion.numpy_recarray_2_numpy_array">
+<span class="sig-prename descclassname"><span class="pre">pyeq.lib.lib_inversion.</span></span><span class="sig-name descname"><span class="pre">numpy_recarray_2_numpy_array</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">A</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pyeq/lib/lib_inversion.html#numpy_recarray_2_numpy_array"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pyeq.lib.lib_inversion.numpy_recarray_2_numpy_array" title="Permalink to this definition"></a></dt>
 <dd><p>Converts a structured array (with homogeneous dtype) to a np.array</p>
 </dd></dl>
 
 <dl class="py function">
-<dt id="pyeq.lib.lib_inversion.rectangular_dislocations_from_geometry">
-<code class="sig-prename descclassname">pyeq.lib.lib_inversion.</code><code class="sig-name descname">rectangular_dislocations_from_geometry</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">GEOMETRY</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pyeq/lib/lib_inversion.html#rectangular_dislocations_from_geometry"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyeq.lib.lib_inversion.rectangular_dislocations_from_geometry" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="pyeq.lib.lib_inversion.rectangular_dislocations_from_geometry">
+<span class="sig-prename descclassname"><span class="pre">pyeq.lib.lib_inversion.</span></span><span class="sig-name descname"><span class="pre">rectangular_dislocations_from_geometry</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">GEOMETRY</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pyeq/lib/lib_inversion.html#rectangular_dislocations_from_geometry"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pyeq.lib.lib_inversion.rectangular_dislocations_from_geometry" title="Permalink to this definition"></a></dt>
 <dd><p>Extract the rectangular dislocations from a pyeq_model GEOMETRY numpy array</p>
 </dd></dl>
 
 <dl class="py function">
-<dt id="pyeq.lib.lib_inversion.centroid_from_geometry">
-<code class="sig-prename descclassname">pyeq.lib.lib_inversion.</code><code class="sig-name descname">centroid_from_geometry</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">GEOMETRY</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pyeq/lib/lib_inversion.html#centroid_from_geometry"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyeq.lib.lib_inversion.centroid_from_geometry" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="pyeq.lib.lib_inversion.centroid_from_geometry">
+<span class="sig-prename descclassname"><span class="pre">pyeq.lib.lib_inversion.</span></span><span class="sig-name descname"><span class="pre">centroid_from_geometry</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">GEOMETRY</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pyeq/lib/lib_inversion.html#centroid_from_geometry"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pyeq.lib.lib_inversion.centroid_from_geometry" title="Permalink to this definition"></a></dt>
 <dd><p>Extract centroid from a pyeq_model GEOMETRY numpy array</p>
 </dd></dl>
 
 <dl class="py function">
-<dt id="pyeq.lib.lib_inversion.make_isotropic_exponential_Cm">
-<code class="sig-prename descclassname">pyeq.lib.lib_inversion.</code><code class="sig-name descname">make_isotropic_exponential_Cm</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">Dm</span></em>, <em class="sig-param"><span class="n">dc</span></em>, <em class="sig-param"><span class="n">sigma</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pyeq/lib/lib_inversion.html#make_isotropic_exponential_Cm"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyeq.lib.lib_inversion.make_isotropic_exponential_Cm" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="pyeq.lib.lib_inversion.make_isotropic_exponential_Cm">
+<span class="sig-prename descclassname"><span class="pre">pyeq.lib.lib_inversion.</span></span><span class="sig-name descname"><span class="pre">make_isotropic_exponential_Cm</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">Dm</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dc</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sigma</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pyeq/lib/lib_inversion.html#make_isotropic_exponential_Cm"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pyeq.lib.lib_inversion.make_isotropic_exponential_Cm" title="Permalink to this definition"></a></dt>
 <dd><p>Creates an isotropic exponential matrix Cm_ij=np.exp(-Dm_ij/dc)*sigma**2</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>Dm</strong> – distance matrix between centroid of subfaults, that is Dm[i,j]=distance in km between subfaults i and j</p></li>
 <li><p><strong>dc</strong> – dc, critical ditance in km</p></li>
@@ -271,11 +187,11 @@ names is the names of each field</p>
 </dd></dl>
 
 <dl class="py function">
-<dt id="pyeq.lib.lib_inversion.normalize_linear_system">
-<code class="sig-prename descclassname">pyeq.lib.lib_inversion.</code><code class="sig-name descname">normalize_linear_system</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">G</span></em>, <em class="sig-param"><span class="n">d</span></em>, <em class="sig-param"><span class="n">m0</span></em>, <em class="sig-param"><span class="n">Cd</span></em>, <em class="sig-param"><span class="n">Cm</span></em>, <em class="sig-param"><span class="n">rake_constraint</span></em>, <em class="sig-param"><span class="n">insar</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">verbose</span><span class="o">=</span><span class="default_value">True</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pyeq/lib/lib_inversion.html#normalize_linear_system"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyeq.lib.lib_inversion.normalize_linear_system" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="pyeq.lib.lib_inversion.normalize_linear_system">
+<span class="sig-prename descclassname"><span class="pre">pyeq.lib.lib_inversion.</span></span><span class="sig-name descname"><span class="pre">normalize_linear_system</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">G</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">d</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">m0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">Cd</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">Cm</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">rake_constraint</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">insar</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">verbose</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pyeq/lib/lib_inversion.html#normalize_linear_system"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pyeq.lib.lib_inversion.normalize_linear_system" title="Permalink to this definition"></a></dt>
 <dd><p>Normalize the linear system using the approach described in Nocquet (2018)</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>G</strong> – model matrix</p></li>
 <li><p><strong>d</strong> – observation vector</p></li>
@@ -289,87 +205,62 @@ names is the names of each field</p>
 </dd></dl>
 
 <dl class="py function">
-<dt id="pyeq.lib.lib_inversion.make_inversion_linear_bayesian">
-<code class="sig-prename descclassname">pyeq.lib.lib_inversion.</code><code class="sig-name descname">make_inversion_linear_bayesian</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">G</span></em>, <em class="sig-param"><span class="n">d</span></em>, <em class="sig-param"><span class="n">Cd</span></em>, <em class="sig-param"><span class="n">Cm</span></em>, <em class="sig-param"><span class="n">scalar_m0</span></em>, <em class="sig-param"><span class="n">m0</span></em>, <em class="sig-param"><span class="n">verbose</span><span class="o">=</span><span class="default_value">True</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pyeq/lib/lib_inversion.html#make_inversion_linear_bayesian"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyeq.lib.lib_inversion.make_inversion_linear_bayesian" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="pyeq.lib.lib_inversion.make_inversion_linear_bayesian">
+<span class="sig-prename descclassname"><span class="pre">pyeq.lib.lib_inversion.</span></span><span class="sig-name descname"><span class="pre">make_inversion_linear_bayesian</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">G</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">d</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">Cd</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">Cm</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">scalar_m0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">m0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">verbose</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pyeq/lib/lib_inversion.html#make_inversion_linear_bayesian"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pyeq.lib.lib_inversion.make_inversion_linear_bayesian" title="Permalink to this definition"></a></dt>
 <dd><p>Simple linear inversion, with model covariance matrix Cm, data covariance matrix Cd, and a priori model m0</p>
 <p>m = m0 + ( Cm * Gt * ( (G * Cm * Gt) + Cd )-1 ) * (d - G * m0 )</p>
 </dd></dl>
 
 <dl class="py function">
-<dt id="pyeq.lib.lib_inversion.sym_inv_chol">
-<code class="sig-prename descclassname">pyeq.lib.lib_inversion.</code><code class="sig-name descname">sym_inv_chol</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">A</span></em>, <em class="sig-param"><span class="n">debug</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pyeq/lib/lib_inversion.html#sym_inv_chol"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyeq.lib.lib_inversion.sym_inv_chol" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="pyeq.lib.lib_inversion.sym_inv_chol">
+<span class="sig-prename descclassname"><span class="pre">pyeq.lib.lib_inversion.</span></span><span class="sig-name descname"><span class="pre">sym_inv_chol</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">A</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">debug</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pyeq/lib/lib_inversion.html#sym_inv_chol"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pyeq.lib.lib_inversion.sym_inv_chol" title="Permalink to this definition"></a></dt>
 <dd><p>Computes the inverse of a symmetric positive definite matrix, using Cholesky factorization
 Uses LAPACK DPOTRF (Cholesky factorization) and DPOTRI routines</p>
 </dd></dl>
 
 <dl class="py function">
-<dt id="pyeq.lib.lib_inversion.sol_unbounded_gaussian">
-<code class="sig-prename descclassname">pyeq.lib.lib_inversion.</code><code class="sig-name descname">sol_unbounded_gaussian</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">m0</span></em>, <em class="sig-param"><span class="n">G</span></em>, <em class="sig-param"><span class="n">Cm</span></em>, <em class="sig-param"><span class="n">Cd</span></em>, <em class="sig-param"><span class="n">d</span></em>, <em class="sig-param"><span class="n">return_precision_matrix</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">verbose</span><span class="o">=</span><span class="default_value">True</span></em>, <em class="sig-param"><span class="n">debug</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pyeq/lib/lib_inversion.html#sol_unbounded_gaussian"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyeq.lib.lib_inversion.sol_unbounded_gaussian" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="pyeq.lib.lib_inversion.sol_unbounded_gaussian">
+<span class="sig-prename descclassname"><span class="pre">pyeq.lib.lib_inversion.</span></span><span class="sig-name descname"><span class="pre">sol_unbounded_gaussian</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">m0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">G</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">Cm</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">Cd</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">d</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">return_precision_matrix</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">verbose</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">debug</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pyeq/lib/lib_inversion.html#sol_unbounded_gaussian"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pyeq.lib.lib_inversion.sol_unbounded_gaussian" title="Permalink to this definition"></a></dt>
 <dd><p>Calculates the solution mm and cov(mm) and optionally Hmm of the unbounded inverse problem, using Tarantola &amp; Valette (1982) solution</p>
 </dd></dl>
 
 <dl class="py function">
-<dt id="pyeq.lib.lib_inversion.renormalization_bounded_inversion">
-<code class="sig-prename descclassname">pyeq.lib.lib_inversion.</code><code class="sig-name descname">renormalization_bounded_inversion</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">A</span></em>, <em class="sig-param"><span class="n">SLIP_NO_BOUNDS</span></em>, <em class="sig-param"><span class="n">SLIP_BOUNDS</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pyeq/lib/lib_inversion.html#renormalization_bounded_inversion"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyeq.lib.lib_inversion.renormalization_bounded_inversion" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="pyeq.lib.lib_inversion.renormalization_bounded_inversion">
+<span class="sig-prename descclassname"><span class="pre">pyeq.lib.lib_inversion.</span></span><span class="sig-name descname"><span class="pre">renormalization_bounded_inversion</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">A</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">SLIP_NO_BOUNDS</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">SLIP_BOUNDS</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pyeq/lib/lib_inversion.html#renormalization_bounded_inversion"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pyeq.lib.lib_inversion.renormalization_bounded_inversion" title="Permalink to this definition"></a></dt>
 <dd><p>Calculates the renormalization factor for a bounded domain</p>
 </dd></dl>
 
-</div>
+</section>
 
 
            </div>
-           
           </div>
-          <footer>
-  
-    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
-      
-        <a href="pyeq.lib.make_inversion.html" class="btn btn-neutral float-right" title="pyeq.lib.make_inversion module" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
-      
-      
-        <a href="pyeq.lib.green_tensor.html" class="btn btn-neutral float-left" title="pyeq.lib.green_tensor module" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
-      
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="pyeq.lib.green_tensor.html" class="btn btn-neutral float-left" title="pyeq.lib.green_tensor module" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="pyeq.lib.make_inversion.html" class="btn btn-neutral float-right" title="pyeq.lib.make_inversion module" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
-  
 
   <hr/>
 
   <div role="contentinfo">
-    <p>
-        
-        &copy; Copyright 2016, Jean-Mathieu Nocquet IRD/Geoazur
-
-    </p>
+    <p>&#169; Copyright 2016, Jean-Mathieu Nocquet IRD/Geoazur.</p>
   </div>
-    
-    
-    
-    Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a
-    
-    <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a>
-    
-    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
 
 </footer>
-
         </div>
       </div>
-
     </section>
-
   </div>
-  
-
-  <script type="text/javascript">
+  <script>
       jQuery(function () {
           SphinxRtdTheme.Navigation.enable(true);
       });
-  </script>
-
-  
-  
-    
-   
+  </script> 
 
 </body>
 </html>

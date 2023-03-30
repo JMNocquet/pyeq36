@@ -14,6 +14,7 @@ Contents:
    :maxdepth: 4 
 
    foreword
+   installation
    behaviour
    tutorial_static_inversion
    dates

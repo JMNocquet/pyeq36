@@ -59,6 +59,7 @@ parser.add_argument('-type', action='store',default='tde',help='dislocation elem
 parser.add_argument('-method', action='store',default='nikkhoo',help='method for Green tensor calculation: nikkhoo (default), meade (tde only) or edcmp (rde only)')
 parser.add_argument('--verbose', '-v', action='count',default=0,help='verbose mode')
 parser.add_argument('--debug', action='count',default=0,help='debug mode')
+parser.add_argument('--tensile', action='count',default=0,help='computes also Green coefficient for tensile slip')
 parser.add_argument('-e', action='store',type=str,required=True, dest='experiment',help='experiment name')
 
 args = parser.parse_args()
@@ -94,6 +95,18 @@ if ('tde' in args.type.lower()) and ('edcmp' in args.method.lower()):
 
 if ('rde' in args.type.lower()) and ('meade' in args.method.lower()):
     ERROR("meade method only is for triangular dislocations",exit=True)
+
+if args.tensile > 0:
+    args.tensile = True
+    MESSAGE('Also computing tensile Green coefficients')
+else:
+    args.tensile = False
+
+if args.tensile and ('edcmp' in args.method.lower()):
+    ERROR("edcmp does not allow tensile slip" , exit=True )
+
+if args.tensile and ('meade' in args.method.lower()):
+    ERROR("meade does not allow tensile slip" , exit=True )
 
 ###############################################################################
 # READS GEOMETRY FILE AS NPY
@@ -184,14 +197,17 @@ if OBS.shape[0] > 0:
         GREEN = pyeq.green.make.meade_tde( GEOMETRY , OBS[:,:2], coor_type='geo' , disp=True, strain=False, stress= False, verbose=verbose )
 
     if ('tde' in args.type) and ('nikkhoo' in args.method):
-        GREEN = pyeq.green.make.nikkhoo_tde( GEOMETRY , OBS[:,:2], coor_type='geo' , disp=True, strain=False, stress= False, verbose=verbose )
+        GREEN = pyeq.green.make.nikkhoo_tde( GEOMETRY , OBS[:,:2], tensile=args.tensile, coor_type='geo' , disp=True, strain=False, stress= False, verbose=verbose )
 
     if ('rde' in args.type) and ('nikkhoo' in args.method):
-        GREEN = pyeq.green.make.nikkhoo_rde(GEOMETRY, OBS[:, :2], coor_type='geo', disp=True, strain=False,
+        GREEN = pyeq.green.make.nikkhoo_rde(GEOMETRY, OBS[:, :2], tensile=args.tensile, coor_type='geo', disp=True, strain=False,
                                             stress=False, verbose=verbose)
 
     if ('rde' in args.type) and ('edcmp' in args.method):
         GREEN, GREEN_STRAIN = pyeq.green.make.edcmp_rde( GEOMETRY , OBS[:,:2], coor_type='geo' , disp=True, strain=True, stress= False, verbose=verbose )
+
+    if ('tde' in args.type) and ('cutde' in args.method):
+        GREEN = pyeq.green.make.cutde_tde( GEOMETRY , OBS[:,:2], tensile=args.tensile, coor_type='geo' , disp=True, strain=False, stress= False, verbose=verbose )
 
 ###############################################################################
 # CREATES OBSERVATION FILE FOR VERTICAL COMPONENT IF PROVIDED
@@ -205,10 +221,10 @@ if OBS_UP.shape[0] > 0:
         GREEN_UP = pyeq.green.make.meade_tde( GEOMETRY , OBS_UP[:,:2], coor_type='geo' , disp=True, strain=False, stress= False, verbose=verbose )
 
     if ('tde' in args.type) and ('nikkhoo' in args.method):
-        GREEN_UP = pyeq.green.make.nikkhoo_tde( GEOMETRY , OBS_UP[:,:2], coor_type='geo' , disp=True, strain=False, stress= False, verbose=verbose )
+        GREEN_UP = pyeq.green.make.nikkhoo_tde( GEOMETRY , OBS_UP[:,:2], tensile=args.tensile, coor_type='geo' , disp=True, strain=False, stress= False, verbose=verbose )
 
     if ('rde' in args.type) and ('nikkhoo' in args.method):
-        GREEN_UP = pyeq.green.make.nikkhoo_rde(GEOMETRY, OBS_UP[:, :2], coor_type='geo', disp=True, strain=False,
+        GREEN_UP = pyeq.green.make.nikkhoo_rde(GEOMETRY, OBS_UP[:, :2], tensile=args.tensile, coor_type='geo', disp=True, strain=False,
                                             stress=False, verbose=verbose)
 
     if ('rde' in args.type) and ('edcmp' in args.method):
@@ -228,11 +244,11 @@ if OBS_INSAR.shape[0] > 0:
                                              stress=False, verbose=verbose)
 
     if ('tde' in args.type) and ('nikkhoo' in args.method):
-        GREEN_INSAR = pyeq.green.make.nikkhoo_tde(GEOMETRY, OBS_INSAR[:, :2], coor_type='geo', disp=True, strain=False,
+        GREEN_INSAR = pyeq.green.make.nikkhoo_tde(GEOMETRY, OBS_INSAR[:, :2], tensile=args.tensile,  coor_type='geo', disp=True, strain=False,
                                                stress=False, verbose=verbose)
 
     if ('rde' in args.type) and ('nikkhoo' in args.method):
-        GREEN_INSAR = pyeq.green.make.nikkhoo_rde(GEOMETRY, OBS_INSAR[:, :2], coor_type='geo', disp=True, strain=False,
+        GREEN_INSAR = pyeq.green.make.nikkhoo_rde(GEOMETRY, OBS_INSAR[:, :2], tensile=args.tensile,  coor_type='geo', disp=True, strain=False,
                                                stress=False, verbose=verbose)
 
     if ('rde' in args.type) and ('edcmp' in args.method):

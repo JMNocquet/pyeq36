@@ -81,8 +81,9 @@ def geometry2shp_gmt(geometry, type_dis, out_shp=None, out_gmt=None , verbose=Tr
             # get the corners
             (X1,X2,X3,X4)=disloc.corners()
             lfaults.append([ [X1[0],X1[1]], [X2[0],X2[1]], [X3[0],X3[1]], [X4[0],X4[1]], [X1[0],X1[1]] ])
-            lrecord.append([i,depth])
-    
+#            lrecord.append([i,depth])
+            lrecord.append([i,centroid_depth, strike,dip,rdis_area])
+
     MESSAGE( ("%d polygons read" % len(lfaults) ))
 
     ###################################################################

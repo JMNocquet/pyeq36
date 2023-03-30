@@ -150,11 +150,21 @@ except:
     ERROR( ("Could not read grid: %s" % (args.grd)),exit=True )
 
 z = ds.variables['z'][:].T
+# change JMN 28/03/2023 - account for 0-360 grid like slab2
+longitudes = ds.variables['x'][:]
+lidx = np.where( longitudes > 180 )[0]
+longitudes[lidx] = longitudes[lidx] - 360.
 interp = scipy.interpolate.RegularGridInterpolator(
-    tuple((ds.variables['x'][:], ds.variables['y'][:])),
+    tuple((longitudes, ds.variables['y'][:])),
     z.data,
     method='linear',
     bounds_error=False)
+############################################################
+#interp = scipy.interpolate.RegularGridInterpolator(
+#    tuple((ds.variables['x'][:], ds.variables['y'][:])),
+#    z.data,
+#    method='linear',
+#    bounds_error=False)
 
 interpolated = interp( (a[:,0], a[:,1]) )
 
@@ -283,11 +293,17 @@ for i in np.arange( nedge ):
     edge[i,:2] = mesh.edge2[i][0]
 
 # fill depth from grid
+# change JMN 28/03/2023 to accommodate 0-360 grid
 interp = scipy.interpolate.RegularGridInterpolator(
-    tuple((ds.variables['x'][:], ds.variables['y'][:])),
+    tuple((longitudes, ds.variables['y'][:])),
     z.data,
     method='linear',
     bounds_error=True)
+#interp = scipy.interpolate.RegularGridInterpolator(
+#    tuple((ds.variables['x'][:], ds.variables['y'][:])),
+#    z.data,
+#    method='linear',
+#    bounds_error=True)
 vert[:,2] = interp( (vert[:,0], vert[:,1]) )
 
 # check vertices on the mesh edges
