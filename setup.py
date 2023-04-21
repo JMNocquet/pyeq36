@@ -2,6 +2,9 @@ from setuptools import setup
 
 ###############################################################################
 # VERSION HISTORY
+# 0.55.5 on 20230419 : refactoring and test on K-fold cross validation - minor bug (VERBOSE) in geometry_remove_idx
+# 0.55.4 on 20230413 : added cutde in pyeq_mesh_jigwas.py
+# 0.55.3 on 20230405 : added parallel option in sgts2tensor
 # 0.55.2 on 20230330 : added Green's function computation using cutde (https://github.com/tbenthompson/cutde)
 # 0.55.1 on 20230328 : can now read 0-360 longitude files in pyeq_parametrize_curve_surface_triangle.py/get_depth
 # 0.55.0 on 20230227 : added import pyacs in pyaks.py. Was causing an error when --cross_validation build with mpck option
@@ -56,7 +59,7 @@ cmdclass = {'build_sphinx': BuildDoc}
 
 name = 'pyeq'
 version = '0.55'
-release = '0.55.2'
+release = '0.55.5'
 
 setup(name = name,
       version = release,
@@ -83,6 +86,7 @@ setup(name = name,
                 'pyeq.green.okada_rde',
                 'pyeq.message',
                 'pyeq.coulomb',
+                'pyeq.cross_validation',
                 'pyeq.regularization',
                 'pyeq.regularization.laplace',
                 'pyeq.regularization.damping',

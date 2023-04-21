@@ -18,6 +18,7 @@
 # TODO reactivate printing resolution.dat ; there is a compatibility issue when model.geometry_type = 'TDV'
 # TODO implement model.geometry_type = 'RDE' (rectangular dislocation element)
 # TODO check incompatible options: mpck option is not compatible with backwards and cross_validation
+# TODO it is not possible to run a model with model_CROSS_VALIDATION.mpck when TDV option has been set on. Improve this.
 
 ###################################################################
 # MODULES IMPORT
@@ -63,8 +64,11 @@ import pyeq.message.debug_message as DEBUG
 
 from art import tprint
 tprint('PYAKS')
-MESSAGE("PYEQ  version: %s" % pkg_resources.get_distribution("pyeq").version)
-MESSAGE("PYACS version: %s" % pkg_resources.get_distribution("pyacs").version)
+MESSAGE("PYEQ   version: %s" % pkg_resources.get_distribution("pyeq").version)
+MESSAGE("PYACS  version: %s" % pkg_resources.get_distribution("pyacs").version)
+MESSAGE("PYTHON version: %s" % sys.version)
+MESSAGE("NUMPY  version: %s" % pkg_resources.get_distribution("numpy").version)
+MESSAGE("SCIPY  version: %s" % pkg_resources.get_distribution("scipy").version)
 
 
 ###################################################################
@@ -145,332 +149,14 @@ model = pyeq.conf.get_resources_info(model)
 ###################################################################
 
 if model.cross_validation == 'run':
-    # residuals
-    def make_res_model(obs, model):
-        # takes displacement tensors and computes basic stats
-        # corrects model so that 0 is at the first epoch of obs
-        import numpy as np
-        # find and correct bias for each site i
-        mmodel = np.copy(model)
-        for i in np.arange(obs.shape[1]):
-            #print('site i',i)
-            #print(obs[:, i, 0])
-            #print('Is Nan ? ' , np.isnan(obs[:, i, 0]).all())
-            if np.isnan(obs[:, i, 0]).all():continue
-            idx = np.where(~np.isnan(obs[:, i, 0]))[0][0]
-            mmodel[:, i, :] = mmodel[:, i, :] - model[idx, i, :]
-        # residuals
-        res = obs[:, :, :3] - mmodel
-        return res
 
-    # rms routine
-    def make_rms_model(obs, model):
-        # takes displacement tensors and computes basic stats
-        # corrects model so that 0 is at the first epoch of obs
-        import numpy as np
-        # find and correct bias for each site i
-        mmodel = np.copy(model)
-        for i in np.arange(obs.shape[1]):
-            #print('site i',i)
-            #print(obs[:, i, 0])
-            #print('Is Nan ? ' , np.isnan(obs[:, i, 0]).all())
-            if np.isnan(obs[:, i, 0]).all():continue
-            idx = np.where(~np.isnan(obs[:, i, 0]))[0][0]
-            mmodel[:, i, :] = mmodel[:, i, :] - model[idx, i, :]
-        # residuals
-        res = obs[:, :, :3] - mmodel
-        # computes statistics
-        rms_h = np.sqrt(np.nanmean(res[:, :, :2] ** 2))
-        rms_v = np.sqrt(np.nanmean(res[:, :, 2] ** 2))
-        chi2 = np.nansum((res[:, :, :3] / obs[:, :, 3:]) ** 2)
-        num = np.nansum((1. / obs[:, :, 3:]) ** 2)
-        wrms_3D = np.sqrt(chi2 / num)
+    import pyeq.cross_validation.run
 
-        return rms_h, rms_v, chi2, wrms_3D
+    pyeq.cross_validation.run( model )
 
-    # load reference model
-
-    # import
-    import pickle
-    import numpy as np
-    # load model
-    # checking regularization parameters
-    MESSAGE("regularization parameters: %s %s %s %s %s " % ( model.sigma, model.lambda_spatial_smoothing,
-                model.lambda_temporal_smoothing, model.lambda_final_spatial_smoothing, model.lambda_stf ))
-    MESSAGE("Loading reference model model_CROSS_VALIDATION.mpck")
-    with open( 'model_CROSS_VALIDATION.mpck', "rb") as f:
-        model_ref = pickle.load( f )
-    f.close()
-
-    # checking regularization parameters
-    MESSAGE("regularization parameters: %s %s %s %s %s " % ( model.sigma, model.lambda_spatial_smoothing,
-                model.lambda_temporal_smoothing, model.lambda_final_spatial_smoothing, model.lambda_stf ))
-
-    model_ref.sigma, model_ref.lambda_spatial_smoothing, \
-    model_ref.lambda_temporal_smoothing, model_ref.lambda_final_spatial_smoothing, model_ref.lambda_stf = \
-    model.sigma, model.lambda_spatial_smoothing, \
-    model.lambda_temporal_smoothing, model.lambda_final_spatial_smoothing, model.lambda_stf
-
-    model = model_ref
-
-    MESSAGE("regularization parameters used for cross-validation: %s %s %s %s %s " % ( model.sigma, model.lambda_spatial_smoothing,
-                model.lambda_temporal_smoothing, model.lambda_final_spatial_smoothing, model.lambda_stf ))
-
-
-    # run K0 with all observations
-    model.N = np.load('CROSS_VALIDATION_N.npy')
-    model.Nd = np.load('CROSS_VALIDATION_Nd.npy')
-
-    import pyeq.regularization.laplace
-
-    model = pyeq.regularization.laplace.add_laplace_cons(model)
-    model = pyeq.regularization.damping.add_damping_cons(model)
-
-    if model.regularization in ['covariance', 'laplacian']:
-        model.parameters, time_inversion = pyeq.optimization.wrapper.make_inversion.pyeq_nnls(model.N, model.Nd, model.nnls,
-                                                                                              verbose=model.verbose)
-    # print results
-
-    if model.geometry_type == 'TDV':
-        MESSAGE("Reformatting output slip from triangular vertices (TDV) to triangular dislocation elements (TDE)")
-        SRN = model.parameters.reshape(-1, model.green_node.shape[1]).T
-        model.green = model.green_subfault
-        SR = np.zeros((model.matrix_subfault_to_node.shape[0], SRN.shape[1]))
-
-        for i in np.arange(SRN.shape[1]):
-            SR[:, i] = np.dot(model.matrix_subfault_to_node, SRN[:, i])
-        model.parameters = SR.T.flatten()
-        model.nfaults = model.green.shape[1]
-
-
-    ###################################################################
-    # REMOVE N & Nd ATTRIBUTES FROM MODEL
-    ###################################################################
-
-    VERBOSE("Deleting Normal System from model")
-
-    try:
-        delattr(model, 'N')
-        delattr(model, 'Nd')
-    except:
-        ERROR("deleting normal system attributes")
-
-    ###################################################################
-    # INVERSION SUMMARY
-    ###################################################################
-    MESSAGE(("INVERSION RESULTS SUMMARY ALL DATA"), level=1)
-    if model.nconstant > 0:
-        model.slip = model.parameters[:-model.nconstant]
-        model.estimated_offsets = model.parameters[-model.nconstant:]
-    else:
-        model.slip = model.parameters
-        model.estimated_offsets = None
-
-    import pyeq.log
-
-    model = pyeq.log.print_dates(model, save=False)
-    model = pyeq.log.print_sol_to_slip(model, save=False)
-    model = pyeq.log.print_stf(model, save=False)
-    model.M0 = model.CSTF[-1]
-    model = pyeq.log.print_offset(model, save=False)
-    model = pyeq.log.print_modeled_time_series(model, save=False)
-
-    if model.M0 > 0:
-        model.magnitude = 2. / 3. * (np.log10(model.M0) - 9.1)
-    else:
-        model.magnitude = -99
-    # moment
-    MESSAGE("Moment (N.n): %8.2E (Mw%.1lf)" % (model.M0, model.magnitude))
-    # max cumulated slip
-
-    # maximum moment rate
-    mmr = np.max(model.STF)
-    if mmr > 0:
-        MESSAGE("Maximum moment rate per day: %8.2E (Mw%.1lf)" % (mmr, 2. / 3. * (np.log10(mmr) - 9.1)))
-    else:
-        MESSAGE("Maximum moment rate per day: %8.2E (Mw%.1lf)" % (mmr, -99))
-
-    # max slip rate
-    i_cs_max = np.unravel_index(np.argmax(model.NORM_CUMULATIVE_SLIP_PER_TIME_STEP),
-                                model.NORM_CUMULATIVE_SLIP_PER_TIME_STEP.shape)
-    slip_max = model.NORM_CUMULATIVE_SLIP_PER_TIME_STEP[i_cs_max]
-    model.idx_cumulative_slip_max = i_cs_max[1]
-
-    MESSAGE("cumulative slip max  (mm)        : %8.1f fault #%d (%.2lf,%.2lf)" % (slip_max, i_cs_max[1],
-                                                                                  model.sgeometry.centroid_long[
-                                                                                      i_cs_max[1]],
-                                                                                  model.sgeometry.centroid_lat[
-                                                                                      i_cs_max[1]]))
-
-
-    rms_h, rms_v, chi2, wrms_3d = make_rms_model(model.t_obs, model.t_mod)
-
-    MESSAGE(("rms_h (mm):%.2lf" % rms_h))
-    MESSAGE(("rms_v (mm):%.2lf" % rms_v))
-    MESSAGE(("wrms_3d (mm):%.2lf" % wrms_3d))
-    MESSAGE(("chi2 (mm**2):%.2lf" % chi2))
-
-
-    with open('L_CURVE.dat','a') as flcurve:
-        flcurve.write("%8.3lf %8.3lf %8.3lf %8.3lf %8.3lf %8.3lf %8.3lf %8.3lf %8.3lf\n" % \
-                tuple(map(float,(model.sigma, model.lambda_spatial_smoothing, \
-                model.lambda_temporal_smoothing, model.lambda_final_spatial_smoothing, model.lambda_stf, \
-                 rms_h, rms_v, chi2, wrms_3d))))
-
-
-    ###########################################################################
-    # Loop on K-fold
-    ###########################################################################
-
-    # load index info
-    np_idxcv_dates = np.load('CROSS_VALIDATION_idxcv_dates.npy')
-    np_idxcv_gps   = np.load('CROSS_VALIDATION_idxcv_gps.npy')
-
-    MSE_CV = 0.
-
-    for k in np.arange(1,10):
-
-        MESSAGE(("Running K-fold: %d with regularization parameters : %s/%s/%s/%s/%s" %
-                 (k,model.sigma, model.lambda_spatial_smoothing,
-        model.lambda_temporal_smoothing, model.lambda_final_spatial_smoothing, model.lambda_stf)) , level=1)
-
-        MESSAGE("GPS sites with 1/3 data deleted")
-        str_message = " ".join(model.np_gps_site[np_idxcv_gps[k,0]:np_idxcv_gps[k,1]])
-        MESSAGE(str_message)
-
-        # load N & Nd
-        Nfile = ("CROSS_VALIDATION_NK%d.npy" % k )
-        Ndfile = ("CROSS_VALIDATION_NdK%d.npy" % k )
-        model.N = np.load( Nfile )
-        model.Nd = np.load( Ndfile )
-
-        MESSAGE("regularization parameters used for cross-validation: %s %s %s %s %s " % (
-        model.sigma, model.lambda_spatial_smoothing,
-        model.lambda_temporal_smoothing, model.lambda_final_spatial_smoothing, model.lambda_stf))
-
-        import pyeq.regularization.laplace
-
-        model = pyeq.regularization.laplace.add_laplace_cons(model)
-        model = pyeq.regularization.damping.add_damping_cons(model)
-
-        if model.regularization in ['covariance', 'laplacian']:
-            model.parameters, time_inversion = pyeq.optimization.wrapper.make_inversion.pyeq_nnls(model.N, model.Nd, model.nnls,
-                                                                                                  verbose=model.verbose)
-        # print results
-
-        if model.geometry_type == 'TDV':
-            MESSAGE("Reformatting output slip from triangular vertices (TDV) to triangular dislocation elements (TDE)")
-            SRN = model.parameters.reshape(-1, model.green_node.shape[1]).T
-            model.green = model.green_subfault
-            SR = np.zeros((model.matrix_subfault_to_node.shape[0], SRN.shape[1]))
-
-            for i in np.arange(SRN.shape[1]):
-                SR[:, i] = np.dot(model.matrix_subfault_to_node, SRN[:, i])
-            model.parameters = SR.T.flatten()
-            model.nfaults = model.green.shape[1]
-
-        ###################################################################
-        # REMOVE N & Nd ATTRIBUTES FROM MODEL
-        ###################################################################
-
-        VERBOSE("Deleting Normal System from model")
-
-        try:
-            delattr(model, 'N')
-            delattr(model, 'Nd')
-        except:
-            ERROR("deleting normal system attributes")
-
-        ###################################################################
-        # INVERSION SUMMARY
-        ###################################################################
-        MESSAGE(("INVERSION RESULTS SUMMARY K=%d" % k), level=1)
-        if model.nconstant > 0:
-            model.slip = model.parameters[:-model.nconstant]
-            model.estimated_offsets = model.parameters[-model.nconstant:]
-        else:
-            model.slip = model.parameters
-            model.estimated_offsets = None
-
-        import pyeq.log
-
-        model = pyeq.log.print_dates(model, save=False)
-        model = pyeq.log.print_sol_to_slip(model, save=False)
-        model = pyeq.log.print_stf(model, save=False)
-        model.M0 = model.CSTF[-1]
-        model = pyeq.log.print_offset(model, save=False)
-        model = pyeq.log.print_modeled_time_series(model, save=False)
-
-        if model.M0 > 0:
-            model.magnitude = 2. / 3. * (np.log10(model.M0) - 9.1)
-        else:
-            model.magnitude = -99
-        # moment
-        MESSAGE("Moment (N.n): %8.2E (Mw%.1lf)" % (model.M0, model.magnitude))
-        # max cumulated slip
-
-        # maximum moment rate
-        mmr = np.max(model.STF)
-        if mmr > 0:
-            MESSAGE("Maximum moment rate per day: %8.2E (Mw%.1lf)" % (mmr, 2. / 3. * (np.log10(mmr) - 9.1)))
-        else:
-            MESSAGE("Maximum moment rate per day: %8.2E (Mw%.1lf)" % (mmr, -99))
-
-        # max slip rate
-        i_cs_max = np.unravel_index(np.argmax(model.NORM_CUMULATIVE_SLIP_PER_TIME_STEP),
-                                    model.NORM_CUMULATIVE_SLIP_PER_TIME_STEP.shape)
-        slip_max = model.NORM_CUMULATIVE_SLIP_PER_TIME_STEP[i_cs_max]
-        model.idx_cumulative_slip_max = i_cs_max[1]
-
-        MESSAGE("cumulative slip max  (mm)        : %8.1f fault #%d (%.2lf,%.2lf)" % (slip_max, i_cs_max[1],
-                                                                                      model.sgeometry.centroid_long[
-                                                                                          i_cs_max[1]],
-                                                                                      model.sgeometry.centroid_lat[
-                                                                                          i_cs_max[1]]))
-
-        rms_h, rms_v, chi2, wrms_3d = make_rms_model(model.t_obs, model.t_mod)
-
-        MESSAGE(("rms_h (mm):%.2lf" % rms_h))
-        MESSAGE(("rms_v (mm):%.2lf" % rms_v))
-        MESSAGE(("wrms_3d (mm):%.2lf" % wrms_3d))
-        MESSAGE(("chi2 (mm**2):%.2lf" % chi2))
-
-
-        #t_obs = model.t_obs[np_idxcv_dates[k,0]:np_idxcv_dates[k,1],np_idxcv_gps[k,0]:np_idxcv_gps[k,1],:]
-        #t_mod = model.t_mod[np_idxcv_dates[k,0]:np_idxcv_dates[k,1],np_idxcv_gps[k,0]:np_idxcv_gps[k,1],:]
-        #rms_h, rms_v, chi2, wrms_3d = make_rms_model(t_obs, t_mod)
-
-        res = make_res_model(model.t_obs, model.t_mod)
-
-        # computes statistics
-        rms_h = np.sqrt(np.nanmean(res[np_idxcv_dates[k,0]:np_idxcv_dates[k,1],np_idxcv_gps[k,0]:np_idxcv_gps[k,1], :2] ** 2))
-        rms_v = np.sqrt(np.nanmean(res[np_idxcv_dates[k,0]:np_idxcv_dates[k,1],np_idxcv_gps[k,0]:np_idxcv_gps[k,1], 2] ** 2))
-        chi2 = np.nansum((res[np_idxcv_dates[k,0]:np_idxcv_dates[k,1],np_idxcv_gps[k,0]:np_idxcv_gps[k,1], :3] / model.t_obs[np_idxcv_dates[k,0]:np_idxcv_dates[k,1],np_idxcv_gps[k,0]:np_idxcv_gps[k,1], 3:]) ** 2)
-        num = np.nansum((1. / model.t_obs[np_idxcv_dates[k,0]:np_idxcv_dates[k,1],np_idxcv_gps[k,0]:np_idxcv_gps[k,1], 3:]) ** 2)
-        wrms_3D = np.sqrt(chi2 / num)
-
-
-        MESSAGE(("MSE K=%d rms_h (mm):%.2lf" % (k,rms_h)))
-        MESSAGE(("MSE K=%d rms_v (mm):%.2lf" % (k,rms_v)))
-        MESSAGE(("MSE K=%d wrms_3d (mm):%.2lf" % (k,wrms_3d)))
-        MESSAGE(("MSE K=%d chi2 (mm**2):%.2lf" % (k,chi2)))
-
-        with open('MSE_K.dat','a') as flcurve:
-            flcurve.write("%8.3lf %8.3lf %8.3lf %8.3lf %8.3lf %d %8.3lf %8.3lf %8.3lf %8.3lf\n" % \
-                    tuple(map(float,(model.sigma, model.lambda_spatial_smoothing, \
-                    model.lambda_temporal_smoothing, model.lambda_final_spatial_smoothing, model.lambda_stf, \
-                     k, rms_h, rms_v, chi2, wrms_3d))))
-
-        MSE_CV = MSE_CV + wrms_3d**2
-
-    with open('MSE_CV.dat','a') as flcurve:
-        flcurve.write("%8.3lf %8.3lf %8.3lf %8.3lf %8.3lf %8.3lf\n" % \
-                tuple(map(float,(model.sigma, model.lambda_spatial_smoothing, \
-                model.lambda_temporal_smoothing, model.lambda_final_spatial_smoothing, model.lambda_stf, \
-                 MSE_CV))))
-
-
+    # end
     sys.exit()
+
 
 
 ###################################################################
@@ -759,101 +445,13 @@ else:
 
     if model.cross_validation == 'build':
         MESSAGE("Building matrices for Cross-validation" )
-        # divides obs in K folds K=9
 
-        date_n3 = int( model.t_obs[:,0,0].size / 3  )
-        r_n3 = model.t_obs[:,0,0].size % 3
-        if r_n3 == 0:
-            len_dates = [date_n3,date_n3,date_n3]
-        if r_n3 == 1:
-            len_dates = [date_n3,date_n3+1,date_n3]
-        if r_n3 == 2:
-            len_dates = [date_n3,date_n3+1,date_n3+1]
+        import pyeq.cross_validation.build
 
-        gps_n3 = int( model.t_obs[0,:,0].size / 3  )
-        r_n3 = model.t_obs[0,:,0].size % 3
-        if r_n3 == 0:
-            len_gps = [gps_n3,gps_n3,gps_n3]
-        if r_n3 == 1:
-            len_gps = [gps_n3, gps_n3+1, gps_n3]
-        if r_n3 == 2:
-            len_gps = [gps_n3,gps_n3+1,gps_n3+1]
+        model = pyeq.cross_validation.build( model )
 
-        # array of indices of obs used for validation
-        np_idxcv_dates = np.zeros(( 10,2 ),dtype=int)
-        np_idxcv_gps   = np.zeros(( 10,2 ),dtype=int)
+        sys.exit()
 
-        # K1
-        np_idxcv_dates[1,:] = [0,len_dates[0]]
-        np_idxcv_gps[1,:]   = [0,len_gps[0]]
-        # K2
-        np_idxcv_dates[2,:] = [0,len_dates[0]]
-        np_idxcv_gps[2,:]   = [len_gps[0],len_gps[0]+len_gps[1]]
-        # etc K 3-> 9
-        np_idxcv_dates[3,:] = [0,len_dates[0]]
-        np_idxcv_gps[3,:]   = [len_gps[0]+len_gps[1],len_gps[0]+len_gps[1]+len_gps[2]]
-
-        np_idxcv_dates[4,:] = [len_dates[0],len_dates[0]+len_dates[1]]
-        np_idxcv_gps[4,:]   = [0,len_gps[0]]
-        np_idxcv_dates[5,:] = [len_dates[0],len_dates[0]+len_dates[1]]
-        np_idxcv_gps[5,:]   = [len_gps[0],len_gps[0]+len_gps[1]]
-        np_idxcv_dates[6,:] = [len_dates[0],len_dates[0]+len_dates[1]]
-        np_idxcv_gps[6,:]   = [len_gps[0]+len_gps[1],len_gps[0]+len_gps[1]+len_gps[2]]
-
-        np_idxcv_dates[7,:] = [len_dates[0]+len_dates[1],len_dates[0]+len_dates[1]+len_dates[2]]
-        np_idxcv_gps[7,:]   = [0,len_gps[0]]
-        np_idxcv_dates[8,:] = [len_dates[0]+len_dates[1],len_dates[0]+len_dates[1]+len_dates[2]]
-        np_idxcv_gps[8,:]   = [len_gps[0],len_gps[0]+len_gps[1]]
-        np_idxcv_dates[9,:] = [len_dates[0]+len_dates[1],len_dates[0]+len_dates[1]+len_dates[2]]
-        np_idxcv_gps[9,:]   = [len_gps[0]+len_gps[1],len_gps[0]+len_gps[1]+len_gps[2]]
-
-        MESSAGE("Saving indices of K-folds")
-        np.save( 'CROSS_VALIDATION_idxcv_dates.npy',np_idxcv_dates )
-        np.save( 'CROSS_VALIDATION_idxcv_gps.npy',np_idxcv_gps )
-
-        MESSAGE("Building and Saving Normal Systems for K-fold cross-validation")
-        # now these are firmly defined
-
-        model.nfaults = model.green.shape[1]
-        model.nstep = model.np_model_date_s.shape[0] - 1
-        model.nparameters = model.nfaults * model.nstep
-
-        if model.up:
-            model.ncomponent = 3
-        else:
-            model.ncomponent = 2
-
-        MESSAGE("Use up component: %s" % model.up)
-        MESSAGE("number of faults/vertices: %d" % model.nfaults)
-        MESSAGE("number of model time steps: %d" % model.nstep)
-        MESSAGE("number of model parameters: %d" % model.nparameters)
-
-        MESSAGE("Building full observation system")
-        (model.N, model.Nd) = pyeq.forward_model.build5(model)
-        MESSAGE("Saving CROSS_VALIDATION_N.npy & CROSS_VALIDATION_Nd.npy")
-        np.save('CROSS_VALIDATION_N.npy',model.N)
-        np.save('CROSS_VALIDATION_Nd.npy',model.Nd)
-
-        # save model.t_obs
-        save_t_obs = np.copy( model.t_obs )
-
-        for i in np.arange(1,10):
-            model.t_obs = np.copy( save_t_obs )
-            MESSAGE("Building observation system for K-fold : %d" % i)
-
-            # change model.t_obs
-            model.t_obs[np_idxcv_dates[i,0]:np_idxcv_dates[i,1],np_idxcv_gps[i,0]:np_idxcv_gps[i,1],:] = np.nan
-            MESSAGE("Building normal system for K-fold: %d" % i)
-            (model.N, model.Nd) = pyeq.forward_model.build5(model)
-            npyN = ("CROSS_VALIDATION_NK%d.npy" % i)
-            npyNd = ("CROSS_VALIDATION_NdK%d.npy" % i)
-            MESSAGE("Saving %s & %s" % (npyN,npyNd))
-            np.save(npyN,model.N)
-            np.save(npyNd,model.Nd)
-
-        MESSAGE("Renaming output")
-        model.name = 'CROSS_VALIDATION'
-        model.t_obs = np.copy(save_t_obs)
 
     ##############################################################################################################################
     # OBSERVATION NORMAL SYSTEM
@@ -945,77 +543,6 @@ else:
         import pyeq.log
 
         pyeq.log.save_model_N(model)
-
-##############################################################################################################################
-# CROSS_VALIDATION_RUN
-##############################################################################################################################
-
-if model.cross_validation == 'run':
-    MESSAGE("Cross validation run", level=1)
-    MESSAGE("regularization parameters: %8.3lf %8.3lf %8.3lf %8.3lf %8.3lf " % ( model.sigma, model.lambda_spatial_smoothing,
-                model.lambda_spatial_smoothing, model.lambda_final_spatial_smoothing, model.lambda_stf ))
-
-    # load model
-
-
-    # full data run
-    model.N = np.load( 'CROSS_VALIDATION_N.npy' )
-    model.Nd = np.load( 'CROSS_VALIDATION_Nd.npy' )
-
-    # adds regularization
-    model = pyeq.regularization.laplace.add_laplace_cons(model)
-    model = pyeq.regularization.damping.add_damping_cons(model)
-
-    if model.offset > 0:
-        model.shift_constant = -10  # 10 mm should be enough
-        MESSAGE("modifying the normal system to handle offset at the origin time")
-        model.Nd += np.dot(model.N[:, -model.nconstant:], np.ones((model.nconstant, 1)) * -model.shift_constant).flatten()
-    else:
-        model.shift_constant = 0.
-
-    ###################################################################
-    # MODIFIES THE NORMAL SYSTEM SO THAT NEGATIVE VALUES FOR SOME
-    # PARAMETERS, OR CHANGE THE LOWER BOUND.
-    # HANDLES THE CASE OF NEGATIVE (BACK-SLIP BOUNDED) SLIP
-    # FOR INTERSEISMIC MODELLING
-    ###################################################################
-
-    if model.interseismic != 0:
-        MESSAGE(("INTERSEISMIC CASE"), level=1)
-        ERROR("NOT IMPLEMENTED YET", exit=True)
-        print("-- modifying the normal system to allow negative bounded slip for the interseismic case")
-        if model.nconstant == 0:
-            model.Nd += np.dot(model.N,
-                               np.ones(((model.nfaults * model.nstep), 1)) * -model.interseismic / 365.25).flatten()
-        else:
-            model.Nd += np.dot(model.N[:, :-model.nconstant],
-                               np.ones(((model.nfaults * model.nstep), 1)) * -model.interseismic / 365.25).flatten()
-
-    else:
-        MESSAGE("TRANSIENT SLIP CASE", level=1)
-
-    ###################################################################
-    # RUNNING INVERSION - NO RAKE
-    ###################################################################
-    MESSAGE("MAKING INVERSION", level=1)
-
-    model.memory_before_inv = pyeq.log.get_process_memory_usage()
-    MESSAGE("memory usage before inversion: %.2lf Gb" % model.memory_before_inv)
-    MESSAGE("Number of estimated parameters: %d" % (model.nparameters))
-
-    T0 = time()
-    if model.regularization in ['covariance', 'laplacian']:
-        model.parameters, time_inversion = pyeq.optimization.wrapper.make_inversion.pyeq_nnls(model.N, model.Nd, model.nnls,
-                                                                                              verbose=model.verbose)
-
-    # NOT IMPLEMENTED YET
-    if model.regularization in ['cvxopt']:
-        model.parameters, time_inversion = pyeq.optimization.wrapper.make_inversion.pyeq_cvxopt(model)
-
-    model.time_inversion = time() - T0
-    VERBOSE(("time inversion: %.1lf s" % (model.time_inversion)))
-
-
 
 
 ##############################################################################################################################

@@ -50,6 +50,7 @@ def cutde_tde( geometry ,
     Note: apparently, conventions are: ENU (positive Upward) ss>0 left-lateral, ds>0 inverse if triangle vertices are ordered upward.
     """
     #TODO check lam, mu and poisson_ratio coherence
+    #TODO STRESS & STRAIN ARE YET TO BE IMPLEMENTED
 
     ###############################################################################
     # IMPORT

@@ -16,6 +16,7 @@ def print_slip_model( model ):
     import pyeq.message.warning as WARNING
     import pyeq.message.debug_message as DEBUG
 
+
     ###########################################################################
     # INITIALIZE COORDINATES FROM GEOMETRY FOR PRINTING SLIP
     ###########################################################################

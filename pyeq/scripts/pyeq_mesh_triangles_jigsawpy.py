@@ -545,8 +545,13 @@ slip=1.0
 
 GREEN=np.zeros((n_dislocations, n_gps, 3,2))
 
-MESSAGE("Creating Green tensor")
-GREEN = pyeq.green.make.nikkhoo_tde( GEOMETRY , OBS[:,:2], coor_type='geo' , disp=True, strain=False, stress= False, verbose=verbose )
+MESSAGE("Creating Green tensor using cutde")
+GREEN = pyeq.green.make.cutde_tde(GEOMETRY, OBS[:, :2], coor_type='geo', disp=True, strain=False, stress=False,
+                                  verbose=verbose)
+try:
+    GREEN = pyeq.green.make.cutde_tde( GEOMETRY , OBS[:,:2], coor_type='geo' , disp=True, strain=False, stress= False, verbose=verbose )
+except:
+    GREEN = pyeq.green.make.nikkhoo_tde( GEOMETRY , OBS[:,:2], coor_type='geo' , disp=True, strain=False, stress= False, verbose=verbose )
 
 MESSAGE("Creating resolution map")
 
@@ -555,7 +560,7 @@ MESSAGE("Best  resolved triangle %.1lf mm" % (np.max( resolution )) )
 MESSAGE("Worst resolved triangle %.1lf mm" % (np.min( resolution )) )
 MESSAGE("Ratio %.1lf and log %.1lf " % ( np.max( resolution) / np.min( resolution) , np.log10(np.max( resolution) / np.min( resolution))  ))
 
-ic(resolution.shape)
+#ic(resolution.shape)
 np.savetxt('spatial_resolution.dat', np.c_[geometry[:, 9:11], resolution],
            fmt="%10.5lf %10.5lf %10.3E")
 GEOMETRY[:,-1] = resolution
@@ -572,11 +577,11 @@ lcons = np.sqrt(1./resolution)
 # normalize
 lcons = lcons / np.min(lcons) * args.ltedge / 111.
 
-ic(np.min(lcons))
-ic(np.max(lcons))
+#ic(np.min(lcons))
+#ic(np.max(lcons))
 
-ic(np.min(lcons)*111.)
-ic(np.max(lcons)*111.)
+#ic(np.min(lcons)*111.)
+#ic(np.max(lcons)*111.)
 
 np_sr = np.c_[geometry[:, 9:11], lcons]
 
@@ -588,9 +593,9 @@ yi = np.arange(np.min(np_sr[:, 1]), np.max(np_sr[:, 1]), median_edge / 111. /2. 
 zi = griddata((np_sr[:, 0], np_sr[:, 1]), np_sr[:, 2], (xi[None, :], yi[:, None]), method='linear',
               fill_value=0.5)
 
-ic(xi.shape)
-ic(yi.shape)
-ic(zi.shape)
+#ic(xi.shape)
+#ic(yi.shape)
+#ic(zi.shape)
 
 hmat.mshID = "euclidean-grid"
 hmat.ndims = +2
@@ -642,11 +647,20 @@ for i in np.arange( nedge ):
     edge[i,:2] = mesh.edge2[i][0]
 
 # fill depth from grid
+
 interp = scipy.interpolate.RegularGridInterpolator(
-    tuple((ds.variables['x'][:], ds.variables['y'][:])),
+    tuple((longitudes, ds.variables['y'][:])),
     z.data,
     method='linear',
     bounds_error=True)
+#ic(longitudes)
+#ic(vert[:,0])
+
+#interp = scipy.interpolate.RegularGridInterpolator(
+#    tuple((ds.variables['x'][:], ds.variables['y'][:])),
+#    z.data,
+#    method='linear',
+#    bounds_error=True)
 vert[:,2] = interp( (vert[:,0], vert[:,1]) )
 
 # check vertices on the mesh edges
@@ -857,7 +871,10 @@ slip=1.0
 GREEN=np.zeros((n_dislocations, n_gps, 3,2))
 
 MESSAGE("Creating Green tensor")
-GREEN = pyeq.green.make.nikkhoo_tde( GEOMETRY , OBS[:,:2], coor_type='geo' , disp=True, strain=False, stress= False, verbose=verbose )
+try:
+    GREEN = pyeq.green.make.cutde_tde( GEOMETRY , OBS[:,:2], coor_type='geo' , disp=True, strain=False, stress= False, verbose=verbose )
+except:
+    GREEN = pyeq.green.make.nikkhoo_tde( GEOMETRY , OBS[:,:2], coor_type='geo' , disp=True, strain=False, stress= False, verbose=verbose )
 
 MESSAGE("Creating resolution map")
 
@@ -866,7 +883,7 @@ MESSAGE("Best  resolved triangle %.1lf mm" % (np.max( resolution )) )
 MESSAGE("Worst resolved triangle %.1lf mm" % (np.min( resolution )) )
 MESSAGE("Ratio %.1lf and log %.1lf " % ( np.max( resolution) / np.min( resolution) , np.log10(np.max( resolution) / np.min( resolution))  ))
 
-ic(resolution.shape)
+#ic(resolution.shape)
 np.savetxt('ireso.dat', np.c_[geometry[:, 9:11], resolution],
            fmt="%10.5lf %10.5lf %10.3E")
 GEOMETRY[:,-1] = resolution

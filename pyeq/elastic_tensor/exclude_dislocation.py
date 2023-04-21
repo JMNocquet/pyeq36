@@ -72,7 +72,7 @@ def exclude_dislocation(G , geometry, Dm, \
 
     
     if exclude_idx is not None:
-        VERBOSE(("Removing dislocations for index %d " % exclude_idx ))
+        VERBOSE(("Removing dislocations for user provided index " ))
         np_idx = np.delete( np.arange( G.shape[0] ) , np.array(exclude_idx) )
         G = G[np_idx,:,:,:]
         geometry = geometry[ np_idx, : ]

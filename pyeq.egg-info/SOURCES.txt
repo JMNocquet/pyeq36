@@ -25,6 +25,9 @@ pyeq/coulomb/stress2traction.py
 pyeq/coulomb/unit_dip_vector.py
 pyeq/coulomb/unit_normal_vector.py
 pyeq/coulomb/unit_strike_vector.py
+pyeq/cross_validation/__init__.py
+pyeq/cross_validation/build.py
+pyeq/cross_validation/run.py
 pyeq/date/__init__.py
 pyeq/date/check_date_obs_vs_model.py
 pyeq/date/date_args.py
